@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:marketplace/det.dart';
+import 'package:marketplace/detail.dart';
 import 'package:marketplace/homepage.dart';
 import 'package:marketplace/product.dart';
 import 'package:marketplace/view/Register/login.dart'; // Import your product data
