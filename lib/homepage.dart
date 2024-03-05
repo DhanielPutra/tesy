@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:marketplace/detail.dart';
+import 'package:marketplace/profile.dart';
 import 'package:marketplace/search.dart';
 import 'package:marketplace/view/Register/login.dart';
 import 'package:marketplace/product.dart';
@@ -31,7 +32,10 @@ class _homepageState extends State<homepage> {
       } else if (index == 2) {
         Navigator.of(context)
             .pushReplacement(MaterialPageRoute(builder: (context)=> Wishlist()));
-      }
+      } else if (index == 3) {
+        Navigator.of(context)
+            .pushReplacement(MaterialPageRoute(builder: (context)=> Profile()));
+      } 
     });
   }
 
