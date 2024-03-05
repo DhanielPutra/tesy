@@ -189,7 +189,7 @@ class _DetailState extends State<Detail> {
                                 fontWeight: FontWeight.w600, fontSize: 15),
                           ),
                           Text(
-                            'Dokumen dan aksesoris : Lengkap Dokumen dan aksesoris : Lengkap,Dokumen dan aksesoris : Lengkap Dokumen dan aksesoris : Lengkap Dokumen dan aksesoris : Lengkap Dokumen dan aksesoris : Lengkap Dokumen dan aksesoris : Lengkap Dokumen dan aksesoris : Lengkap',
+                            'Dokumen dan aksesoris : Lengkap ',
                             style: TextStyle(
                                 fontWeight: FontWeight.w600, fontSize: 15),
                           ),
