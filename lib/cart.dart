@@ -56,16 +56,151 @@ class _CartState extends State<Cart> {
             size: 30.0,
           ),
           title: Text(
-            'My Total',
+            'My Cart',
             style: TextStyle(color: Colors.black),
           ),
         ),
-        body: ListView.builder(
-          itemCount: products.length,
-          itemBuilder: (context, index) {
-            Product product = products[index];
-            return buildProductCard(product);
-          },
+        body: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 100),
+              child: ListView.builder(
+                itemCount: products.length,
+                itemBuilder: (context, index) {
+                  Product product = products[index];
+                  return buildProductCard(product);
+                },
+              ),
+            ),
+            Positioned(
+              bottom: 0, // Sesuaikan posisi sesuai kebutuhan Anda
+              left: 0,
+              right: 0,
+              child: Container(
+                color: Colors.white,
+                padding: EdgeInsets.all(16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Total Harga', // Gantilah dengan total harga yang sesuai
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            IconButton(
+                                onPressed: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(
+                                            20.0), // Atur radius top sesuai keinginan
+                                      ),
+                                    ),
+                                    builder: (BuildContext context) {
+                                      return Container(
+                                        padding: EdgeInsets.all(15),
+                                        height: 250.0,
+                                        width: MediaQuery.of(context)
+                                            .size
+                                            .width, // Atur tinggi modal bottom sheet sesuai keinginan
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            IconButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                icon: Icon(Icons.close_sharp)),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            Text(
+                                              'Detail pembayaran',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 18),
+                                            ),
+                                            SizedBox(height: 20),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text('Total harga (3 produk)'),
+                                                Text('Rp. 2.100.000'),
+                                              ],
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text('Biaya Platform'),
+                                                Text('Rp. 1.000'),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            Divider(),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text('Total Pembayaran',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                                Text('Rp. 2.101.000'),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                                icon: Icon(Icons.keyboard_arrow_up))
+                          ],
+                        ),
+                        Text('Rp. 2.100.000')
+                      ],
+                    ),
+                    ElevatedButton(
+                      onPressed: () {},
+                      child: Text(
+                        'Checkout',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 17,
+                          color: Colors.white,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFB50B0B),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
@@ -79,7 +214,7 @@ class _CartState extends State<Cart> {
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.shopping_cart_outlined),
-              label: 'Total',
+              label: 'Cart',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.favorite_border),
@@ -93,57 +228,7 @@ class _CartState extends State<Cart> {
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
         ),
-        floatingActionButton: Container(
-          height: 55,
-          width: 260,
-          margin: EdgeInsets.all(20),
-          child: ElevatedButton(
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (BuildContext context) {
-                  // Konten Bottom Sheet
-                  return Container(
-                    padding: EdgeInsets.all(16),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Ringkasan Pembelian',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
-                        // Tambahkan informasi ringkasan pembelian atau formulir pembayaran di sini
-                        SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () {
-                            // Logika yang akan dijalankan ketika tombol pembayaran ditekan
-                            Navigator.pop(context); // Menutup Bottom Sheet
-                          },
-                          child: Text('Pilih Metode Pembayaran'),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            },
-            child: Text(
-              'Checkout',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 17,
-                color: Colors.white,
-              ),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFFB50B0B),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-            ),
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        //
       ),
     );
   }
@@ -178,6 +263,8 @@ class _CartState extends State<Cart> {
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                     SizedBox(
                       height: 40,
@@ -185,6 +272,8 @@ class _CartState extends State<Cart> {
                     Text(
                       product.price,
                       style: TextStyle(fontSize: 16, color: Colors.black),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                   ],
                 ),

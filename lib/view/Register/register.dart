@@ -178,7 +178,7 @@ class HalamanDaftar extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {
                        Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => homepage()));
+                      MaterialPageRoute(builder: (context) => login()));
                     },
                     child: Text(
                       'Sign Up',
