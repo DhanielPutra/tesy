@@ -15,7 +15,11 @@ class _CheckoutState extends State<Checkout> {
       home: Scaffold(
         appBar: AppBar(
           title: Text('Checkout'),
-          leading: IconButton(onPressed: () {}, icon: Icon(Icons.arrow_back)),
+          leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.arrow_back)),
         ),
         body: Container(
           padding: EdgeInsets.all(30),
@@ -34,7 +38,6 @@ class _CheckoutState extends State<Checkout> {
                 maxLines: 3,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
-                    
                     borderRadius: BorderRadius.circular(4.0),
                     borderSide: BorderSide(
                       color: Colors.black,
@@ -47,7 +50,6 @@ class _CheckoutState extends State<Checkout> {
                   ),
                 ),
               ),
-
               SizedBox(
                 height: 25,
               ),
@@ -130,11 +132,9 @@ class _CheckoutState extends State<Checkout> {
                       Icon(Icons.account_balance_outlined)
                     ],
                   )),
-
               SizedBox(
                 height: 50,
               ),
-
               Center(
                 child: ElevatedButton(
                     onPressed: () {},

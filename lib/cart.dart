@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:marketplace/checkout.dart';
 
 class Cart extends StatefulWidget {
   const Cart({super.key});
@@ -50,11 +51,11 @@ class _CartState extends State<Cart> {
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.transparent,
-          leading: Icon(
-            Icons.arrow_back_sharp,
-            color: Colors.black,
-            size: 30.0,
-          ),
+          leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.arrow_back)),
           title: Text(
             'My Cart',
             style: TextStyle(color: Colors.black),
@@ -180,7 +181,10 @@ class _CartState extends State<Cart> {
                       ],
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => Checkout()));
+                      },
                       child: Text(
                         'Checkout',
                         style: TextStyle(

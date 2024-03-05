@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:marketplace/cart.dart';
+import 'package:marketplace/checkout.dart';
 import 'package:marketplace/product.dart';
 
 class Detail extends StatefulWidget {
@@ -256,7 +258,8 @@ class _DetailState extends State<Detail> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: IconButton(
-                  onPressed: () {},
+                  onPressed: () { Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => Cart()));},
                   icon: const Icon(
                     Icons.shopping_cart_outlined,
                     size: 20,
@@ -265,7 +268,10 @@ class _DetailState extends State<Detail> {
                 ),
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                   Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => Checkout()));
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFB50B0B),
                   minimumSize: const Size(200, 60),
