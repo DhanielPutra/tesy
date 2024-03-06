@@ -95,24 +95,28 @@ class _loginState extends State<login> {
             ),
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Checkbox(
-                value: rememberMe,
-                onChanged: (bool? newValue) {
-                  setState(() {
-                    rememberMe = newValue!;
-                  });
-                },
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Checkbox(
+                    value: rememberMe,
+                    onChanged: (bool? newValue) {
+                      setState(() {
+                        rememberMe = newValue!;
+                      });
+                    },
+                  ),
+                  const Text(
+                    'Remember me',
+                    style: TextStyle(
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
               ),
-              const Text(
-                'Remember me',
-                style: TextStyle(
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(
-                width: 86,
-              ),
+
               const Text(
                 'Forgot Password?',
                 style: TextStyle(
@@ -151,27 +155,30 @@ class _loginState extends State<login> {
               ),
             ),
           ),
-          Padding(padding: const EdgeInsets.fromLTRB(70, 0, 0, 0),
-          child :
-           Row(
-            children: [
-              const Text(
-                'New Member?',style: TextStyle(color: Colors.black,fontSize: 15),
-              ),
-              TextButton(
-                  onPressed: () {
-                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => HalamanDaftar()));
-                  },
-                  child: const Text(
-                    'Register Now!',
-                    style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold),
-                  ))
-            ],
-          ),),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'New Member?',
+                  style: TextStyle(color: Colors.black, fontSize: 15),
+                ),
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => HalamanDaftar()));
+                    },
+                    child: const Text(
+                      'Register Now!',
+                      style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ))
+              ],
+            ),
+          ),
         ],
       ),
     ));
