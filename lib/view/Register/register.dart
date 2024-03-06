@@ -2,8 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:marketplace/homepage.dart';
 import 'package:marketplace/view/Register/login.dart';
 
-class HalamanDaftar extends StatelessWidget {
-  const HalamanDaftar({super.key});
+class HalamanDaftar extends StatefulWidget {
+  HalamanDaftar({super.key});
+
+  @override
+  State<HalamanDaftar> createState() => _HalamanDaftarState();
+}
+
+class _HalamanDaftarState extends State<HalamanDaftar> {
+  bool isFormComplete = false;
+  String passwordError = '';
+
+  final TextEditingController namaLengkapController = TextEditingController();
+
+  final TextEditingController teleponController = TextEditingController();
+
+  final TextEditingController emailController = TextEditingController();
+
+  final TextEditingController passwordController = TextEditingController();
+
+  final TextEditingController konfirmasiPasswordController =
+      TextEditingController();
+
+  bool validateForm() {
+    return namaLengkapController.text.isNotEmpty &&
+        teleponController.text.isNotEmpty &&
+        emailController.text.isNotEmpty &&
+        passwordController.text.isNotEmpty &&
+        konfirmasiPasswordController.text.isNotEmpty;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +42,7 @@ class HalamanDaftar extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              //LOGO
+              //LOGO APP
               ClipOval(
                 child: Image.asset(
                   'assets/bbq.jpg', // Ganti dengan nama file gambar Anda
@@ -27,7 +54,7 @@ class HalamanDaftar extends StatelessWidget {
               SizedBox(
                 height: 10,
               ),
-              //WELCOME
+              //WELCOME TEXT
               Text(
                 'Get started',
                 style: TextStyle(fontWeight: FontWeight.w900, fontSize: 30),
@@ -44,6 +71,12 @@ class HalamanDaftar extends StatelessWidget {
               //NAMA LENGKAP
               TextField(
                 style: TextStyle(height: 1.5),
+                onChanged: (value) {
+                  setState(() {
+                    isFormComplete = validateForm();
+                  });
+                },
+                controller: namaLengkapController,
                 decoration: InputDecoration(
                   fillColor: Color(0xFFD9D9D9),
                   filled: true,
@@ -67,6 +100,12 @@ class HalamanDaftar extends StatelessWidget {
               // TELEPON
               TextField(
                 style: TextStyle(height: 1.5),
+                onChanged: (value) {
+                  setState(() {
+                    isFormComplete = validateForm();
+                  });
+                },
+                controller: teleponController,
                 decoration: InputDecoration(
                   fillColor: Color(
                       0xFFD9D9D9), // Ganti dengan warna latar belakang yang diinginkan
@@ -93,6 +132,12 @@ class HalamanDaftar extends StatelessWidget {
               //EMAIL
               TextField(
                 style: TextStyle(height: 1.5),
+                onChanged: (value) {
+                  setState(() {
+                    isFormComplete = validateForm();
+                  });
+                },
+                controller: emailController,
                 decoration: InputDecoration(
                   fillColor: Color(
                       0xFFD9D9D9), // Ganti dengan warna latar belakang yang diinginkan
@@ -118,6 +163,12 @@ class HalamanDaftar extends StatelessWidget {
               //PASSWORD
               TextField(
                 style: TextStyle(height: 1.5),
+                onChanged: (value) {
+                  setState(() {
+                    isFormComplete = validateForm();
+                  });
+                },
+                controller: passwordController,
                 decoration: InputDecoration(
                   fillColor: Color(
                       0xFFD9D9D9), // Ganti dengan warna latar belakang yang diinginkan
@@ -143,6 +194,15 @@ class HalamanDaftar extends StatelessWidget {
               //KONFIRMASI PAASSWORD
               TextField(
                 style: TextStyle(height: 1.5),
+                onChanged: (value) {
+                  setState(() {
+                    isFormComplete = validateForm();
+                    passwordError = passwordController.text == value
+                        ? ''
+                        : 'Passwords do not match';
+                  });
+                },
+                controller: konfirmasiPasswordController,
                 decoration: InputDecoration(
                   iconColor: Colors.black,
 
@@ -167,6 +227,11 @@ class HalamanDaftar extends StatelessWidget {
                   suffixIcon: Icon(Icons.lock_outlined),
                 ),
               ),
+              Text(
+                passwordError,
+                style: TextStyle(color: Colors.red),
+              ),
+              
               SizedBox(height: 40),
 
               //TOMBOL SIGN UP
@@ -176,14 +241,18 @@ class HalamanDaftar extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: SizedBox.expand(
                   child: ElevatedButton(
-                    onPressed: () {
-                       Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => login()));
-                    },
+                    onPressed: isFormComplete && passwordError.isEmpty
+                        ? () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => login()));
+                          }
+                        : null,
                     child: Text(
                       'Sign Up',
-                      style:
-                          TextStyle(fontWeight: FontWeight.w500, fontSize: 17,color: Colors.white),
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 17,
+                          color: Colors.white),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFFB50B0B),
@@ -195,7 +264,6 @@ class HalamanDaftar extends StatelessWidget {
                   ),
                 ),
               ),
-              
 
               //LINK LOGIN
               Row(
@@ -204,8 +272,8 @@ class HalamanDaftar extends StatelessWidget {
                   Text('sudah memiliki akun?'),
                   TextButton(
                     onPressed: () {
-                       Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => login()));
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => login()));
                     },
                     child: Text(
                       'Log in!',
