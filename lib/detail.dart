@@ -16,7 +16,7 @@ class Detail extends StatefulWidget {
 
 class _DetailState extends State<Detail> {
   int _selectedIndex = 0;
-
+  bool isLiked = false;
   // Function to handle BottomNavigationBar index changes
   void _onItemTapped(int index) {
     setState(() {
@@ -102,9 +102,16 @@ class _DetailState extends State<Detail> {
                               ),
                             ),
                           ),
-                        const  Padding(
-                            padding:  EdgeInsets.only(right: 5),
-                            child: Icon(Icons.favorite, color: Colors.red),
+                          IconButton(
+                            icon: Icon(
+                              isLiked ? Icons.favorite : Icons.favorite_border,
+                              color: isLiked ? Colors.red : null,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                isLiked = !isLiked;
+                              });
+                            },
                           ),
                         ],
                       ),
@@ -258,10 +265,10 @@ class _DetailState extends State<Detail> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: IconButton(
-                  onPressed: () { 
+                  onPressed: () {
                     // Navigator.of(context).push(
                     //   MaterialPageRoute(builder: (context) => Cart(products: [],)));
-                      },
+                  },
                   icon: const Icon(
                     Icons.shopping_cart_outlined,
                     size: 20,
@@ -271,7 +278,7 @@ class _DetailState extends State<Detail> {
               ),
               ElevatedButton(
                 onPressed: () {
-                   Navigator.of(context).push(
+                  Navigator.of(context).push(
                       MaterialPageRoute(builder: (context) => Checkout()));
                 },
                 style: ElevatedButton.styleFrom(
