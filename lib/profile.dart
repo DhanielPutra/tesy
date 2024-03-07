@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:marketplace/cart.dart';
 import 'package:marketplace/homepage.dart';
+import 'package:marketplace/pembayaran.dart';
+import 'package:marketplace/view/Register/register.dart';
 import 'package:marketplace/wishlist.dart';
 
 class Profile extends StatefulWidget {
@@ -19,13 +21,13 @@ class _ProfileState extends State<Profile> {
       _selectedIndex = index;
       if (index == 0) {
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => homepage()));
+            .push(MaterialPageRoute(builder: (context) => const homepage()));
       } else if (index == 1) {
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Cart()));
+            .push(MaterialPageRoute(builder: (context) =>const Cart()));
       } else if (index == 2) {
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Wishlist()));
+            .push(MaterialPageRoute(builder: (context) =>const Wishlist()));
       }
     });
   }
@@ -60,21 +62,21 @@ class _ProfileState extends State<Profile> {
           ],
           currentIndex: _selectedIndex,
           selectedItemColor: const Color.fromARGB(255, 255, 255, 255),
-          unselectedItemColor: Color.fromARGB(207, 0, 0, 0),
+          unselectedItemColor:const Color.fromARGB(207, 0, 0, 0),
           onTap: _onItemTapped,
         ),
         body: Container(
-          padding: EdgeInsets.fromLTRB(20, 30, 20, 20),
+          padding:const EdgeInsets.fromLTRB(20, 30, 20, 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Profile'),
-              SizedBox(
+             const Text('Profile'),
+            const  SizedBox(
                 height: 10,
               ),
               Container(
-                color: Color(0xFFB50B0B),
-                padding: EdgeInsets.all(20),
+                color:const Color(0xFFB50B0B),
+                padding:const EdgeInsets.all(20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -89,10 +91,10 @@ class _ProfileState extends State<Profile> {
                                 .cover, // Atur sesuai kebutuhan tata letak gambar
                           ),
                         ),
-                        SizedBox(
+                      const  SizedBox(
                           width: 20,
                         ),
-                        Column(
+                       const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
@@ -109,23 +111,23 @@ class _ProfileState extends State<Profile> {
                     ),
                     IconButton(
                         onPressed: () {},
-                        icon: Icon(
+                        icon:const Icon(
                           Icons.edit_outlined,
                           color: Colors.white,
                         ))
                   ],
                 ),
               ),
-              SizedBox(
+           const   SizedBox(
                 height: 10,
               ),
               Container(
-                padding: EdgeInsets.all(15),
+                padding:const EdgeInsets.all(15),
                 color: Colors.white,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
+                  const  SizedBox(
                       height: 15,
                     ),
                     InkWell(
@@ -134,7 +136,7 @@ class _ProfileState extends State<Profile> {
                         print('Account Information pressed');
                         // Tambahkan navigasi atau tindakan sesuai kebutuhan Anda
                       },
-                      child: Row(
+                      child:const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Account Information'),
@@ -142,10 +144,10 @@ class _ProfileState extends State<Profile> {
                         ],
                       ),
                     ),
-                    SizedBox(
+                  const  SizedBox(
                       height: 10,
                     ),
-                    SizedBox(
+                  const  SizedBox(
                       height: 10,
                     ),
                     InkWell(
@@ -154,7 +156,7 @@ class _ProfileState extends State<Profile> {
                         print('My Store pressed');
                         // Tambahkan navigasi atau tindakan sesuai kebutuhan Anda
                       },
-                      child: Row(
+                      child:const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('My Store'),
@@ -162,10 +164,10 @@ class _ProfileState extends State<Profile> {
                         ],
                       ),
                     ),
-                    SizedBox(
+                   const SizedBox(
                       height: 10,
                     ),
-                    SizedBox(
+                  const  SizedBox(
                       height: 10,
                     ),
                     InkWell(
@@ -174,7 +176,7 @@ class _ProfileState extends State<Profile> {
                         print('Daftar Transaksi pressed');
                         // Tambahkan navigasi atau tindakan sesuai kebutuhan Anda
                       },
-                      child: Row(
+                      child:const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Daftar Transaksi'),
@@ -182,19 +184,20 @@ class _ProfileState extends State<Profile> {
                         ],
                       ),
                     ),
-                    SizedBox(
+                  const  SizedBox(
                       height: 10,
                     ),
-                    SizedBox(
+                   const SizedBox(
                       height: 10,
                     ),
                     InkWell(
                       onTap: () {
                         // Navigasi atau tindakan yang diinginkan saat bagian ini dipencet
                         print('Pembayaran pressed');
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=> Pembayaran()));
                         // Tambahkan navigasi atau tindakan sesuai kebutuhan Anda
                       },
-                      child: Row(
+                      child:const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Pembayaran'),
@@ -202,27 +205,28 @@ class _ProfileState extends State<Profile> {
                         ],
                       ),
                     ),
-                    SizedBox(
+                  const  SizedBox(
                       height: 10,
                     ),
                   ],
                 ),
               ),
-              SizedBox(
+             const SizedBox(
                 height: 10,
               ),
               InkWell(
                 onTap: () {
                   // Tindakan logout, misalnya membersihkan data sesi atau menghapus token
                   print('Logout pressed');
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> HalamanDaftar()));
 
                   // Navigasi kembali ke halaman login
                 },
                 child: Container(
                   height: 60,
                   color: Colors.white,
-                  padding: EdgeInsets.all(15),
-                  child: Row(
+                  padding:const EdgeInsets.all(15),
+                  child:const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Logout'),
