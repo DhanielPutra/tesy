@@ -258,8 +258,10 @@ class _DetailState extends State<Detail> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: IconButton(
-                  onPressed: () { Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => Cart()));},
+                  onPressed: () { 
+                    // Navigator.of(context).push(
+                    //   MaterialPageRoute(builder: (context) => Cart(products: [],)));
+                      },
                   icon: const Icon(
                     Icons.shopping_cart_outlined,
                     size: 20,

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 
 class Checkout extends StatefulWidget {
   const Checkout({super.key});
@@ -22,7 +22,7 @@ class _CheckoutState extends State<Checkout> {
               icon: Icon(Icons.arrow_back)),
         ),
         body: Container(
-          padding: EdgeInsets.all(30),
+          padding: const EdgeInsets.all(30),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

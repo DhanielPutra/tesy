@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:marketplace/cart.dart';
 import 'package:marketplace/detail.dart';
 import 'package:marketplace/profile.dart';
 import 'package:marketplace/search.dart';
@@ -28,7 +29,7 @@ class _homepageState extends State<homepage> {
         //     .push(MaterialPageRoute(builder: (context) => homepage()));
       } else if (index == 1) {
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => login()));
+            .push(MaterialPageRoute(builder: (context) => Cart()));
       } else if (index == 2) {
         Navigator.of(context)
             .pushReplacement(MaterialPageRoute(builder: (context)=> Wishlist()));
