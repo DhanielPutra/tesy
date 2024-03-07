@@ -163,7 +163,7 @@ class _ProfileState extends State<Profile> {
                 
                 height: 60,
                 color: Colors.white,
-                padding: EdgeInsets.all(15),
+                padding:const EdgeInsets.all(15), 
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [Text('Logout'), Icon(Icons.logout)],

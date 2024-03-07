@@ -7,6 +7,20 @@ class SearchForm extends StatefulWidget {
 
 class _SearchFormState extends State<SearchForm> {
   String _searchQuery = '';
+  late TextEditingController _searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose(); // Dispose the controller when the widget is removed
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,11 +35,11 @@ class _SearchFormState extends State<SearchForm> {
           },
         ),
         actions: [
-          
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(left: 40), // Adjust the right padding
               child: TextField(
+                controller: _searchController, // Assign controller to TextField
                 decoration: InputDecoration(
                   hintText: 'Search',
                   hintStyle: TextStyle(
@@ -38,7 +52,8 @@ class _SearchFormState extends State<SearchForm> {
                   ),
                   filled: true,
                   fillColor: Color.fromARGB(255, 235, 226, 226),
-                  contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   prefixIcon: Icon(
                     Icons.search,
                     color: Colors.black,
@@ -61,7 +76,8 @@ class _SearchFormState extends State<SearchForm> {
             padding: EdgeInsets.all(10),
             child: GestureDetector(
               onTap: () {
-                Navigator.pop(context);
+                _searchController.clear(); // Clear text field when cancel button pressed
+                FocusScope.of(context).unfocus();
               },
               child: Text(
                 'Cancel',
