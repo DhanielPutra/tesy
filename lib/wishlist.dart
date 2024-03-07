@@ -1,10 +1,13 @@
+// ignore: unused_import
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:marketplace/cart.dart';
 import 'package:marketplace/detail.dart';
 import 'package:marketplace/homepage.dart';
 import 'package:marketplace/product.dart';
-import 'package:marketplace/view/Register/login.dart'; // Import your product data
+import 'package:marketplace/profile.dart';
+// Import your product data
 
 class Wishlist extends StatefulWidget {
   const Wishlist({Key? key}) : super(key: key);
@@ -15,6 +18,7 @@ class Wishlist extends StatefulWidget {
 
 class _WishlistState extends State<Wishlist> {
   int _selectedIndex = 2; // Default index for Wishlist
+  // ignore: unused_field
   String _selectedText = 'All'; // Initially set to 'All'
   List<List<String>> filteredItems = List.from(items);
 
@@ -26,8 +30,12 @@ class _WishlistState extends State<Wishlist> {
             .push(MaterialPageRoute(builder: (context) => homepage()));
       } else if (index == 1) {
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => login()));
-      } else if (index == 2) {}
+            .push(MaterialPageRoute(builder: (context) => Cart()));
+      } else if (index == 2) {
+
+      }else if(index == 3){
+        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>Profile()));
+      }
     });
   }
 

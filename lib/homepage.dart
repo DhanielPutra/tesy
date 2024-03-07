@@ -3,7 +3,7 @@ import 'package:marketplace/cart.dart';
 import 'package:marketplace/detail.dart';
 import 'package:marketplace/profile.dart';
 import 'package:marketplace/search.dart';
-import 'package:marketplace/view/Register/login.dart';
+
 import 'package:marketplace/product.dart';
 import 'package:marketplace/wishlist.dart';
 

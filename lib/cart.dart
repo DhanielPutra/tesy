@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:marketplace/checkout.dart';
+import 'package:marketplace/homepage.dart';
+import 'package:marketplace/profile.dart';
+import 'package:marketplace/wishlist.dart';
 
 class Cart extends StatefulWidget {
   const Cart({super.key});
@@ -9,7 +12,7 @@ class Cart extends StatefulWidget {
 }
 
 class _CartState extends State<Cart> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
 
   List<Product> products = [
     Product(
@@ -40,6 +43,15 @@ class _CartState extends State<Cart> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      if (index == 0) {
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => homepage()));
+      }else if(index == 1){
+        Navigator.of(context).push(MaterialPageRoute(builder: (context)=> Cart()));
+      }else if(index == 2){
+        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>Wishlist()));
+      }else if (index == 3){
+        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>Profile()));
+      }
     });
   }
 
@@ -50,15 +62,15 @@ class _CartState extends State<Cart> {
       home: Scaffold(
         appBar: AppBar(
           elevation: 0,
-          backgroundColor: Colors.transparent,
+          backgroundColor: Color.fromARGB(255, 203, 9, 9),
           leading: IconButton(
               onPressed: () {
                 Navigator.pop(context);
               },
               icon: Icon(Icons.arrow_back)),
-          title: Text(
+          title:const  Text(
             'My Cart',
-            style: TextStyle(color: Colors.black),
+            style: TextStyle(color:  Color.fromARGB(255, 255, 255, 255),fontWeight: FontWeight.bold),
           ),
         ),
         body: Stack(
@@ -206,32 +218,33 @@ class _CartState extends State<Cart> {
             ),
           ],
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Color(0xFFB50B0B),
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.grey.shade400,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart_outlined),
-              label: 'Cart',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.favorite_border),
-              label: 'Wishlist',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline_sharp),
-              label: 'Profil',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-        ),
+       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed, // Set type to fixed
+        backgroundColor: const Color.fromARGB(
+            255, 193, 24, 24), // Set the background color here
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart),
+            label: 'Cart',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Wishlist',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_rounded), // Add your new icon here
+            label: 'Profile', // Add the label for the new icon
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: const Color.fromARGB(255, 255, 255, 255),
+        unselectedItemColor: Color.fromARGB(207, 0, 0, 0),
+        onTap: _onItemTapped,
+      ),
         //
       ),
     );
@@ -252,8 +265,8 @@ class _CartState extends State<Cart> {
             children: [
               Image.asset(
                 product.imageUrl,
-                width: 95,
-                height: 60,
+                width: 100,
+                height: double.infinity,
                 fit: BoxFit.cover,
               ),
               SizedBox(width: 10),

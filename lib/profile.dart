@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:marketplace/cart.dart';
+import 'package:marketplace/homepage.dart';
+import 'package:marketplace/wishlist.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -8,12 +11,19 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 3;
 
   // Fungsi untuk menangani perubahan indeks BottomNavigationBar
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      if (index == 0) {
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => homepage()));
+      }else if(index == 1){
+        Navigator.of(context).push(MaterialPageRoute(builder: (context)=> Cart()));
+      }else if(index == 2){
+        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>Wishlist()));
+      }
     });
   }
 
@@ -23,32 +33,33 @@ class _ProfileState extends State<Profile> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: Colors.grey[200],
-        bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Color(0xFFB50B0B),
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.grey.shade400,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart_outlined),
-              label: 'Cart',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.favorite_border),
-              label: 'Wishlist',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline_sharp),
-              label: 'Profil',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-        ),
+       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed, // Set type to fixed
+        backgroundColor: const Color.fromARGB(
+            255, 193, 24, 24), // Set the background color here
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart),
+            label: 'Cart',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Wishlist',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_rounded), // Add your new icon here
+            label: 'Profile', // Add the label for the new icon
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: const Color.fromARGB(255, 255, 255, 255),
+        unselectedItemColor: Color.fromARGB(207, 0, 0, 0),
+        onTap: _onItemTapped,
+      ),
         body: Container(
           padding: EdgeInsets.fromLTRB(20, 30, 20, 20),
           child: Column(
