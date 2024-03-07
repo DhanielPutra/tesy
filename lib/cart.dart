@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:marketplace/checkout.dart';
 import 'package:marketplace/homepage.dart';
+
 import 'package:marketplace/profile.dart';
+
 import 'package:marketplace/wishlist.dart';
 
 class Cart extends StatefulWidget {
@@ -13,7 +15,6 @@ class Cart extends StatefulWidget {
 
 class _CartState extends State<Cart> {
   int _selectedIndex = 1;
-
   List<Product> products = [
     Product(
       name: 'Logitech Gaming Mouse',
@@ -35,23 +36,32 @@ class _CartState extends State<Cart> {
       imageUrl: 'assets/hd.png',
       price: 'Rp. 1.500.000',
     ),
-
     // Tambahkan produk lainnya sesuai kebutuhan...
   ];
 
-  // Fungsi untuk menangani perubahan indeks BottomNavigationBar
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+
       if (index == 0) {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => homepage()));
-      }else if(index == 1){
-        Navigator.of(context).push(MaterialPageRoute(builder: (context)=> Cart()));
-      }else if(index == 2){
-        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>Wishlist()));
-      }else if (index == 3){
-        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>Profile()));
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => homepage()));
+      } else if (index == 1) {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => Cart()));
+      } else if (index == 2) {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => Wishlist()));
+      } else if (index == 3) {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => Profile()));
       }
+    });
+  }
+
+  void _removeProduct(int index) {
+    setState(() {
+      products.removeAt(index);
     });
   }
 
@@ -62,26 +72,27 @@ class _CartState extends State<Cart> {
       home: Scaffold(
         appBar: AppBar(
           elevation: 0,
-          backgroundColor: Color.fromARGB(255, 203, 9, 9),
+          backgroundColor: Colors.transparent,
           leading: IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: Icon(Icons.arrow_back)),
-          title:const  Text(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(Icons.arrow_back),
+          ),
+          title: Text(
             'My Cart',
-            style: TextStyle(color:  Color.fromARGB(255, 255, 255, 255),fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.black),
           ),
         ),
         body: Stack(
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 8, 8, 100),
+            Container(
+              padding: const EdgeInsets.fromLTRB(5, 5, 5, 100),
               child: ListView.builder(
                 itemCount: products.length,
                 itemBuilder: (context, index) {
                   Product product = products[index];
-                  return buildProductCard(product);
+                  return buildProductCard(product, index);
                 },
               ),
             ),
@@ -218,41 +229,47 @@ class _CartState extends State<Cart> {
             ),
           ],
         ),
-       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed, // Set type to fixed
-        backgroundColor: const Color.fromARGB(
-            255, 193, 24, 24), // Set the background color here
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'Cart',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Wishlist',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_rounded), // Add your new icon here
-            label: 'Profile', // Add the label for the new icon
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: const Color.fromARGB(255, 255, 255, 255),
-        unselectedItemColor: Color.fromARGB(207, 0, 0, 0),
-        onTap: _onItemTapped,
-      ),
-        //
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed, // Set type to fixed
+
+          backgroundColor: const Color.fromARGB(
+              255, 193, 24, 24), // Set the background color here
+
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_cart),
+              label: 'Cart',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.favorite),
+              label: 'Wishlist',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_rounded), // Add your new icon here
+
+              label: 'Profile', // Add the label for the new icon
+            ),
+          ],
+
+          currentIndex: _selectedIndex,
+
+          selectedItemColor: const Color.fromARGB(255, 255, 255, 255),
+
+          unselectedItemColor: Color.fromARGB(207, 0, 0, 0),
+
+          onTap: _onItemTapped,
+        ),
       ),
     );
   }
 
-  Widget buildProductCard(Product product) {
+  Widget buildProductCard(Product product, int index) {
     return Container(
-      margin: EdgeInsets.fromLTRB(25, 10, 25, 10),
+      margin: EdgeInsets.fromLTRB(20, 5, 20, 5),
       height: 140,
       child: Card(
         shape: RoundedRectangleBorder(
@@ -260,15 +277,20 @@ class _CartState extends State<Cart> {
         ),
         elevation: 5,
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(10.0),
           child: Row(
             children: [
-              Image.asset(
-                product.imageUrl,
-                width: 100,
-                height: double.infinity,
-                fit: BoxFit.cover,
+              Container(
+                width: 120.0,
+                height: 120.0,
+                child: Image.asset(
+                  product.imageUrl,
+                  fit: BoxFit
+                      .contain, // Mengatur agar gambar terlihat sepenuhnya
+                ),
               ),
+              SizedBox(width: 16.0), // Jarak antara gambar dan teks
+
               SizedBox(width: 10),
               Expanded(
                 child: Column(
@@ -301,7 +323,7 @@ class _CartState extends State<Cart> {
                   color: Color(0xFFB50B0B),
                 ),
                 onPressed: () {
-                  print('Delete Pressed!');
+                  _removeProduct(index);
                 },
               ),
             ],
