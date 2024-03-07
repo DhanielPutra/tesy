@@ -266,8 +266,8 @@ class _DetailState extends State<Detail> {
                 ),
                 child: IconButton(
                   onPressed: () {
-                    // Navigator.of(context).push(
-                    //   MaterialPageRoute(builder: (context) => Cart(products: [],)));
+                     Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => Cart()));
                   },
                   icon: const Icon(
                     Icons.shopping_cart_outlined,

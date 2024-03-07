@@ -60,28 +60,7 @@ class _CheckoutState extends State<Checkout> {
               SizedBox(
                 height: 15,
               ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  fixedSize: Size(400, 60),
-                  // Properti gaya tombol
-                  backgroundColor: Colors.white, // Warna latar belakang tombol
-                  foregroundColor: Colors.red,
-                  // Padding tombol
-                  side: BorderSide(color: Colors.red, width: 1),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4.0),
-                    // Bentuk tepi tombol
-                  ),
-                ),
-                onPressed: () {},
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Debit/ Credit Card'),
-                    Icon(Icons.credit_card_rounded)
-                  ],
-                ),
-              ),
+              
               SizedBox(
                 height: 10,
               ),
