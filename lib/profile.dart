@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:marketplace/cart.dart';
+import 'package:marketplace/editProfile.dart';
 import 'package:marketplace/homepage.dart';
 import 'package:marketplace/pembayaran.dart';
 import 'package:marketplace/view/Register/register.dart';
@@ -110,7 +111,9 @@ class _ProfileState extends State<Profile> {
                       ],
                     ),
                     IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>EditProfile()));
+                        },
                         icon:const Icon(
                           Icons.edit_outlined,
                           color: Colors.white,
@@ -135,6 +138,7 @@ class _ProfileState extends State<Profile> {
                         // Navigasi atau tindakan yang diinginkan saat bagian ini dipencet
                         print('Account Information pressed');
                         // Tambahkan navigasi atau tindakan sesuai kebutuhan Anda
+                        // Navigator.of(context)
                       },
                       child:const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

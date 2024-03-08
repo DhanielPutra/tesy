@@ -8,7 +8,7 @@ class EditProfile extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color(0xFFE9EAEC),
+        backgroundColor: Color.fromARGB(255, 201, 11, 11),
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
@@ -16,7 +16,12 @@ class EditProfile extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
         ),
         title: const Center(child: Text('Edit Profil')),
-        actions: [TextButton(onPressed: () {}, child: const Text('SAVE'))],
+        actions: [
+          TextButton(
+            onPressed: () {},
+            child: const Text('SAVE',style: TextStyle(color: Colors.white),),
+          ),
+        ],
       ),
       body: Stack(
         children: [
@@ -37,8 +42,9 @@ class EditProfile extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: Colors.amber,
                               border: Border.all(
-                                color: const Color(0xFFE9EAEC).withOpacity(
-                                    0.5), // Warna border yang tersamarkan
+                                color: Color.fromARGB(255, 255, 255, 255)
+                                    .withOpacity(
+                                        0.5), // Warna border yang tersamarkan
                                 width: 2.0, // Lebar border
                               ),
                             ),
@@ -46,7 +52,7 @@ class EditProfile extends StatelessWidget {
                             child: Center(
                               child: ClipOval(
                                 child: Image.asset(
-                                  'dn.jpg',
+                                  'assets/dn.jpg',
                                 ),
                               ),
                               // child: Image.network(
