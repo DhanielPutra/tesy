@@ -51,7 +51,7 @@ class _PembayaranState extends State<Pembayaran> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Cash on Delivery'),
-                  Icon(Icons.arrow_drop_down),
+                  
                 ],
               ),
             ),
@@ -90,7 +90,7 @@ class _PembayaranState extends State<Pembayaran> {
                           child: Text(
                             'Transfer Bank BCA',
                             style: TextStyle(
-                              color: _selectedPaymentMethod == 'Bank BCA' ? Colors.red : null,
+                              color: _selectedPaymentMethod == 'Bank BCA' ? Color.fromARGB(255, 19, 65, 204) : null,
                             ),
                           ),
                         ),
@@ -107,7 +107,7 @@ class _PembayaranState extends State<Pembayaran> {
                           child: Text(
                             'Transfer Bank Mandiri',
                             style: TextStyle(
-                              color: _selectedPaymentMethod == 'Bank Mandiri' ? Colors.red : null,
+                              color: _selectedPaymentMethod == 'Bank Mandiri' ? Color.fromARGB(255, 15, 3, 255) : null,
                             ),
                           ),
                         ),
