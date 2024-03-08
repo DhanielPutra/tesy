@@ -32,57 +32,16 @@ class _PembayaranState extends State<Pembayaran> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ElevatedButton(
-              onPressed: () async {
-                final selectedMethod = await showMenu<String>(
-                  context: context,
-                  position: RelativeRect.fromLTRB(0, 100, 0, 0),
-                  items: <PopupMenuEntry<String>>[
-                    PopupMenuItem<String>(
-                      value: 'Cash on Delivery',
-                      child: Text(
-                        'Cash on Delivery',
-                        style: TextStyle(
-                          color: _selectedPaymentMethod == 'Cash on Delivery' ? Colors.red : null,
-                        ),
-                      ),
-                    ),
-                    PopupMenuItem<String>(
-                      value: 'Transfer Bank',
-                      child: PopupMenuButton<String>(
-                        itemBuilder: (context) => [
-                          PopupMenuItem(
-                            value: 'Bank A',
-                            child: Text('Bank A'),
-                          ),
-                          PopupMenuItem(
-                            value: 'Bank B',
-                            child: Text('Bank B'),
-                          ),
-                          PopupMenuItem(
-                            value: 'Bank C',
-                            child: Text('Bank C'),
-                          ),
-                        ],
-                        onSelected: (value) {
-                          setState(() {
-                            _selectedBank = value;
-                            _selectedPaymentMethod = 'Transfer Bank ($_selectedBank)';
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                );
-                if (selectedMethod != null && !selectedMethod.startsWith('Transfer Bank')) {
-                  setState(() {
-                    _selectedPaymentMethod = selectedMethod;
-                  });
-                }
+              onPressed: () {
+                setState(() {
+                  _selectedPaymentMethod = 'Cash on Delivery';
+                  _selectedBank = ''; // Reset selected bank when cash on delivery is chosen
+                });
               },
               style: ElevatedButton.styleFrom(
                 fixedSize: const Size(400, 60),
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.red,
+                backgroundColor: _selectedPaymentMethod == 'Cash on Delivery' ? Colors.red : Colors.white,
+                foregroundColor: _selectedPaymentMethod == 'Cash on Delivery' ? Colors.white : Colors.red,
                 side: const BorderSide(color: Colors.red, width: 1),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4.0),
@@ -91,7 +50,91 @@ class _PembayaranState extends State<Pembayaran> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Save your Payment'),
+                  Text('Cash on Delivery'),
+                  Icon(Icons.arrow_drop_down),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () async {
+                final selectedMethod = await showMenu<String>(
+                  context: context,
+                  position: RelativeRect.fromLTRB(0, 120, 0, 0),
+                  items: <PopupMenuEntry<String>>[
+                    PopupMenuItem<String>(
+                      value: 'Bank BNI',
+                      height: 50,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white, style: BorderStyle.none, width: 15,),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Transfer Bank BNI',
+                            style: TextStyle(
+                              color: _selectedPaymentMethod == 'Bank BNI' ? Colors.red : null,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'Bank BCA',
+                      height: 50,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white, style: BorderStyle.none, width: 15,),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Transfer Bank BCA',
+                            style: TextStyle(
+                              color: _selectedPaymentMethod == 'Bank BCA' ? Colors.red : null,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'Bank Mandiri',
+                      height: 50,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white, style: BorderStyle.none, width: 15,),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Transfer Bank Mandiri',
+                            style: TextStyle(
+                              color: _selectedPaymentMethod == 'Bank Mandiri' ? Colors.red : null,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+                if (selectedMethod != null && selectedMethod.startsWith('Bank')) {
+                  setState(() {
+                    _selectedPaymentMethod = selectedMethod;
+                    _selectedBank = selectedMethod; // Set selected bank to the chosen bank name
+                  });
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                fixedSize: const Size(400, 60),
+                backgroundColor: _selectedPaymentMethod != 'Cash on Delivery' ? Colors.red : Colors.white,
+                foregroundColor: _selectedPaymentMethod != 'Cash on Delivery' ? Colors.white : Colors.red,
+                side: const BorderSide(color: Colors.red, width: 1),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4.0),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(_selectedBank.isNotEmpty ? _selectedBank : 'Choose Bank'), // Display selected bank name or default text
                   Icon(Icons.arrow_drop_down),
                 ],
               ),
@@ -99,10 +142,7 @@ class _PembayaranState extends State<Pembayaran> {
             const SizedBox(
               height: 10,
             ),
-            Text(
-              'Selected Payment Method: $_selectedPaymentMethod',
-              style: const TextStyle(fontSize: 16),
-            ),
+            
             const SizedBox(
               height: 50,
             ),
