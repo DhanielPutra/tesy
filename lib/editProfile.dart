@@ -15,8 +15,8 @@ class EditProfile extends StatelessWidget {
           },
           icon: const Icon(Icons.arrow_back),
         ),
-        title: Center(child: Text('Edit Profil')),
-        actions: [TextButton(onPressed: () {}, child: Text('SAVE'))],
+        title: const Center(child: Text('Edit Profil')),
+        actions: [TextButton(onPressed: () {}, child: const Text('SAVE'))],
       ),
       body: Stack(
         children: [
@@ -33,11 +33,11 @@ class EditProfile extends StatelessWidget {
                         //gambar
                         children: [
                           Container(
-                            padding: EdgeInsets.all(50),
+                            padding: const EdgeInsets.all(50),
                             decoration: BoxDecoration(
                               color: Colors.amber,
                               border: Border.all(
-                                color: Color(0xFFE9EAEC).withOpacity(
+                                color: const Color(0xFFE9EAEC).withOpacity(
                                     0.5), // Warna border yang tersamarkan
                                 width: 2.0, // Lebar border
                               ),
@@ -64,8 +64,8 @@ class EditProfile extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.fromLTRB(30, 20, 30, 10),
-                  child: Column(
+                  padding: const EdgeInsets.fromLTRB(30, 20, 30, 10),
+                  child: const Column(
                     // mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
