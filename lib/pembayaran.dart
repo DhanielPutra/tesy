@@ -47,9 +47,9 @@ class _PembayaranState extends State<Pembayaran> {
                   borderRadius: BorderRadius.circular(4.0),
                 ),
               ),
-              child: Row(
+              child:const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: [ 
                   Text('Cash on Delivery'),
                   
                 ],
@@ -60,7 +60,7 @@ class _PembayaranState extends State<Pembayaran> {
               onPressed: () async {
                 final selectedMethod = await showMenu<String>(
                   context: context,
-                  position: RelativeRect.fromLTRB(0, 120, 0, 0),
+                  position:const RelativeRect.fromLTRB(5, 200, 0, 0),
                   items: <PopupMenuEntry<String>>[
                     PopupMenuItem<String>(
                       value: 'Bank BNI',
@@ -107,7 +107,7 @@ class _PembayaranState extends State<Pembayaran> {
                           child: Text(
                             'Transfer Bank Mandiri',
                             style: TextStyle(
-                              color: _selectedPaymentMethod == 'Bank Mandiri' ? Color.fromARGB(255, 15, 3, 255) : null,
+                              color: _selectedPaymentMethod == 'Bank Mandiri' ?const Color.fromARGB(255, 15, 3, 255) : null,
                             ),
                           ),
                         ),
@@ -134,8 +134,8 @@ class _PembayaranState extends State<Pembayaran> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(_selectedBank.isNotEmpty ? _selectedBank : 'Choose Bank'), // Display selected bank name or default text
-                  Icon(Icons.arrow_drop_down),
+                  Text(_selectedBank.isNotEmpty ? _selectedBank : 'Transfer Bank'), // Display selected bank name or default text
+                  const Icon(Icons.arrow_drop_down),
                 ],
               ),
             ),
