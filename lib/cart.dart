@@ -5,6 +5,7 @@ import 'package:marketplace/homepage.dart';
 import 'package:marketplace/profile.dart';
 
 import 'package:marketplace/wishlist.dart';
+import 'package:intl/intl.dart';
 
 class Cart extends StatefulWidget {
   const Cart({super.key});
@@ -22,8 +23,15 @@ class _CartState extends State<Cart> {
       price: 1300000,
     ),
     Product(
-        name: 'Wireless Keyboard', imageUrl: 'assets/ky.png', price: 800000),
-    Product(name: 'Gaming Headset', imageUrl: 'assets/hd.png', price: 1500000),
+      name: 'Wireless Keyboard',
+      imageUrl: 'assets/ky.png',
+      price: 800000,
+    ),
+    Product(
+      name: 'Gaming Headset',
+      imageUrl: 'assets/hd.png',
+      price: 1500000,
+    ),
 
     // Tambahkan produk lainnya sesuai kebutuhan...
   ];
@@ -150,18 +158,18 @@ class _CartState extends State<Cart> {
                                               children: [
                                                 Text(
                                                     'Total harga (${products.length} produk)'),
-                                                Text('Rp. ${getTotalPrice()}'),
+                                                Text('Rp. ${NumberFormat('#,##0').format(getTotalPrice())}',),
                                               ],
                                             ),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text('Biaya Platform'),
-                                                Text('Rp. 1.000'),
-                                              ],
-                                            ),
+                                            // Row(
+                                            //   mainAxisAlignment:
+                                            //       MainAxisAlignment
+                                            //           .spaceBetween,
+                                            //   children: [
+                                            //     Text('Biaya Platform'),
+                                            //     Text('Rp. 1.000'),
+                                            //   ],
+                                            // ),
                                             SizedBox(
                                               height: 10,
                                             ),
@@ -179,7 +187,7 @@ class _CartState extends State<Cart> {
                                                         fontWeight:
                                                             FontWeight.bold)),
                                                 Text(
-                                                    'Rp. ${getTotalPrice() + 1000}'),
+                                                    'Rp. ${NumberFormat('#,##0').format(getTotalPrice())}',),
                                               ],
                                             ),
                                           ],
@@ -191,7 +199,7 @@ class _CartState extends State<Cart> {
                                 icon: Icon(Icons.keyboard_arrow_up))
                           ],
                         ),
-                        Text('Rp. ${getTotalPrice()}')
+                        Text('Rp. ${NumberFormat('#,##0').format(getTotalPrice())}',)
                       ],
                     ),
                     ElevatedButton(
@@ -288,7 +296,7 @@ class _CartState extends State<Cart> {
                       height: 40,
                     ),
                     Text(
-                      'Rp. ${product.price.toString()}',
+                      'Rp. ${NumberFormat('#,##0').format(product.price)}',
                       style: TextStyle(fontSize: 16, color: Colors.black),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
