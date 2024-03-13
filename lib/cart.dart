@@ -16,6 +16,26 @@ class Cart extends StatefulWidget {
 
 class _CartState extends State<Cart> {
   int _selectedIndex = 1;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      if (index == 0) {
+         Navigator.of(context)
+           .push(MaterialPageRoute(builder: (context) => homepage()));
+      } else if (index == 1) {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => Cart()));
+      } else if (index == 2) {
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => Wishlist()));
+      } else if (index == 3) {
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => Profile()));
+      }
+    });
+  }
+
   List<Product> products = [
     Product(
       name: 'Logitech Gaming Mouse',
@@ -35,26 +55,6 @@ class _CartState extends State<Cart> {
 
     // Tambahkan produk lainnya sesuai kebutuhan...
   ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-
-      if (index == 0) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => homepage()));
-      } else if (index == 1) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Cart()));
-      } else if (index == 2) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Wishlist()));
-      } else if (index == 3) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Profile()));
-      }
-    });
-  }
 
   void _removeProduct(int index) {
     setState(() {
@@ -158,7 +158,9 @@ class _CartState extends State<Cart> {
                                               children: [
                                                 Text(
                                                     'Total harga (${products.length} produk)'),
-                                                Text('Rp. ${NumberFormat('#,##0').format(getTotalPrice())}',),
+                                                Text(
+                                                  'Rp. ${NumberFormat('#,##0').format(getTotalPrice())}',
+                                                ),
                                               ],
                                             ),
                                             // Row(
@@ -187,7 +189,8 @@ class _CartState extends State<Cart> {
                                                         fontWeight:
                                                             FontWeight.bold)),
                                                 Text(
-                                                    'Rp. ${NumberFormat('#,##0').format(getTotalPrice())}',),
+                                                  'Rp. ${NumberFormat('#,##0').format(getTotalPrice())}',
+                                                ),
                                               ],
                                             ),
                                           ],
@@ -199,7 +202,9 @@ class _CartState extends State<Cart> {
                                 icon: Icon(Icons.keyboard_arrow_up))
                           ],
                         ),
-                        Text('Rp. ${NumberFormat('#,##0').format(getTotalPrice())}',)
+                        Text(
+                          'Rp. ${NumberFormat('#,##0').format(getTotalPrice())}',
+                        )
                       ],
                     ),
                     ElevatedButton(
@@ -229,28 +234,31 @@ class _CartState extends State<Cart> {
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Color(0xFFB50B0B),
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.grey.shade400,
+          type: BottomNavigationBarType.fixed, // Set type to fixed
+          backgroundColor: const Color.fromARGB(
+              255, 193, 24, 24), // Set the background color here
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
+              icon: Icon(Icons.home),
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart_outlined),
+              icon: Icon(Icons.shopping_cart),
               label: 'Cart',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.favorite_border),
+              icon: Icon(Icons.favorite),
               label: 'Wishlist',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline_sharp),
-              label: 'Profil',
+              icon: Icon(Icons.person_rounded), // Add your new icon here
+              label: 'Profile', // Add the label for the new icon
             ),
           ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: const Color.fromARGB(255, 255, 255, 255),
+          unselectedItemColor: Color.fromARGB(207, 0, 0, 0),
+          onTap: _onItemTapped,
         ),
       ),
     );
