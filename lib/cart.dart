@@ -19,23 +19,12 @@ class _CartState extends State<Cart> {
     Product(
       name: 'Logitech Gaming Mouse',
       imageUrl: 'assets/mouse.png',
-      price: 'Rp. 1.300.000',
+      price: 1300000,
     ),
     Product(
-      name: 'Wireless Keyboard',
-      imageUrl: 'assets/ky.png',
-      price: 'Rp. 800.000',
-    ),
-    Product(
-      name: 'Gaming Headset',
-      imageUrl: 'assets/hd.png',
-      price: 'Rp. 1.500.000',
-    ),
-    Product(
-      name: 'Gaming Headset',
-      imageUrl: 'assets/hd.png',
-      price: 'Rp. 1.500.000',
-    ),
+        name: 'Wireless Keyboard', imageUrl: 'assets/ky.png', price: 800000),
+    Product(name: 'Gaming Headset', imageUrl: 'assets/hd.png', price: 1500000),
+
     // Tambahkan produk lainnya sesuai kebutuhan...
   ];
 
@@ -159,8 +148,9 @@ class _CartState extends State<Cart> {
                                                   MainAxisAlignment
                                                       .spaceBetween,
                                               children: [
-                                                Text('Total harga (3 produk)'),
-                                                Text('Rp. 2.100.000'),
+                                                Text(
+                                                    'Total harga (${products.length} produk)'),
+                                                Text('Rp. ${getTotalPrice()}'),
                                               ],
                                             ),
                                             Row(
@@ -188,7 +178,8 @@ class _CartState extends State<Cart> {
                                                     style: TextStyle(
                                                         fontWeight:
                                                             FontWeight.bold)),
-                                                Text('Rp. 2.101.000'),
+                                                Text(
+                                                    'Rp. ${getTotalPrice() + 1000}'),
                                               ],
                                             ),
                                           ],
@@ -200,7 +191,7 @@ class _CartState extends State<Cart> {
                                 icon: Icon(Icons.keyboard_arrow_up))
                           ],
                         ),
-                        Text('Rp. 2.100.000')
+                        Text('Rp. ${getTotalPrice()}')
                       ],
                     ),
                     ElevatedButton(
@@ -230,38 +221,28 @@ class _CartState extends State<Cart> {
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed, // Set type to fixed
-
-          backgroundColor: const Color.fromARGB(
-              255, 193, 24, 24), // Set the background color here
-
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Color(0xFFB50B0B),
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.grey.shade400,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+              icon: Icon(Icons.home_outlined),
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart),
+              icon: Icon(Icons.shopping_cart_outlined),
               label: 'Cart',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.favorite),
+              icon: Icon(Icons.favorite_border),
               label: 'Wishlist',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person_rounded), // Add your new icon here
-
-              label: 'Profile', // Add the label for the new icon
+              icon: Icon(Icons.person_outline_sharp),
+              label: 'Profil',
             ),
           ],
-
-          currentIndex: _selectedIndex,
-
-          selectedItemColor: const Color.fromARGB(255, 255, 255, 255),
-
-          unselectedItemColor: Color.fromARGB(207, 0, 0, 0),
-
-          onTap: _onItemTapped,
         ),
       ),
     );
@@ -290,8 +271,6 @@ class _CartState extends State<Cart> {
                 ),
               ),
               SizedBox(width: 16.0), // Jarak antara gambar dan teks
-
-              SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -309,7 +288,7 @@ class _CartState extends State<Cart> {
                       height: 40,
                     ),
                     Text(
-                      product.price,
+                      'Rp. ${product.price.toString()}',
                       style: TextStyle(fontSize: 16, color: Colors.black),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
@@ -332,12 +311,20 @@ class _CartState extends State<Cart> {
       ),
     );
   }
+
+  double getTotalPrice() {
+    double total = 0.0;
+    for (Product product in products) {
+      total += product.price;
+    }
+    return total;
+  }
 }
 
 class Product {
   final String name;
   final String imageUrl;
-  final String price;
+  final double price;
 
   Product({
     required this.name,
