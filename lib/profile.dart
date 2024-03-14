@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:marketplace/cart.dart';
+import 'package:marketplace/daftarTransaksi.dart';
 import 'package:marketplace/editProfile.dart';
 import 'package:marketplace/homepage.dart';
 import 'package:marketplace/pembayaran.dart';
@@ -161,6 +162,10 @@ class _ProfileState extends State<Profile> {
                     ),
                     InkWell(
                       onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => DaftarTransaksi()),
+                        );
                         // Navigasi atau tindakan yang diinginkan saat bagian ini dipencet
                         print('Daftar Transaksi pressed');
                         // Tambahkan navigasi atau tindakan sesuai kebutuhan Anda
