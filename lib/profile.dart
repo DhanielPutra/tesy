@@ -72,7 +72,7 @@ class _ProfileState extends State<Profile> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-             const Text('Profile'),
+             const Text('Profile',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 22),),
             const  SizedBox(
                 height: 10,
               ),
