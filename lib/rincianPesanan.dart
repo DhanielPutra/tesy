@@ -26,7 +26,9 @@ class _RincianPesananState extends State<RincianPesanan> {
         appBar: AppBar(
           title: Text('Rincian Pesanan'),
           leading: IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pop(context);
+            },
             icon: Icon(Icons.arrow_back),
           ),
         ),

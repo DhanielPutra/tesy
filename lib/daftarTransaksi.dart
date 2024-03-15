@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:indexed/indexed.dart';
 import 'package:marketplace/detail.dart';
 import 'package:marketplace/product.dart';
-
+import 'package:marketplace/rincianPesanan.dart';
 
 class DaftarTransaksi extends StatefulWidget {
   const DaftarTransaksi({super.key});
@@ -24,7 +24,9 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> {
         appBar: AppBar(
           title: Text('Daftar Transaksi'),
           leading: IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pop(context);
+              },
               icon: Icon(Icons.arrow_back)), // Tombol kembali di AppBar
         ),
         body: Column(
@@ -92,7 +94,7 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> {
                                 // Navigate to the detail page when the card is tapped
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) =>
-                                        Detail(item: [],))); // Navigasi ke halaman detail
+                                        RincianPesanan())); // Navigasi ke halaman detail
                               },
                               child: Container(
                                 height: 200,
@@ -131,7 +133,8 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> {
                                                         const EdgeInsets.only(
                                                             top: 10, right: 40),
                                                     child: Text(
-                                                      product[1], // Mengambil nama produk
+                                                      product[
+                                                          1], // Mengambil nama produk
                                                       style: const TextStyle(
                                                         color: Colors.black,
                                                         fontSize: 20,
@@ -144,7 +147,6 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> {
                                                     ),
                                                   ),
                                                 ),
-                                              
                                               ],
                                             ),
                                             Padding(
@@ -177,7 +179,9 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> {
                                                 maxLines: 1,
                                               ),
                                             ),
-                                            SizedBox(height: 15,),
+                                            SizedBox(
+                                              height: 15,
+                                            ),
                                             Padding(
                                               padding:
                                                   const EdgeInsets.fromLTRB(
@@ -198,7 +202,8 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> {
                                                               5),
                                                     ),
                                                     backgroundColor:
-                                                        Color.fromARGB(255, 208, 9, 9),
+                                                        Color.fromARGB(
+                                                            255, 208, 9, 9),
                                                   ),
                                                   child: const Text(
                                                     'Pesanan Diproses',
