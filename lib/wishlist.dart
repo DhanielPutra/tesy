@@ -21,6 +21,7 @@ class _WishlistState extends State<Wishlist> {
   // ignore: unused_field
   String _selectedText = 'All'; // Initially set to 'All'
   List<List<String>> filteredItems = List.from(items);
+ 
 
   void _onItemTapped(int index) {
     setState(() {
@@ -32,10 +33,16 @@ class _WishlistState extends State<Wishlist> {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => Cart()));
       } else if (index == 2) {
-
-      }else if(index == 3){
-        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>Profile()));
+      } else if (index == 3) {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => Profile()));
       }
+    });
+  }
+   // Function to remove an item from the wishlist
+  void _removeFromWishlist(int index) {
+    setState(() {
+      filteredItems.removeAt(index);
     });
   }
 
@@ -117,7 +124,7 @@ class _WishlistState extends State<Wishlist> {
                           borderRadius: BorderRadius.circular(
                               10), // Adjust border radius as needed
                         ),
-                        backgroundColor: Color.fromARGB(
+                        backgroundColor:const Color.fromARGB(
                             255, 132, 132, 132), // Change the button color
                       ),
                       child: const Text(
@@ -187,6 +194,7 @@ class _WishlistState extends State<Wishlist> {
                                     ),
                                     IconButton(
                                       onPressed: () {
+                                       _removeFromWishlist(index);
                                         // Add functionality to remove the item from the wishlist
                                       },
                                       icon: const Icon(Icons.close),

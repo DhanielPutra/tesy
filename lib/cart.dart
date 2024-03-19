@@ -111,7 +111,7 @@ class _CartState extends State<Cart> {
                       children: [
                         Row(
                           children: [
-                            Text(
+                           const Text(
                               'Total Harga', // Gantilah dengan total harga yang sesuai
                               style: TextStyle(
                                 fontSize: 18,
@@ -122,7 +122,7 @@ class _CartState extends State<Cart> {
                                 onPressed: () {
                                   showModalBottomSheet(
                                     context: context,
-                                    shape: RoundedRectangleBorder(
+                                    shape: const RoundedRectangleBorder(
                                       borderRadius: BorderRadius.vertical(
                                         top: Radius.circular(
                                             20.0), // Atur radius top sesuai keinginan
