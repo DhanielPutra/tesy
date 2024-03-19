@@ -7,19 +7,28 @@ class EditProfile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 60,
         elevation: 0,
         backgroundColor: Color.fromARGB(255, 201, 11, 11),
         leading: IconButton(
+          color: Colors.white,
           onPressed: () {
             Navigator.pop(context);
           },
           icon: const Icon(Icons.arrow_back),
         ),
-        title: const Center(child: Text('Edit Profil')),
+        title: const Center(
+            child: Text(
+          'Edit Profil',
+          style: TextStyle(color: Colors.white),
+        )),
         actions: [
           TextButton(
             onPressed: () {},
-            child: const Text('SAVE',style: TextStyle(color: Colors.white),),
+            child: const Text(
+              'SAVE',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -40,13 +49,7 @@ class EditProfile extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(50),
                             decoration: BoxDecoration(
-                              color: Colors.amber,
-                              border: Border.all(
-                                color: Color.fromARGB(255, 255, 255, 255)
-                                    .withOpacity(
-                                        0.5), // Warna border yang tersamarkan
-                                width: 2.0, // Lebar border
-                              ),
+                              color: Color.fromARGB(255, 201, 11, 11),
                             ),
                             height: MediaQuery.of(context).size.height * 0.3,
                             child: Center(

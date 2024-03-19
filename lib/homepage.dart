@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:marketplace/cart.dart';
 import 'package:marketplace/detail.dart';
 import 'package:marketplace/profile.dart';
@@ -31,12 +32,12 @@ class _homepageState extends State<homepage> {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => Cart()));
       } else if (index == 2) {
-        Navigator.of(context)
-            .pushReplacement(MaterialPageRoute(builder: (context)=> Wishlist()));
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => Wishlist()));
       } else if (index == 3) {
-        Navigator.of(context)
-            .pushReplacement(MaterialPageRoute(builder: (context)=> Profile()));
-      } 
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => Profile()));
+      }
     });
   }
 
@@ -61,7 +62,8 @@ class _homepageState extends State<homepage> {
               padding: EdgeInsets.fromLTRB(15, 0, 10, 0),
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => SearchForm()));
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => SearchForm()));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromARGB(255, 235, 226, 226),
@@ -91,14 +93,22 @@ class _homepageState extends State<homepage> {
               ),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(10, 0, 15, 0),
-            child: ClipOval(
-              child: Image.asset(
-                'assets/bbq.jpg',
-                fit: BoxFit.cover,
-                width: 50.0,
-                height: 50.0,
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Profile()),
+              );
+            },
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(10, 0, 15, 0),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/bbq.jpg',
+                  fit: BoxFit.cover,
+                  width: 50.0,
+                  height: 50.0,
+                ),
               ),
             ),
           ),
@@ -165,8 +175,8 @@ class _homepageState extends State<homepage> {
               children: filteredItems.map((item) {
                 return GestureDetector(
                   onTap: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => Detail(item: item)));
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => Detail(item: item)));
                   },
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width / 2 -
@@ -199,8 +209,8 @@ class _homepageState extends State<homepage> {
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
                                 ),
-                                 overflow: TextOverflow.ellipsis,
-                            maxLines: 1, // Limit the text to 1 line
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1, // Limit the text to 1 line
                               ),
                             ),
                             Align(

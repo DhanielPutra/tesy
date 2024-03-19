@@ -5,6 +5,7 @@ import 'package:marketplace/homepage.dart';
 import 'package:marketplace/profile.dart';
 
 import 'package:marketplace/wishlist.dart';
+import 'package:intl/intl.dart';
 
 class Cart extends StatefulWidget {
   const Cart({super.key});
@@ -15,49 +16,45 @@ class Cart extends StatefulWidget {
 
 class _CartState extends State<Cart> {
   int _selectedIndex = 1;
-  List<Product> products = [
-    Product(
-      name: 'Logitech Gaming Mouse',
-      imageUrl: 'assets/mouse.png',
-      price: 'Rp. 1.300.000',
-    ),
-    Product(
-      name: 'Wireless Keyboard',
-      imageUrl: 'assets/ky.png',
-      price: 'Rp. 800.000',
-    ),
-    Product(
-      name: 'Gaming Headset',
-      imageUrl: 'assets/hd.png',
-      price: 'Rp. 1.500.000',
-    ),
-    Product(
-      name: 'Gaming Headset',
-      imageUrl: 'assets/hd.png',
-      price: 'Rp. 1.500.000',
-    ),
-    // Tambahkan produk lainnya sesuai kebutuhan...
-  ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-
       if (index == 0) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => homepage()));
+         Navigator.of(context)
+           .push(MaterialPageRoute(builder: (context) => homepage()));
       } else if (index == 1) {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => Cart()));
       } else if (index == 2) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Wishlist()));
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => Wishlist()));
       } else if (index == 3) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Profile()));
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => Profile()));
       }
     });
   }
+
+  List<Product> products = [
+    Product(
+      name: 'Logitech Gaming Mouse',
+      imageUrl: 'assets/mouse.png',
+      price: 1300000,
+    ),
+    Product(
+      name: 'Wireless Keyboard',
+      imageUrl: 'assets/ky.png',
+      price: 800000,
+    ),
+    Product(
+      name: 'Gaming Headset',
+      imageUrl: 'assets/hd.png',
+      price: 1500000,
+    ),
+
+    // Tambahkan produk lainnya sesuai kebutuhan...
+  ];
 
   void _removeProduct(int index) {
     setState(() {
@@ -159,19 +156,22 @@ class _CartState extends State<Cart> {
                                                   MainAxisAlignment
                                                       .spaceBetween,
                                               children: [
-                                                Text('Total harga (3 produk)'),
-                                                Text('Rp. 2.100.000'),
+                                                Text(
+                                                    'Total harga (${products.length} produk)'),
+                                                Text(
+                                                  'Rp. ${NumberFormat('#,##0').format(getTotalPrice())}',
+                                                ),
                                               ],
                                             ),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text('Biaya Platform'),
-                                                Text('Rp. 1.000'),
-                                              ],
-                                            ),
+                                            // Row(
+                                            //   mainAxisAlignment:
+                                            //       MainAxisAlignment
+                                            //           .spaceBetween,
+                                            //   children: [
+                                            //     Text('Biaya Platform'),
+                                            //     Text('Rp. 1.000'),
+                                            //   ],
+                                            // ),
                                             SizedBox(
                                               height: 10,
                                             ),
@@ -188,7 +188,9 @@ class _CartState extends State<Cart> {
                                                     style: TextStyle(
                                                         fontWeight:
                                                             FontWeight.bold)),
-                                                Text('Rp. 2.101.000'),
+                                                Text(
+                                                  'Rp. ${NumberFormat('#,##0').format(getTotalPrice())}',
+                                                ),
                                               ],
                                             ),
                                           ],
@@ -200,7 +202,9 @@ class _CartState extends State<Cart> {
                                 icon: Icon(Icons.keyboard_arrow_up))
                           ],
                         ),
-                        Text('Rp. 2.100.000')
+                        Text(
+                          'Rp. ${NumberFormat('#,##0').format(getTotalPrice())}',
+                        )
                       ],
                     ),
                     ElevatedButton(
@@ -231,10 +235,8 @@ class _CartState extends State<Cart> {
         ),
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed, // Set type to fixed
-
           backgroundColor: const Color.fromARGB(
               255, 193, 24, 24), // Set the background color here
-
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
@@ -250,17 +252,12 @@ class _CartState extends State<Cart> {
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person_rounded), // Add your new icon here
-
               label: 'Profile', // Add the label for the new icon
             ),
           ],
-
           currentIndex: _selectedIndex,
-
           selectedItemColor: const Color.fromARGB(255, 255, 255, 255),
-
           unselectedItemColor: Color.fromARGB(207, 0, 0, 0),
-
           onTap: _onItemTapped,
         ),
       ),
@@ -290,8 +287,6 @@ class _CartState extends State<Cart> {
                 ),
               ),
               SizedBox(width: 16.0), // Jarak antara gambar dan teks
-
-              SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -309,7 +304,7 @@ class _CartState extends State<Cart> {
                       height: 40,
                     ),
                     Text(
-                      product.price,
+                      'Rp. ${NumberFormat('#,##0').format(product.price)}',
                       style: TextStyle(fontSize: 16, color: Colors.black),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
@@ -332,12 +327,20 @@ class _CartState extends State<Cart> {
       ),
     );
   }
+
+  double getTotalPrice() {
+    double total = 0.0;
+    for (Product product in products) {
+      total += product.price;
+    }
+    return total;
+  }
 }
 
 class Product {
   final String name;
   final String imageUrl;
-  final String price;
+  final double price;
 
   Product({
     required this.name,
