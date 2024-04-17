@@ -22,7 +22,7 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Daftar Transaksi'),
+          title: const Text('Daftar Transaksi'),
           leading: IconButton(
               onPressed: () {
                 Navigator.pop(context);

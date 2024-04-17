@@ -4,6 +4,7 @@ import 'package:marketplace/daftarTransaksi.dart';
 import 'package:marketplace/editProfile.dart';
 import 'package:marketplace/homepage.dart';
 import 'package:marketplace/pembayaran.dart';
+import 'package:marketplace/user_services.dart';
 import 'package:marketplace/view/Register/login.dart';
 import 'package:marketplace/view/Register/register.dart';
 import 'package:marketplace/wishlist.dart';
@@ -213,8 +214,8 @@ class _ProfileState extends State<Profile> {
                 onTap: () {
                   // Tindakan logout, misalnya membersihkan data sesi atau menghapus token
                   print('Logout pressed');
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (context) => login()));
+                  // Navigator.of(context)
+                  //     .push(MaterialPageRoute(builder: (context) => login()));
 
                   // Navigasi kembali ke halaman login
                 },

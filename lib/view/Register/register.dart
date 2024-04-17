@@ -243,8 +243,8 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
                   child: ElevatedButton(
                     onPressed: isFormComplete && passwordError.isEmpty
                         ? () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => login()));
+                            // Navigator.of(context).push(MaterialPageRoute(
+                            //     builder: (context) => login()));
                           }
                         : null,
                     child: Text(
@@ -272,8 +272,8 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
                   Text('sudah memiliki akun?'),
                   TextButton(
                     onPressed: () {
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => login()));
+                      // Navigator.of(context).push(
+                      //     MaterialPageRoute(builder: (context) => login(txtEmail, txtPassword)));
                     },
                     child: Text(
                       'Log in!',

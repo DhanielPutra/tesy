@@ -36,7 +36,8 @@ class _DetailState extends State<Detail> {
           },
           icon: const Icon(Icons.arrow_back),
         ),
-      ),
+      ),  
+      
       body: SingleChildScrollView(
         child: Stack(
           children: [
@@ -49,9 +50,9 @@ class _DetailState extends State<Detail> {
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         //gambar
-                        children: [
+                         children: [
                           Container(
-                            decoration: BoxDecoration(
+                            decoration: BoxDecoration( 
                               color: const Color(0xFFE9EAEC),
                               borderRadius: const BorderRadius.only(
                                 bottomLeft: Radius.circular(20.0),

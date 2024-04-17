@@ -42,7 +42,7 @@ class _RincianPesananState extends State<RincianPesanan> {
                   color: Colors.grey[350],
                   thickness: 10,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Container(
@@ -51,7 +51,7 @@ class _RincianPesananState extends State<RincianPesanan> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                     const Row(
                         children: [
                           Icon(Icons.location_on_outlined),
                           SizedBox(width: 8),
@@ -61,7 +61,7 @@ class _RincianPesananState extends State<RincianPesanan> {
                       SizedBox(height: 8),
                       Container(
                         padding: EdgeInsets.fromLTRB(33, 0, 0, 0),
-                        child: Column(
+                        child: const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('Zahra Meidira'),
