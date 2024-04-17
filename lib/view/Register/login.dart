@@ -1,10 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:marketplace/homepage.dart';
 import 'package:marketplace/models/api_response.dart';
 import 'package:marketplace/models/user.dart';
 import 'package:marketplace/user_services.dart';
 import 'package:marketplace/view/Register/register.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
@@ -16,37 +18,60 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   bool rememberMe = false;
-
+  String errorMessage = '';
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController txtEmail = TextEditingController();
   TextEditingController txtPassword = TextEditingController();
   bool loading = false;
 
-  Future<ApiResponse> loginUser(String email, String password) async {
-    // Replace this with your actual login API call
-    // For demonstration, I'm just returning a dummy response
-    return ApiResponse();
-  }
+ Future<void> _login() async {
+    // Replace apiUrl with your actual login API endpoint
+    const apiUrl = 'https://barbeqshop.online/api/login';
 
-  void _loginUser() async {
-    if (formKey.currentState!.validate()) {
+    try {
+      final http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        body: {
+          'email': txtEmail.text.toString(),
+          'password': txtPassword.text.toString(),
+        },
+        // headers: {'Content-Type': 'application/json'},
+      );
+
       setState(() {
-        loading = true;
+        var responseData = jsonDecode(response.body);
+        print(response.statusCode.toString());
+        print(responseData);
       });
-      ApiResponse response =
-          await loginUser(txtEmail.text, txtPassword.text);
-      if (response.error == null) {
-        _saveAndRedirectToHome(response.data as User);
+      if (response.statusCode == 200) {
+        // Login successful
+        final responseData = jsonDecode(response.body);
+        final String token = responseData['token'];
+        // final int id = responseData['user']['id'];
+        // final String username = responseData['user']['username'];
+        // setState(() {
+        //   errorMessage = 'success';
+        //   print(token);
+        // });
+        _saveAndRedirectToHome(User());
+
+        // Handle the token or navigate to the home screen
+        // For now, we'll print the token to the console
+        // print('Login successful! Token: $token');
       } else {
+        // Login failed
         setState(() {
-          loading = false;
+          errorMessage = 'Failed to login';
         });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('${response.error}'),
-        ));
       }
+    } catch (e) {
+      // Exception occurred
+      setState(() {
+        errorMessage = 'Failed to connect to the server';
+      });
     }
   }
+
 
   void _saveAndRedirectToHome(User user) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -198,7 +223,7 @@ class _LoginState extends State<Login> {
                 child: SizedBox.expand(
                   child: ElevatedButton(
                     onPressed: () {
-                      _loginUser();
+                      _login();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFFB50B0B),
