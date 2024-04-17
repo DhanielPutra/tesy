@@ -8,6 +8,9 @@ class Checkout extends StatefulWidget {
 }
 
 class _CheckoutState extends State<Checkout> {
+  String _selectedPaymentMethod = ''; // To store the selected payment method
+  String _selectedBank = ''; // To store the selected bank
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -60,57 +63,163 @@ class _CheckoutState extends State<Checkout> {
               SizedBox(
                 height: 15,
               ),
-              
               SizedBox(
                 height: 10,
               ),
-              ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    fixedSize: Size(400, 60),
-                    // Properti gaya tombol
-                    backgroundColor:
-                        Colors.white, // Warna latar belakang tombol
-                    foregroundColor: Colors.red,
-                    // Padding tombol
-                    side: BorderSide(color: Colors.red, width: 1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4.0),
-                      // Bentuk tepi tombol
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedPaymentMethod = 'Cash on Delivery';
+                        _selectedBank =
+                            ''; // Reset selected bank when cash on delivery is chosen
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      fixedSize: const Size(400, 60),
+                      backgroundColor:
+                          _selectedPaymentMethod == 'Cash on Delivery'
+                              ? Color(0xFFB50B0B)
+                              : Colors.white,
+                      foregroundColor:
+                          _selectedPaymentMethod == 'Cash on Delivery'
+                              ? Colors.white
+                              : Color(0xFFB50B0B),
+                      side: const BorderSide(color: Colors.red, width: 1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4.0),
+                      ),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Cash on Delivery'),
+                      ],
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Cash on Delivery'),
-                      Icon(Icons.attach_money)
-                    ],
-                  )),
-              SizedBox(
-                height: 10,
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final selectedMethod = await showMenu<String>(
+                        context: context,
+                        position: const RelativeRect.fromLTRB(5, 200, 0, 0),
+                        items: <PopupMenuEntry<String>>[
+                          PopupMenuItem<String>(
+                            value: 'Bank BNI',
+                            height: 50,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.white,
+                                  style: BorderStyle.none,
+                                  width: 15,
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'Transfer Bank BNI',
+                                  style: TextStyle(
+                                    color: _selectedPaymentMethod == 'Bank BNI'
+                                        ? Color(0xFFB50B0B)
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          PopupMenuItem<String>(
+                            value: 'Bank BCA',
+                            height: 50,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.white,
+                                  style: BorderStyle.none,
+                                  width: 15,
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'Transfer Bank BCA',
+                                  style: TextStyle(
+                                    color: _selectedPaymentMethod == 'Bank BCA'
+                                        ? Color.fromARGB(255, 19, 65, 204)
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          PopupMenuItem<String>(
+                            value: 'Bank Mandiri',
+                            height: 50,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.white,
+                                  style: BorderStyle.none,
+                                  width: 15,
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'Transfer Bank Mandiri',
+                                  style: TextStyle(
+                                    color: _selectedPaymentMethod ==
+                                            'Bank Mandiri'
+                                        ? const Color.fromARGB(255, 15, 3, 255)
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                      if (selectedMethod != null &&
+                          selectedMethod.startsWith('Bank')) {
+                        setState(() {
+                          _selectedPaymentMethod = selectedMethod;
+                          _selectedBank =
+                              selectedMethod; // Set selected bank to the chosen bank name
+                        });
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      fixedSize: const Size(400, 60),
+                      backgroundColor:
+                          _selectedPaymentMethod != 'Cash on Delivery'
+                              ? Color(0xFFB50B0B)
+                              : Colors.white,
+                      foregroundColor:
+                          _selectedPaymentMethod != 'Cash on Delivery'
+                              ? Colors.white
+                              : Color(0xFFB50B0B),
+                      side: const BorderSide(color: Color(0xFFB50B0B), width: 1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4.0),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(_selectedBank.isNotEmpty
+                            ? _selectedBank
+                            : 'Transfer Bank'), // Display selected bank name or default text
+                        const Icon(Icons.arrow_drop_down),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const SizedBox(
+                    height: 50,
+                  ),
+                ],
               ),
-              ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    fixedSize: Size(400, 60),
-                    // Properti gaya tombol
-                    backgroundColor:
-                        Colors.white, // Warna latar belakang tombol
-                    foregroundColor: Colors.red,
-                    // Padding tombol
-                    side: BorderSide(color: Colors.red, width: 1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4.0),
-                      // Bentuk tepi tombol
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Transfer Bank'),
-                      Icon(Icons.account_balance_outlined)
-                    ],
-                  )),
               SizedBox(
                 height: 50,
               ),

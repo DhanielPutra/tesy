@@ -224,7 +224,147 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> {
                           },
                         ),
                       )
-                    : Text('lagi')
+                    : Expanded(
+                        child: ListView.builder(
+                          itemCount: filteredItems.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final product =
+                                filteredItems[index]; // Mengambil data item
+                            return GestureDetector(
+                              onTap: () {
+                                // Navigate to the detail page when the card is tapped
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) =>
+                                        RincianPesanan())); // Navigasi ke halaman detail
+                              },
+                              child: Container(
+                                height: 200,
+                                width: double.infinity,
+                                child: Card(
+                                  margin:
+                                      const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(0),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        color: const Color.fromARGB(
+                                                255, 255, 255, 255)
+                                            .withOpacity(0.5),
+                                        width: 150,
+                                        height: double.infinity,
+                                        child: Image.asset(
+                                          product[0], // Mengambil URL gambar
+                                          width: 150,
+                                          height: double.infinity,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 10, right: 40),
+                                                    child: Text(
+                                                      product[
+                                                          1], // Mengambil nama produk
+                                                      style: const TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      maxLines: 1,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.only(top: 3),
+                                              child: Text(
+                                                product[
+                                                    3], // Mengambil deskripsi produk
+                                                style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.normal,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 1,
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.only(top: 3),
+                                              child: Text(
+                                                product[
+                                                    2], // Mengambil harga produk
+                                                style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 1,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 15,
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      0, 7, 0, 5),
+                                              child: SizedBox(
+                                                width: 200,
+                                                height: 35,
+                                                child: ElevatedButton(
+                                                  onPressed: () {
+                                                    // Add functionality to order the product
+                                                  },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5),
+                                                    ),
+                                                    backgroundColor:
+                                                        Color.fromARGB(
+                                                            255, 208, 9, 9),
+                                                  ),
+                                                  child: const Text(
+                                                    'Pesanan Diproses',
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      )
                 // Container(
                 //     color: Colors.green,
                 //     height: 200,
