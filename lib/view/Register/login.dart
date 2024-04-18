@@ -269,7 +269,9 @@ class _LoginState extends State<Login> {
                 child: SizedBox.expand(
                   child: ElevatedButton(
                     onPressed: () {
-                      _login();
+                      (txtEmail.text.isNotEmpty && txtPassword.text.isNotEmpty)
+                          ? _login()
+                          : null;
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFFB50B0B),

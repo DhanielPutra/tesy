@@ -312,19 +312,19 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
                             _register();
                           }
                         : null,
-                    child: Text(
-                      'Sign Up',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 17,
-                          color: Colors.white),
-                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFFB50B0B),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
                             10.0), // Sesuaikan nilai radius sesuai keinginan
                       ),
+                    ),
+                    child: const Text(
+                      'Sign Up',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 17,
+                          color: Colors.white),
                     ),
                   ),
                 ),
