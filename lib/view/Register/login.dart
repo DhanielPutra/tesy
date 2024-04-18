@@ -24,9 +24,49 @@ class _LoginState extends State<Login> {
   TextEditingController txtPassword = TextEditingController();
   bool loading = false;
 
- Future<void> _login() async {
+  void _showInvalidCredentialsAlert() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Invalid Credentials'),
+          content: Text('The email or password you entered is incorrect.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  bool _isPasswordVisible = false;
+
+  Widget _buildPasswordVisibilityToggle() {
+    return IconButton(
+      icon: Icon(
+        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+        color: Colors.grey,
+      ),
+      onPressed: () {
+        setState(() {
+          _isPasswordVisible = !_isPasswordVisible;
+        });
+      },
+    );
+  }
+
+  Future<void> _login() async {
     // Replace apiUrl with your actual login API endpoint
     const apiUrl = 'https://barbeqshop.online/api/login';
+    setState(() {
+      loading = true;
+      errorMessage = '';
+    });
 
     try {
       final http.Response response = await http.post(
@@ -38,11 +78,11 @@ class _LoginState extends State<Login> {
         // headers: {'Content-Type': 'application/json'},
       );
 
-      setState(() {
-        var responseData = jsonDecode(response.body);
-        print(response.statusCode.toString());
-        print(responseData);
-      });
+      // setState(() {
+      //   var responseData = jsonDecode(response.body);
+      //   print(response.statusCode.toString());
+      //   print(responseData);
+      // });
       if (response.statusCode == 200) {
         // Login successful
         final responseData = jsonDecode(response.body);
@@ -63,15 +103,21 @@ class _LoginState extends State<Login> {
         setState(() {
           errorMessage = 'Failed to login';
         });
+        // _showInvalidCredentialsAlert();
       }
     } catch (e) {
       // Exception occurred
       setState(() {
         errorMessage = 'Failed to connect to the server';
       });
+    } finally {
+      setState(() {
+        loading = false;
+      });
+      _showInvalidCredentialsAlert();
+      txtPassword.clear();
     }
   }
-
 
   void _saveAndRedirectToHome(User user) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -138,7 +184,7 @@ class _LoginState extends State<Login> {
                         ),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10)),
-                        hintText: 'Enter e-Mail / Username',
+                        hintText: 'Enter e-Mail ',
                         suffixIcon: const Icon(Icons.person_outline),
                       ),
                       validator: (value) {
@@ -154,7 +200,7 @@ class _LoginState extends State<Login> {
                     TextFormField(
                       style: const TextStyle(height: 1.5),
                       controller: txtPassword,
-                      obscureText: true,
+                      obscureText: !_isPasswordVisible,
                       decoration: InputDecoration(
                         fillColor: const Color(0xFFD9D9D9),
                         filled: true,
@@ -171,7 +217,7 @@ class _LoginState extends State<Login> {
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10)),
                         hintText: 'Enter Password',
-                        suffixIcon: const Icon(Icons.password_outlined),
+                        suffixIcon: _buildPasswordVisibilityToggle(),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {

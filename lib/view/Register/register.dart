@@ -1,6 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:marketplace/homepage.dart';
+import 'package:marketplace/models/user.dart';
+import 'package:marketplace/user_services.dart';
 import 'package:marketplace/view/Register/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HalamanDaftar extends StatefulWidget {
   HalamanDaftar({super.key});
@@ -12,6 +18,7 @@ class HalamanDaftar extends StatefulWidget {
 class _HalamanDaftarState extends State<HalamanDaftar> {
   bool isFormComplete = false;
   String passwordError = '';
+  String errormessage = '';
 
   final TextEditingController namaLengkapController = TextEditingController();
 
@@ -31,6 +38,65 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
         passwordController.text.isNotEmpty &&
         konfirmasiPasswordController.text.isNotEmpty;
   }
+
+  Future<void> _register() async {
+    // Replace apiUrl with your actual register API endpoint
+    const apiUrl = 'https://barbeqshop.online/api/register';
+
+    try {
+      final http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        body: {
+          'name': namaLengkapController.text.toString(),
+          'no_tlp': teleponController.text.toString(),
+          'email': emailController.text.toString(),
+          'password': passwordController.text.toString(),
+        },
+        // headers: {'Content-Type': 'application/json'},
+      );
+
+      setState(() {
+        var responseData = jsonDecode(response.body);
+        print(response.statusCode.toString());
+        print(responseData);
+      });
+      if (response.statusCode == 200) {
+        // Login successful
+        final responseData = jsonDecode(response.body);
+        // final String token = responseData['token'];
+        // final int id = responseData['user']['id'];
+        // final String username = responseData['user']['username'];
+        // setState(() {
+        errormessage = 'success';
+        //   print(token);
+        // });
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => Login()), (route) => false);
+
+        // Handle the token or navigate to the home screen
+        // For now, we'll print the token to the console
+        // print('Login successful! Token: $token');
+      } else {
+        // Login failed
+        setState(() {
+          errormessage = 'Failed to login';
+        });
+      }
+    } catch (e) {
+      // Exception occurred
+      setState(() {
+        errormessage = 'Failed to connect to the server';
+      });
+    }
+  }
+
+  // void _saveAndRedirectToLogin(User user) async {
+  //   SharedPreferences pref = await SharedPreferences.getInstance();
+  //   // await pref.setString('token', user.token ?? '');
+  //   await pref.setInt('id', user.id ?? 0);
+  //   Navigator.of(context).pushAndRemoveUntil(
+  //       MaterialPageRoute(builder: (context) => Login()), (route) => false);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -231,7 +297,7 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
                 passwordError,
                 style: TextStyle(color: Colors.red),
               ),
-              
+
               SizedBox(height: 40),
 
               //TOMBOL SIGN UP
@@ -243,8 +309,7 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
                   child: ElevatedButton(
                     onPressed: isFormComplete && passwordError.isEmpty
                         ? () {
-                            // Navigator.of(context).push(MaterialPageRoute(
-                            //     builder: (context) => login()));
+                            _register();
                           }
                         : null,
                     child: Text(
@@ -272,8 +337,7 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
                   Text('sudah memiliki akun?'),
                   TextButton(
                     onPressed: () {
-                      // Navigator.of(context).push(
-                      //     MaterialPageRoute(builder: (context) => login(txtEmail, txtPassword)));
+                      _register();
                     },
                     child: Text(
                       'Log in!',

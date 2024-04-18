@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:marketplace/cart.dart';
 import 'package:marketplace/daftarTransaksi.dart';
@@ -24,13 +25,13 @@ class _ProfileState extends State<Profile> {
     setState(() {
       _selectedIndex = index;
       if (index == 0) {
-        Navigator.of(context)
+        Navigator.of(context as BuildContext)
             .push(MaterialPageRoute(builder: (context) => const homepage()));
       } else if (index == 1) {
-        Navigator.of(context)
+        Navigator.of(context as BuildContext)
             .push(MaterialPageRoute(builder: (context) => const Cart()));
       } else if (index == 2) {
-        Navigator.of(context)
+        Navigator.of(context as BuildContext)
             .push(MaterialPageRoute(builder: (context) => const Wishlist()));
       }
     });
@@ -223,11 +224,15 @@ class _ProfileState extends State<Profile> {
                   height: 60,
                   color: Colors.white,
                   padding: const EdgeInsets.all(15),
-                  child: const Row(
+                  child:  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Logout'),
-                      Icon(Icons.logout),
+                      IconButton(
+                        onPressed: (){
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => Login() ));
+                        }, icon: Icon(Icons.logout))
+                      
                     ],
                   ),
                 ),
