@@ -6,7 +6,7 @@ import 'package:marketplace/checkout.dart';
 import 'package:marketplace/product.dart';
 
 class Detail extends StatefulWidget {
-  final List<String> item;
+  final dynamic item;
 
   const Detail({Key? key, required this.item}) : super(key: key);
 
@@ -36,8 +36,7 @@ class _DetailState extends State<Detail> {
           },
           icon: const Icon(Icons.arrow_back),
         ),
-      ),  
-      
+      ),
       body: SingleChildScrollView(
         child: Stack(
           children: [
@@ -50,9 +49,9 @@ class _DetailState extends State<Detail> {
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         //gambar
-                         children: [
+                        children: [
                           Container(
-                            decoration: BoxDecoration( 
+                            decoration: BoxDecoration(
                               color: const Color(0xFFE9EAEC),
                               borderRadius: const BorderRadius.only(
                                 bottomLeft: Radius.circular(20.0),
@@ -67,8 +66,7 @@ class _DetailState extends State<Detail> {
                             height: MediaQuery.of(context).size.height * 0.3,
                             child: Center(
                               child: Image.asset(
-                                widget
-                                    .item[0], // Accessing image path from item
+                                widget.item['gambar'],
                                 height: 250.0,
                               ),
                             ),
@@ -91,9 +89,7 @@ class _DetailState extends State<Detail> {
                             child: Padding(
                               padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
                               child: Text(
-                                //nama produk
-                                widget.item[
-                                    1], // Accessing product name from item
+                                widget.item['nama_produk'],
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w900,
                                   fontSize: 18,
@@ -140,7 +136,7 @@ class _DetailState extends State<Detail> {
                             ],
                           ),
                           Text(
-                            widget.item[2],
+                            widget.item['harga'],
                             style: const TextStyle(
                                 fontWeight: FontWeight.w700, fontSize: 16),
                           ),
@@ -267,8 +263,8 @@ class _DetailState extends State<Detail> {
                 ),
                 child: IconButton(
                   onPressed: () {
-                     Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => Cart()));
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) => Cart()));
                   },
                   icon: const Icon(
                     Icons.shopping_cart_outlined,
