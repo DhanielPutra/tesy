@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:marketplace/cart.dart';
 import 'package:marketplace/checkout.dart';
-import 'package:marketplace/product.dart';
 
 class Detail extends StatefulWidget {
   final dynamic item;
@@ -173,32 +172,23 @@ class _DetailState extends State<Detail> {
                       ),
 
                       //deskripsi barang
-                      const Column(
+                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             'Deskripsi Barang',
                             style: TextStyle(
                                 fontWeight: FontWeight.w600, fontSize: 15),
                           ),
-                          SizedBox(
+                         const SizedBox(
                             height: 20,
                           ),
                           Text(
-                            'Kondisi barang : Tidak ada kerusakan',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600, fontSize: 15),
+                            widget.item['detail'],
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w700, fontSize: 16),
                           ),
-                          Text(
-                            'Lama Pemakaian barang : 1 bulan pemakaian',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600, fontSize: 15),
-                          ),
-                          Text(
-                            'Dokumen dan aksesoris : Lengkap ',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600, fontSize: 15),
-                          ),
+                          
                         ],
                       )
                     ],

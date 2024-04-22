@@ -1,13 +1,11 @@
-// ignore: unused_import
-import 'dart:math';
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:marketplace/cart.dart';
 import 'package:marketplace/detail.dart';
 import 'package:marketplace/homepage.dart';
-import 'package:marketplace/product.dart';
 import 'package:marketplace/profile.dart';
-// Import your product data
 
 class Wishlist extends StatefulWidget {
   const Wishlist({Key? key}) : super(key: key);
@@ -17,32 +15,41 @@ class Wishlist extends StatefulWidget {
 }
 
 class _WishlistState extends State<Wishlist> {
-  int _selectedIndex = 2; // Default index for Wishlist
-  // ignore: unused_field
-  String _selectedText = 'All'; // Initially set to 'All'
-  List<List<String>> filteredItems = List.from(items);
- 
+  int _selectedIndex = 2;
+  List<Product> products = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    final response = await http.get(Uri.parse('https://barbeqshop.online/api/produk'));
+
+    if (response.statusCode == 200) {
+      // If the server returns a 200 OK response, parse the JSON.
+      List<dynamic> responseData = json.decode(response.body);
+      setState(() {
+        products = responseData.map((data) => Product.fromJson(data)).toList();
+      });
+    } else {
+      // If the server did not return a 200 OK response, throw an exception.
+      throw Exception('Failed to load products');
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
       if (index == 0) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => homepage()));
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => homepage()));
       } else if (index == 1) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Cart()));
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => Cart()));
       } else if (index == 2) {
       } else if (index == 3) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Profile()));
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => Profile()));
       }
-    });
-  }
-   // Function to remove an item from the wishlist
-  void _removeFromWishlist(int index) {
-    setState(() {
-      filteredItems.removeAt(index);
     });
   }
 
@@ -61,219 +68,122 @@ class _WishlistState extends State<Wishlist> {
           ),
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(120, 10, 0, 5),
-                  child: SizedBox(
-                    width: 100, // Set the width of the button
-                    height: 30, // Set the height of the button
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              10), // Adjust border radius as needed
-                        ),
-                        backgroundColor: const Color.fromARGB(
-                            255, 0, 0, 0), // Change the button color
-                      ),
-                      child: const Text(
-                        'All',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
+      body: ListView.builder(
+        itemCount: products.length,
+        itemBuilder: (BuildContext context, int index) {
+          final product = products[index];
+          return GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => Detail(item: product)));
+            },
+            child: Container(
+              height: 200,
+              width: double.infinity,
+              child: Card(
+                margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(0),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 10, 0, 5),
-                  child: SizedBox(
-                    width: 110, // Set the width of the button
-                    height: 30, // Set the height of the button
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              10), // Adjust border radius as needed
-                        ),
-                        backgroundColor: Color.fromARGB(
-                            255, 212, 212, 212), // Change the button color
-                      ),
-                      child: const Text(
-                        'Discount',
-                        style: TextStyle(color: Colors.white),
+                child: Row(
+                  children: [
+                    Container(
+                      color: const Color.fromARGB(255, 255, 255, 255)
+                          .withOpacity(0.5),
+                      width: 150,
+                      height: double.infinity,
+                      child: Image.network(
+                        product.imageUrl,
+                        width: 150,
+                        height: double.infinity,
+                        fit: BoxFit.cover,
                       ),
                     ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 10, 0, 5),
-                  child: SizedBox(
-                    width: 100, // Set the width of the button
-                    height: 30, // Set the height of the button
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              10), // Adjust border radius as needed
-                        ),
-                        backgroundColor:const Color.fromARGB(
-                            255, 132, 132, 132), // Change the button color
-                      ),
-                      child: const Text(
-                        'Sold',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: filteredItems.length,
-              itemBuilder: (BuildContext context, int index) {
-                final product = filteredItems[index];
-                return GestureDetector(
-                  onTap: () {
-                    // Navigate to the detail page when the card is tapped
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => Detail(item: product)));
-                  },
-                  child: Container(
-                    height: 200,
-                    width: double.infinity,
-                    child: Card(
-                      margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(0),
-                      ),
-                      child: Row(
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            color: const Color.fromARGB(255, 255, 255, 255)
-                                .withOpacity(0.5),
-                            width: 150,
-                            height: double.infinity,
-                            child: Image.asset(
-                              product[0],
-                              width: 150,
-                              height: double.infinity,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 10, right: 40),
-                                        child: Text(
-                                          product[1],
-                                          style: const TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                        ),
-                                      ),
-                                    ),
-                                    IconButton(
-                                      onPressed: () {
-                                       _removeFromWishlist(index);
-                                        // Add functionality to remove the item from the wishlist
-                                      },
-                                      icon: const Icon(Icons.close),
-                                    ),
-                                  ],
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 3),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 10, right: 40),
                                   child: Text(
-                                    product[2],
+                                    product.name,
                                     style: const TextStyle(
                                       color: Colors.black,
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.normal,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 3),
-                                  child: Text(
-                                    product[3],
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 17,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                     ),
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
                                   ),
                                 ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 7, 0, 5),
-                                  child: SizedBox(
-                                    width: 200,
-                                    height: 35,
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        // Add functionality to order the product
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                        ),
-                                        backgroundColor:
-                                            Color.fromARGB(255, 208, 9, 9),
-                                      ),
-                                      child: const Text(
-                                        'Order Now',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  // Remove from wishlist functionality here
+                                },
+                                icon: const Icon(Icons.close),
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 3),
+                            child: Text(
+                              'Rp. ${NumberFormat('#,##0').format(product.price)}',
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(0, 7, 0, 5),
+                            child: SizedBox(
+                              width: 200,
+                              height: 35,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  // Add functionality to order the product
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(5),
                                   ),
+                                  backgroundColor:
+                                      Color.fromARGB(255, 208, 9, 9),
                                 ),
-                              ],
+                                child: const Text(
+                                  'Order Now',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                );
-              },
+                  ],
+                ),
+              ),
             ),
-          ),
-        ],
+          );
+        },
       ),
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed, // Set type to fixed
-        backgroundColor: const Color.fromARGB(
-            255, 193, 24, 24), // Set the background color here
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: const Color.fromARGB(255, 193, 24, 24),
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            // label
-
             label: 'Home',
           ),
           BottomNavigationBarItem(
@@ -285,8 +195,8 @@ class _WishlistState extends State<Wishlist> {
             label: 'Wishlist',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_rounded), // Add your new icon here
-            label: 'Profile', // Add the label for the new icon
+            icon: Icon(Icons.person_rounded),
+            label: 'Profile',
           ),
         ],
         currentIndex: _selectedIndex,

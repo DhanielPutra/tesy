@@ -347,4 +347,12 @@ class Product {
     required this.imageUrl,
     required this.price,
   });
+
+   factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      name: json['name'] ?? '',
+      imageUrl: json['imageUrl'] ?? '',
+      price: json['price'] != null ? json['price'].toDouble() : 0.0,
+    );
+  }
 }
