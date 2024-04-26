@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:marketplace/profile.dart';
+import 'package:marketplace/wishlist.dart';
 
 class Cart extends StatefulWidget {
   final Map<String, dynamic> postData;
@@ -324,7 +326,21 @@ class _CartState extends State<Cart> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      // Handle navigation based on index
+      if (index == 0) {
+        // Navigator.of(context)
+        //     .push(MaterialPageRoute(builder: (context) => homepage()));
+      } else if (index == 1) {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => Cart(
+                  postData: {},
+                )));
+      } else if (index == 2) {
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => Wishlist()));
+      } else if (index == 3) {
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => Profile()));
+      }
     });
   }
 }

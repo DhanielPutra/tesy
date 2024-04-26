@@ -47,7 +47,7 @@ class _homepageState extends State<homepage> {
         //     .push(MaterialPageRoute(builder: (context) => homepage()));
       } else if (index == 1) {
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Cart(postData: {},)));
+            .push(MaterialPageRoute(builder: (context) => Cart()));
       } else if (index == 2) {
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => Wishlist()));
