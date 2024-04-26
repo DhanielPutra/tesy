@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:marketplace/cart.dart';
 import 'package:marketplace/checkout.dart';
+import 'package:http/http.dart' as http;
 
 class Detail extends StatefulWidget {
   final dynamic item;
@@ -16,11 +17,36 @@ class Detail extends StatefulWidget {
 class _DetailState extends State<Detail> {
   int _selectedIndex = 0;
   bool isLiked = false;
+
   // Function to handle BottomNavigationBar index changes
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  Future<void> addToCart() async {
+    final String url = 'https://barbeqshop.online/api/cart';
+
+    final Map<String, dynamic> bodyData = {
+      'gambar': widget.item['gambar'],
+      'nama_produk': widget.item['nama_produk'],
+      'harga': widget.item['harga'],
+    };
+
+    try {
+      final response = await http.post(Uri.parse(url), body: bodyData);
+
+      if (response.statusCode == 200) {
+        print('Item added to cart successfully.');
+        // Optionally, you can navigate to the cart screen here
+      } else {
+        print(
+            'Failed to add item to cart. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error adding item to cart: $e');
+    }
   }
 
   @override
@@ -64,7 +90,7 @@ class _DetailState extends State<Detail> {
                             ),
                             height: MediaQuery.of(context).size.height * 0.3,
                             child: Center(
-                              child: Image.asset(
+                              child: Image.network(
                                 widget.item['gambar'],
                                 height: 250.0,
                               ),
@@ -172,7 +198,7 @@ class _DetailState extends State<Detail> {
                       ),
 
                       //deskripsi barang
-                       Column(
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
@@ -180,7 +206,7 @@ class _DetailState extends State<Detail> {
                             style: TextStyle(
                                 fontWeight: FontWeight.w600, fontSize: 15),
                           ),
-                         const SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           Text(
@@ -188,7 +214,6 @@ class _DetailState extends State<Detail> {
                             style: const TextStyle(
                                 fontWeight: FontWeight.w700, fontSize: 16),
                           ),
-                          
                         ],
                       )
                     ],
@@ -253,6 +278,8 @@ class _DetailState extends State<Detail> {
                 ),
                 child: IconButton(
                   onPressed: () {
+                    addToCart();
+
                     Navigator.of(context)
                         .push(MaterialPageRoute(builder: (context) => Cart()));
                   },

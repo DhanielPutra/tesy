@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:marketplace/checkout.dart';
-import 'package:marketplace/homepage.dart';
-
-import 'package:marketplace/profile.dart';
-
-import 'package:marketplace/wishlist.dart';
 import 'package:intl/intl.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class Cart extends StatefulWidget {
-  const Cart({super.key});
+  final Map<String, dynamic> postData;
+
+  const Cart({Key? key, this.postData = const {}}) : super(key: key);
 
   @override
   State<Cart> createState() => _CartState();
@@ -16,50 +14,54 @@ class Cart extends StatefulWidget {
 
 class _CartState extends State<Cart> {
   int _selectedIndex = 1;
+  List<dynamic> cartItems = [];
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      if (index == 0) {
-         Navigator.of(context)
-           .push(MaterialPageRoute(builder: (context) => homepage()));
-      } else if (index == 1) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Cart()));
-      } else if (index == 2) {
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => Wishlist()));
-      } else if (index == 3) {
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => Profile()));
+  Future<void> fetchCartData() async {
+    final String url = 'https://barbeqshop.online/api/cart';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['status'] == true) {
+          setState(() {
+            cartItems = responseData['data'];
+          });
+          print('Cart items: $cartItems');
+        } else {
+          print('Failed to fetch cart data: ${responseData['message']}');
+        }
+      } else {
+        print('Failed to fetch cart data. Status code: ${response.statusCode}');
       }
-    });
+    } catch (e) {
+      print('Error fetching cart data: $e');
+    }
   }
 
-  List<Product> products = [
-    Product(
-      name: 'Logitech Gaming Mouse',
-      imageUrl: 'assets/mouse.png',
-      price: 1300000,
-    ),
-    Product(
-      name: 'Wireless Keyboard',
-      imageUrl: 'assets/ky.png',
-      price: 800000,
-    ),
-    Product(
-      name: 'Gaming Headset',
-      imageUrl: 'assets/hd.png',
-      price: 1500000,
-    ),
+  Future<void> deleteItem(String itemId) async {
+    final String url = 'https://barbeqshop.online/api/cart/$itemId';
 
-    // Tambahkan produk lainnya sesuai kebutuhan...
-  ];
+    try {
+      final response = await http.post(Uri.parse(url));
 
-  void _removeProduct(int index) {
-    setState(() {
-      products.removeAt(index);
-    });
+      if (response.statusCode == 200) {
+        print('Item deleted successfully.');
+        // Refresh cart data after deletion
+        fetchCartData();
+      } else {
+        print('Failed to delete item. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error deleting item: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCartData();
   }
 
   @override
@@ -86,15 +88,15 @@ class _CartState extends State<Cart> {
             Container(
               padding: const EdgeInsets.fromLTRB(5, 5, 5, 100),
               child: ListView.builder(
-                itemCount: products.length,
+                itemCount: cartItems.length,
                 itemBuilder: (context, index) {
-                  Product product = products[index];
-                  return buildProductCard(product, index);
+                  final item = cartItems[index];
+                  return buildProductCard(item, index);
                 },
               ),
             ),
             Positioned(
-              bottom: 0, // Sesuaikan posisi sesuai kebutuhan Anda
+              bottom: 0,
               left: 0,
               right: 0,
               child: Container(
@@ -108,109 +110,94 @@ class _CartState extends State<Cart> {
                       children: [
                         Row(
                           children: [
-                           const Text(
-                              'Total Harga', // Gantilah dengan total harga yang sesuai
+                            Text(
+                              'Total Harga',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             IconButton(
-                                onPressed: () {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    shape: const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.vertical(
-                                        top: Radius.circular(
-                                            20.0), // Atur radius top sesuai keinginan
-                                      ),
+                              onPressed: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(20.0),
                                     ),
-                                    builder: (BuildContext context) {
-                                      return Container(
-                                        padding: EdgeInsets.all(15),
-                                        height: 250.0,
-                                        width: MediaQuery.of(context)
-                                            .size
-                                            .width, // Atur tinggi modal bottom sheet sesuai keinginan
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            IconButton(
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                icon: Icon(Icons.close_sharp)),
-                                            SizedBox(
-                                              height: 10,
+                                  ),
+                                  builder: (BuildContext context) {
+                                    return Container(
+                                      padding: EdgeInsets.all(15),
+                                      height: 250.0,
+                                      width: MediaQuery.of(context).size.width,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          IconButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            icon: Icon(Icons.close_sharp),
+                                          ),
+                                          SizedBox(height: 10),
+                                          Text(
+                                            'Detail pembayaran',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
                                             ),
-                                            Text(
-                                              'Detail pembayaran',
-                                              style: TextStyle(
+                                          ),
+                                          SizedBox(height: 20),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                'Total harga (${cartItems.length} produk)',
+                                              ),
+                                              Text(
+                                                'Rp. ${NumberFormat('#,##0').format(getTotalPrice())}',
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 10),
+                                          Divider(),
+                                          SizedBox(height: 10),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                'Total Pembayaran',
+                                                style: TextStyle(
                                                   fontWeight: FontWeight.bold,
-                                                  fontSize: 18),
-                                            ),
-                                            SizedBox(height: 20),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text(
-                                                    'Total harga (${products.length} produk)'),
-                                                Text(
-                                                  'Rp. ${NumberFormat('#,##0').format(getTotalPrice())}',
                                                 ),
-                                              ],
-                                            ),
-                                            // Row(
-                                            //   mainAxisAlignment:
-                                            //       MainAxisAlignment
-                                            //           .spaceBetween,
-                                            //   children: [
-                                            //     Text('Biaya Platform'),
-                                            //     Text('Rp. 1.000'),
-                                            //   ],
-                                            // ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            Divider(),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text('Total Pembayaran',
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold)),
-                                                Text(
-                                                  'Rp. ${NumberFormat('#,##0').format(getTotalPrice())}',
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
-                                icon: Icon(Icons.keyboard_arrow_up))
+                                              ),
+                                              Text(
+                                                'Rp. ${NumberFormat('#,##0').format(getTotalPrice())}',
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                              icon: Icon(Icons.keyboard_arrow_up),
+                            ),
                           ],
                         ),
                         Text(
                           'Rp. ${NumberFormat('#,##0').format(getTotalPrice())}',
-                        )
+                        ),
                       ],
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => Checkout()));
+                        // Handle checkout button pressed
                       },
                       child: Text(
                         'Checkout',
@@ -226,7 +213,7 @@ class _CartState extends State<Cart> {
                           borderRadius: BorderRadius.circular(10.0),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -234,9 +221,8 @@ class _CartState extends State<Cart> {
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed, // Set type to fixed
-          backgroundColor: const Color.fromARGB(
-              255, 193, 24, 24), // Set the background color here
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: const Color.fromARGB(255, 193, 24, 24),
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
@@ -251,8 +237,8 @@ class _CartState extends State<Cart> {
               label: 'Wishlist',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person_rounded), // Add your new icon here
-              label: 'Profile', // Add the label for the new icon
+              icon: Icon(Icons.person_rounded),
+              label: 'Profile',
             ),
           ],
           currentIndex: _selectedIndex,
@@ -264,7 +250,7 @@ class _CartState extends State<Cart> {
     );
   }
 
-  Widget buildProductCard(Product product, int index) {
+  Widget buildProductCard(Map<String, dynamic> product, int index) {
     return Container(
       margin: EdgeInsets.fromLTRB(20, 5, 20, 5),
       height: 140,
@@ -280,19 +266,18 @@ class _CartState extends State<Cart> {
               Container(
                 width: 120.0,
                 height: 120.0,
-                child: Image.asset(
-                  product.imageUrl,
-                  fit: BoxFit
-                      .contain, // Mengatur agar gambar terlihat sepenuhnya
+                child: Image.network(
+                  product['gambar'],
+                  fit: BoxFit.contain,
                 ),
               ),
-              SizedBox(width: 16.0), // Jarak antara gambar dan teks
+              SizedBox(width: 16.0),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      product.name,
+                      product['nama_produk'],
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
@@ -304,7 +289,7 @@ class _CartState extends State<Cart> {
                       height: 40,
                     ),
                     Text(
-                      'Rp. ${NumberFormat('#,##0').format(product.price)}',
+                      'Rp. ${NumberFormat('#,##0').format(double.parse(product['harga']))}',
                       style: TextStyle(fontSize: 16, color: Colors.black),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
@@ -318,7 +303,7 @@ class _CartState extends State<Cart> {
                   color: Color(0xFFB50B0B),
                 ),
                 onPressed: () {
-                  _removeProduct(index);
+                  deleteItem(product['id'].toString()); // Delete item by id
                 },
               ),
             ],
@@ -330,29 +315,16 @@ class _CartState extends State<Cart> {
 
   double getTotalPrice() {
     double total = 0.0;
-    for (Product product in products) {
-      total += product.price;
+    for (Map<String, dynamic> product in cartItems) {
+      total += double.parse(product['harga']);
     }
     return total;
   }
-}
 
-class Product {
-  final String name;
-  final String imageUrl;
-  final double price;
-
-  Product({
-    required this.name,
-    required this.imageUrl,
-    required this.price,
-  });
-
-   factory Product.fromJson(Map<String, dynamic> json) {
-    return Product(
-      name: json['name'] ?? '',
-      imageUrl: json['imageUrl'] ?? '',
-      price: json['price'] != null ? json['price'].toDouble() : 0.0,
-    );
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      // Handle navigation based on index
+    });
   }
 }

@@ -47,7 +47,7 @@ class _homepageState extends State<homepage> {
         //     .push(MaterialPageRoute(builder: (context) => homepage()));
       } else if (index == 1) {
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Cart()));
+            .push(MaterialPageRoute(builder: (context) => Cart(postData: {},)));
       } else if (index == 2) {
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => Wishlist()));
@@ -225,7 +225,7 @@ class _homepageState extends State<homepage> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Image.asset(
+                                    Image.network(
                                       product['gambar'],
                                       height: 150,
                                       width: double.infinity,
