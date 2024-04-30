@@ -1,10 +1,9 @@
-import 'dart:convert';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:marketplace/cart.dart';
+import 'package:marketplace/checkout.dart';
 import 'package:http/http.dart' as http;
-
-import 'cart.dart';
-import 'checkout.dart';
 
 class Detail extends StatefulWidget {
   final dynamic item;
@@ -19,97 +18,35 @@ class _DetailState extends State<Detail> {
   int _selectedIndex = 0;
   bool isLiked = false;
 
+  // Function to handle BottomNavigationBar index changes
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
 
-  Future<bool> checkWishlist() async {
+  Future<void> addToCart() async {
+    final String url = 'https://barbeqshop.online/api/cart';
+
+    final Map<String, dynamic> bodyData = {
+      'gambar': widget.item['gambar'],
+      'nama_produk': widget.item['nama_produk'],
+      'harga': widget.item['harga'],
+    };
+
     try {
-      var response = await http.get(
-        Uri.parse('https://barbeqshop.online/api/wishlist'),
-      );
+      final response = await http.post(Uri.parse(url), body: bodyData);
 
       if (response.statusCode == 200) {
-        var data = json.decode(response.body);
-
-        // Ensure data is a Map
-        if (data is Map) {
-          // Check if the product ID exists in the wishlist
-          if (data.containsKey(widget.item['id'])) {
-            return true; // Product is in the wishlist
-          }
-        } else {
-          print('Invalid data format: $data');
-        }
+        print('Item added to cart successfully.');
+        // Optionally, you can navigate to the cart screen here
       } else {
-        print('Failed to fetch wishlist data: ${response.statusCode}');
+        print(
+            'Failed to add item to cart. Status code: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error checking wishlist: $e');
+      print('Error adding item to cart: $e');
     }
-    return false; // Return false if there's an error or the product is not in the wishlist
-  }
-
-Future<void> toggleWishlist() async {
-  try {
-    // Check if the product is already in the wishlist
-    bool isInWishlist = await checkWishlist();
-    if (isInWishlist) {
-      // If the product is already in the wishlist, remove it
-      var response = await http.post(
-        Uri.parse('https://barbeqshop.online/api/wishlist/${widget.item['id'].toString()}'),
-      );
-      if (response.statusCode == 200) {
-        setState(() {
-          isLiked = false;
-        });
-        print('Produk berhasil dihapus dari wishlist');
-      } else {
-        print('Gagal menghapus produk dari wishlist');
-      }
-    } else {
-      // If the product is not in the wishlist, add it
-      var productData = {
-       "id_produk" : widget.item['id'].toString(),
-        "nama_product": widget.item['nama_produk'],
-        "harga": widget.item['harga'],
-        "gambar": widget.item['gambar'],
-        "detail": widget.item['detail'],
-      };
-
-      var response = await http.post(
-        Uri.parse('https://barbeqshop.online/api/wishlist'),
-        body: productData,
-      );
-
-      if (response.statusCode == 200) {
-        setState(() {
-          isLiked = true;
-        });
-        print('Produk berhasil ditambahkan ke wishlist');
-      } else {
-        print('Gagal menambahkan produk ke wishlist');
-        
-      }
-    }
-  } catch (e) {
-    print('Error: $e');
-  }
-}
-
-
-
-  @override
-  void initState() {
-    super.initState();
-    // Check the wishlist status when the widget is initialized
-    checkWishlist().then((isInWishlist) {
-      setState(() {
-        isLiked = isInWishlist;
-      });
-    });
   }
 
   @override
@@ -136,6 +73,7 @@ Future<void> toggleWishlist() async {
                     children: [
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        //gambar
                         children: [
                           Container(
                             decoration: BoxDecoration(
@@ -145,13 +83,13 @@ Future<void> toggleWishlist() async {
                                 bottomRight: Radius.circular(20.0),
                               ),
                               border: Border.all(
-                                color: const Color(0xFFE9EAEC).withOpacity(0.5),
-                                width: 2.0,
+                                color: const Color(0xFFE9EAEC).withOpacity(
+                                    0.5), // Warna border yang tersamarkan
+                                width: 2.0, // Lebar border
                               ),
                             ),
                             height: MediaQuery.of(context).size.height * 0.3,
                             child: Center(
-                              
                               child: Image.network(
                                 widget.item['gambar'],
                                 height: 250.0,
@@ -195,14 +133,15 @@ Future<void> toggleWishlist() async {
                               setState(() {
                                 isLiked = !isLiked;
                               });
-                              toggleWishlist();
                             },
                           ),
                         ],
                       ),
+
                       const SizedBox(
                         height: 20,
                       ),
+                      //rating
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -217,24 +156,22 @@ Future<void> toggleWishlist() async {
                               Text(
                                 '4.6',
                                 style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 15,
-                                ),
+                                    fontWeight: FontWeight.w700, fontSize: 15),
                               ),
                             ],
                           ),
                           Text(
                             widget.item['harga'],
                             style: const TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
-                            ),
+                                fontWeight: FontWeight.w700, fontSize: 16),
                           ),
                         ],
                       ),
                       const SizedBox(
                         height: 10,
                       ),
+
+                      //warna produk
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -255,29 +192,27 @@ Future<void> toggleWishlist() async {
                           ),
                         ],
                       ),
+
                       const SizedBox(
                         height: 20,
                       ),
+
+                      //deskripsi barang
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
                             'Deskripsi Barang',
                             style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15,
-                            ),
+                                fontWeight: FontWeight.w600, fontSize: 15),
                           ),
-                  
                           const SizedBox(
                             height: 20,
                           ),
                           Text(
                             widget.item['detail'],
                             style: const TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
-                            ),
+                                fontWeight: FontWeight.w700, fontSize: 16),
                           ),
                         ],
                       )
@@ -289,79 +224,92 @@ Future<void> toggleWishlist() async {
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(50.0),
-            topRight: Radius.circular(50.0),
-          ),
-          border: Border.all(
-            color: Colors.black,
-            width: 1.5,
-          ),
-        ),
-        height: MediaQuery.of(context).size.height * 0.15,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                border: Border.all(
-                  color: Colors.black54,
-                  width: 1,
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.message,
-                  size: 20,
-                  color: Colors.black,
-                ),
-              ),
+      bottomNavigationBar: Positioned(
+        bottom: 0,
+        left: 0,
+        right: 0,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(50.0),
+              topRight: Radius.circular(50.0),
             ),
-            Container(
-              padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                border: Border.all(
-                  color: Colors.black54,
-                  width: 1,
+            border: Border.all(
+              color: Colors.black, // Warna border yang tersamarkan
+              width: 1.5, // Lebar border
+            ),
+          ),
+          height: MediaQuery.of(context).size.height * 0.15,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              //IB MESSAGE
+              Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  border: Border.all(
+                    color: Colors.black54,
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                borderRadius: BorderRadius.circular(8),
+                child: IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.message,
+                    size: 20,
+                    color: Colors.black,
+                  ),
+                ),
               ),
-              child: IconButton(
+
+              //IB CART
+              Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  border: Border.all(
+                    color: Colors.black54,
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: IconButton(
+                  onPressed: () {
+                    addToCart();
+
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) => Cart()));
+                  },
+                  icon: const Icon(
+                    Icons.shopping_cart_outlined,
+                    size: 20,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+              ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => Cart()));
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => Checkout()));
                 },
-                icon: const Icon(
-                  Icons.shopping_cart_outlined,
-                  size: 20,
-                  color: Colors.black,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFB50B0B),
+                  minimumSize: const Size(200, 60),
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(10.0), // Atur sesuai kebutuhan
+                  ),
                 ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => Checkout()));
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFB50B0B),
-                minimumSize: const Size(200, 60),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+                child: const Text(
+                  'Buy Now',
+                  style: TextStyle(fontSize: 17, color: Colors.white),
                 ),
-              ),
-              child: const Text(
-                'Buy Now',
-                style: TextStyle(fontSize: 17, color: Colors.white),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );

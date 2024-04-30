@@ -326,21 +326,10 @@ class _CartState extends State<Cart> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      if (index == 0) {
-        // Navigator.of(context)
-        //     .push(MaterialPageRoute(builder: (context) => homepage()));
-      } else if (index == 1) {
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => Cart(
-                  postData: {},
-                )));
-      } else if (index == 2) {
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => Wishlist()));
-      } else if (index == 3) {
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => Profile()));
-      }
+      // Handle navigation based on index
     });
   }
 }
+
+
+
