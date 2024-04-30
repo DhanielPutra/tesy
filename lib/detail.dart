@@ -152,6 +152,7 @@ Future<void> toggleWishlist() async {
                             height: MediaQuery.of(context).size.height * 0.3,
                             child: Center(
                               child: Image.network(
+                              child: Image.network(
                                 widget.item['gambar'],
                                 height: 250.0,
                               ),
@@ -267,6 +268,7 @@ Future<void> toggleWishlist() async {
                               fontSize: 15,
                             ),
                           ),
+                          const SizedBox(
                           const SizedBox(
                             height: 20,
                           ),
