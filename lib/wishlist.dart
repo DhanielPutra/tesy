@@ -1,11 +1,37 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
-import 'package:marketplace/cart.dart';
-import 'package:marketplace/detail.dart';
 import 'package:marketplace/homepage.dart';
 import 'package:marketplace/profile.dart';
+import 'dart:convert';
+
+import 'cart.dart';
+import 'detail.dart'; // Import the Detail widget
+
+class Product {
+  final String id;
+  final String name;
+  final String imageUrl;
+  final String price;
+  final String detail; // Add detail field
+
+  Product({
+    required this.id,
+    required this.name,
+    required this.imageUrl,
+    required this.price,
+    required this.detail,
+  });
+
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      id: json['id'].toString(),
+      name: json['nama_product'] ?? '',
+      imageUrl: json['gambar'] ?? '',
+      price: json['harga'].toString() ?? '',
+      detail: json['detail'] ?? '', // Assign detail field
+    );
+  }
+}
 
 class Wishlist extends StatefulWidget {
   const Wishlist({Key? key}) : super(key: key);
@@ -25,17 +51,26 @@ class _WishlistState extends State<Wishlist> {
   }
 
   Future<void> fetchData() async {
-    final response = await http.get(Uri.parse('https://barbeqshop.online/api/produk'));
+    try {
+      final response =
+          await http.get(Uri.parse('https://barbeqshop.online/api/wishlist'));
 
-    if (response.statusCode == 200) {
-      // If the server returns a 200 OK response, parse the JSON.
-      List<dynamic> responseData = json.decode(response.body);
-      setState(() {
-        products = responseData.map((data) => Product.fromJson(data)).toList();
-      });
-    } else {
-      // If the server did not return a 200 OK response, throw an exception.
-      throw Exception('Failed to load products');
+      if (response.statusCode == 200) {
+        Map<String, dynamic> responseData = json.decode(response.body);
+        if (responseData['status'] == true) {
+          List<dynamic> productList = responseData['data'];
+          setState(() {
+            products =
+                productList.map((data) => Product.fromJson(data)).toList();
+          });
+        } else {
+          print('Error: ${responseData['message']}');
+        }
+      } else {
+        throw Exception('Failed to load products');
+      }
+    } catch (e) {
+      print('Error: $e');
     }
   }
 
@@ -43,12 +78,16 @@ class _WishlistState extends State<Wishlist> {
     setState(() {
       _selectedIndex = index;
       if (index == 0) {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => homepage()));
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => homepage()));
       } else if (index == 1) {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => Cart()));
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => Cart()));
       } else if (index == 2) {
+        // Wishlist page, do nothing as we are already on this page
       } else if (index == 3) {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => Profile()));
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => Profile()));
       }
     });
   }
@@ -57,6 +96,7 @@ class _WishlistState extends State<Wishlist> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false, // Remove the back arrow button
         elevation: 5,
         backgroundColor: Color.fromARGB(255, 206, 22, 22),
         title: const Text(
@@ -75,7 +115,8 @@ class _WishlistState extends State<Wishlist> {
           return GestureDetector(
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => Detail(item: product)));
+                  builder: (context) =>
+                      Detail(item: product))); // Pass product to Detail widget
             },
             child: Container(
               height: 200,
@@ -108,8 +149,8 @@ class _WishlistState extends State<Wishlist> {
                             children: [
                               Expanded(
                                 child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 10, right: 40),
+                                  padding:
+                                      const EdgeInsets.only(top: 10, right: 40),
                                   child: Text(
                                     product.name,
                                     style: const TextStyle(
@@ -133,7 +174,7 @@ class _WishlistState extends State<Wishlist> {
                           Padding(
                             padding: const EdgeInsets.only(top: 3),
                             child: Text(
-                              'Rp. ${NumberFormat('#,##0').format(product.price)}',
+                              product.price,
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 17,
@@ -144,8 +185,7 @@ class _WishlistState extends State<Wishlist> {
                             ),
                           ),
                           Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(0, 7, 0, 5),
+                            padding: const EdgeInsets.fromLTRB(0, 7, 0, 5),
                             child: SizedBox(
                               width: 200,
                               height: 35,
@@ -155,8 +195,7 @@ class _WishlistState extends State<Wishlist> {
                                 },
                                 style: ElevatedButton.styleFrom(
                                   shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(5),
+                                    borderRadius: BorderRadius.circular(5),
                                   ),
                                   backgroundColor:
                                       Color.fromARGB(255, 208, 9, 9),

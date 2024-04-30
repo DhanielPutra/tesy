@@ -3,9 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:marketplace/homepage.dart';
-import 'package:marketplace/models/api_response.dart';
 import 'package:marketplace/models/user.dart';
-import 'package:marketplace/user_services.dart';
 import 'package:marketplace/view/Register/register.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -29,14 +27,14 @@ class _LoginState extends State<Login> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Invalid Credentials'),
-          content: Text('The email or password you entered is incorrect.'),
+          title:const Text('Invalid Credentials'),
+          content:const Text('The email or password you entered is incorrect.'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('OK'),
+              child:const Text('OK'),
             ),
           ],
         );
@@ -61,68 +59,65 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> _login() async {
-    // Replace apiUrl with your actual login API endpoint
-    const apiUrl = 'https://barbeqshop.online/api/login';
-    setState(() {
-      loading = true;
-      errorMessage = '';
-    });
+  const apiUrl = 'https://barbeqshop.online/api/login';
+  setState(() {
+    loading = true;
+    errorMessage = '';
+  });
 
-    try {
-      final http.Response response = await http.post(
-        Uri.parse(apiUrl),
-        body: {
-          'email': txtEmail.text.toString(),
-          'password': txtPassword.text.toString(),
-        },
-        // headers: {'Content-Type': 'application/json'},
-      );
+  try {
+    final http.Response response = await http.post(
+      Uri.parse(apiUrl),
+      body: {
+        'email': txtEmail.text.toString(),
+        'password': txtPassword.text.toString(),
+      },
+    );
+    print(response.statusCode);
 
-      // setState(() {
-      //   var responseData = jsonDecode(response.body);
-      //   print(response.statusCode.toString());
-      //   print(responseData);
-      // });
-      if (response.statusCode == 200) {
-        // Login successful
-        final responseData = jsonDecode(response.body);
-        final String token = responseData['token'];
-        // final int id = responseData['user']['id'];
-        // final String username = responseData['user']['username'];
-        // setState(() {
-        //   errorMessage = 'success';
-        //   print(token);
-        // });
-        _saveAndRedirectToHome(User());
+    if (response.statusCode == 200) {
+      // Login successful
+      final responseData = jsonDecode(response.body);
+      final String token = responseData['data']['token']; // Adjust this to match your API response structure
+      final int id = responseData['data']['user']['id']; // Adjust this to match your API response structure
 
-        // Handle the token or navigate to the home screen
-        // For now, we'll print the token to the console
-        // print('Login successful! Token: $token');
+      if (token != null && id != null) {
+        _saveAndRedirectToHome();
+        print('Login successful! Token: $token, User ID: $id');
       } else {
-        // Login failed
         setState(() {
-          errorMessage = 'Failed to login';
+          errorMessage = 'Failed to login: Token or user ID missing';
         });
-        // _showInvalidCredentialsAlert();
+        print('Failed to login: Token or user ID missing');
       }
-    } catch (e) {
-      // Exception occurred
+    } else {
       setState(() {
-        errorMessage = 'Failed to connect to the server';
+        errorMessage = 'Failed to login: ${response.reasonPhrase}';
       });
-    } finally {
-      setState(() {
-        loading = false;
-      });
-      _showInvalidCredentialsAlert();
-      txtPassword.clear();
+      print('Failed to login: ${response.reasonPhrase}');
+      print('Response body: ${response.body}');
     }
+  } catch (e) {
+    setState(() {
+      errorMessage = 'Failed to connect to the server: $e';
+    });
+    print('Failed to connect to the server: $e');
+  } finally {
+    setState(() {
+      loading = false;
+    });
+    if (errorMessage.isNotEmpty) {
+      _showInvalidCredentialsAlert();
+    }
+    txtPassword.clear();
   }
+}
 
-  void _saveAndRedirectToHome(User user) async {
+
+
+  void _saveAndRedirectToHome() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    await pref.setString('token', user.token ?? '');
-    await pref.setInt('id', user.id ?? 0);
+
     Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => homepage()), (route) => false);
   }

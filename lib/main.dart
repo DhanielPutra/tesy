@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 // ignore: unused_import
 import 'package:marketplace/homepage.dart';
-import 'package:marketplace/pembayaran.dart';
 import 'package:marketplace/splashscreen.dart';
 // ignore: unused_import
 import 'package:marketplace/view/Register/login.dart';

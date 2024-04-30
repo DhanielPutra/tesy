@@ -19,7 +19,7 @@ class User {
     try {
       return User(
         id: json['user']['id'] ?? 0,
-        name: json['user']['username'] ?? '',
+        name: json['user']['name'] ?? '',
         email: json['user']['email'] ?? '',
         no_tlp: json['user']['no_tlp'] ?? '',
         username: json['user']['username'] ?? '',

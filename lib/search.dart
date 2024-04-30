@@ -22,14 +22,14 @@ class _SearchFormState extends State<SearchForm> {
     super.dispose();
   }
 
-  @override
+  @override 
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leadingWidth: 40, // Adjust the width of the leading widget
         leading: IconButton(
           padding: EdgeInsets.zero, // Remove padding around the icon
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -51,16 +51,16 @@ class _SearchFormState extends State<SearchForm> {
                     borderSide: BorderSide.none,
                   ),
                   filled: true,
-                  fillColor: Color.fromARGB(255, 235, 226, 226),
+                  fillColor: const Color.fromARGB(255, 235, 226, 226),
                   contentPadding:
-                      EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                  prefixIcon: Icon(
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  prefixIcon: const Icon(
                     Icons.search,
                     color: Colors.black,
                     size: 20,
                   ),
                 ),
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.black,
                   fontSize: 18,
                 ),
@@ -73,13 +73,13 @@ class _SearchFormState extends State<SearchForm> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             child: GestureDetector(
               onTap: () {
                 _searchController.clear(); // Clear text field when cancel button pressed
                 FocusScope.of(context).unfocus();
               },
-              child: Text(
+              child:const Text(
                 'Cancel',
                 style: TextStyle(fontSize: 18, color: Colors.red),
               ),

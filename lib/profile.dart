@@ -5,9 +5,7 @@ import 'package:marketplace/daftarTransaksi.dart';
 import 'package:marketplace/editProfile.dart';
 import 'package:marketplace/homepage.dart';
 import 'package:marketplace/pembayaran.dart';
-import 'package:marketplace/user_services.dart';
 import 'package:marketplace/view/Register/login.dart';
-import 'package:marketplace/view/Register/register.dart';
 import 'package:marketplace/wishlist.dart';
 
 class Profile extends StatefulWidget {
