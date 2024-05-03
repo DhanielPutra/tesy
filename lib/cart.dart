@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:marketplace/checkout.dart';
 import 'package:marketplace/profile.dart';
 import 'package:marketplace/wishlist.dart';
 
@@ -200,6 +201,8 @@ class _CartState extends State<Cart> {
                     ElevatedButton(
                       onPressed: () {
                         // Handle checkout button pressed
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => Checkout()));
                       },
                       child: Text(
                         'Checkout',
@@ -330,6 +333,3 @@ class _CartState extends State<Cart> {
     });
   }
 }
-
-
-
