@@ -152,8 +152,8 @@ class _CartState extends State<Cart> {
                                             },
                                             icon: Icon(Icons.close_sharp),
                                           ),
-                                          SizedBox(height: 10),
-                                          Text(
+                                          const SizedBox(height: 10),
+                                          const Text(
                                             'Detail pembayaran',
                                             style: TextStyle(
                                               fontWeight: FontWeight.bold,
@@ -169,7 +169,7 @@ class _CartState extends State<Cart> {
                                                 'Total harga (${cartItems.length} produk)',
                                               ),
                                               Text(
-                                                'Rp. ${NumberFormat('#,##0').format(getTotalPrice())}',
+                                                'Rp. ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(getTotalPrice())},00',
                                               ),
                                             ],
                                           ),
@@ -187,7 +187,8 @@ class _CartState extends State<Cart> {
                                                 ),
                                               ),
                                               Text(
-                                                'Rp. ${NumberFormat('#,##0').format(getTotalPrice())}',
+                                                
+                                                'Rp. ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(getTotalPrice())},00',
                                               ),
                                             ],
                                           ),
@@ -202,7 +203,7 @@ class _CartState extends State<Cart> {
                           ],
                         ),
                         Text(
-                          'Rp. ${NumberFormat('#,##0').format(getTotalPrice())}',
+                          'Rp. ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(getTotalPrice())},00',
                         ),
                       ],
                     ),
@@ -302,7 +303,7 @@ class _CartState extends State<Cart> {
                       height: 40,
                     ),
                     Text(
-                      'Rp. ${NumberFormat('#,##0').format(double.parse(product['harga']))}',
+                      'Rp. ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(double.parse(product['harga']))},00',
                       style: TextStyle(fontSize: 16, color: Colors.black),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,

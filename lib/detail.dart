@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:marketplace/cart.dart';
 import 'package:marketplace/models/product.dart';
 import 'package:marketplace/user_services.dart'; // Import the method to get user ID and token
@@ -335,7 +336,7 @@ Future<void> checkWishlist(int productId) async {
                             ],
                           ),
                           Text(
-                            widget.item['harga'],
+                            'Rp. ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(double.parse(widget.item['harga']))}',
                             style: const TextStyle(
                                 fontWeight: FontWeight.w700, fontSize: 16),
                           ),

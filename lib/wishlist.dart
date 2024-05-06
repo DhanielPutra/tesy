@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:marketplace/cart.dart';
 import 'package:marketplace/homepage.dart';
 import 'package:marketplace/models/product.dart';
@@ -172,8 +173,11 @@ Future<void> fetchWishlistData() async {
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
                                   ),
+                                  
                                 ),
+                                
                               ),
+                              
                               IconButton(
                                 onPressed: () {
                                   deleteFromWishlist(product.id);
@@ -185,7 +189,20 @@ Future<void> fetchWishlistData() async {
                           Padding(
                             padding: const EdgeInsets.only(top: 3),
                             child: Text(
-                              product.price,
+                              product.detail,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 3),
+                            child: Text(
+                              'Rp. ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(double.parse(product.price))},00',
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 17,
