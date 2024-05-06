@@ -1,8 +1,6 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:marketplace/cart.dart';
-import 'package:marketplace/checkout.dart';
 import 'package:http/http.dart' as http;
 import 'package:marketplace/cart.dart';
 import 'package:marketplace/models/product.dart';
@@ -41,26 +39,11 @@ void initState() {
 
     try {
       final response = await http.post(Uri.parse(url), body: bodyData);
-  Future<void> addToCart() async {
-    final String url = 'https://barbeqshop.online/api/cart';
-
-    final Map<String, dynamic> bodyData = {
-      'gambar': widget.item['gambar'],
-      'nama_produk': widget.item['nama_produk'],
-      'harga': widget.item['harga'],
-    };
-
-    try {
-      final response = await http.post(Uri.parse(url), body: bodyData);
 
       if (response.statusCode == 200) {
         print('Item added to cart successfully.');
         // Optionally, you can navigate to the cart screen here
-        print('Item added to cart successfully.');
-        // Optionally, you can navigate to the cart screen here
       } else {
-        print(
-            'Failed to add item to cart. Status code: ${response.statusCode}');
         print(
             'Failed to add item to cart. Status code: ${response.statusCode}');
       }
@@ -318,7 +301,6 @@ Future<void> checkWishlist(int productId) async {
                           ),
                         ],
                       ),
-
                       const SizedBox(
                         height: 20,
                       ),
@@ -405,79 +387,91 @@ Future<void> checkWishlist(int productId) async {
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(50.0),
-            topRight: Radius.circular(50.0),
-          ),
-          border: Border.all(
-            color: Colors.black,
-            width: 1.5,
-          ),
-        ),
-        height: MediaQuery.of(context).size.height * 0.15,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                border: Border.all(
-                  color: Colors.black54,
-                  width: 1,
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.message,
-                  size: 20,
-                  color: Colors.black,
-                ),
-              ),
+      bottomNavigationBar: Positioned(
+        bottom: 0,
+        left: 0,
+        right: 0,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(50.0),
+              topRight: Radius.circular(50.0),
             ),
-            Container(
-              padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                border: Border.all(
-                  color: Colors.black54,
-                  width: 1,
+            border: Border.all(
+              color: Colors.black, // Warna border yang tersamarkan
+              width: 1.5, // Lebar border
+            ),
+          ),
+          height: MediaQuery.of(context).size.height * 0.15,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              //IB MESSAGE
+              Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  border: Border.all(
+                    color: Colors.black54,
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                borderRadius: BorderRadius.circular(8),
+                child: IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.message,
+                    size: 20,
+                    color: Colors.black,
+                  ),
+                ),
               ),
-              child: IconButton(
+
+              //IB CART
+              Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  border: Border.all(
+                    color: Colors.black54,
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: IconButton(
+                  onPressed: () {
+                    addToCart();
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) => Cart()));
+                  },
+                  icon: const Icon(
+                    Icons.shopping_cart_outlined,
+                    size: 20,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+              ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => Cart()));
+                  // Navigator.of(context).push(
+                  //     MaterialPageRoute(builder: (context) => Checkout()));
                 },
-                icon: const Icon(
-                  Icons.shopping_cart_outlined,
-                  size: 20,
-                  color: Colors.black,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFB50B0B),
+                  minimumSize: const Size(200, 60),
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(10.0), // Atur sesuai kebutuhan
+                  ),
                 ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => Checkout()));
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFB50B0B),
-                minimumSize: const Size(200, 60),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+                child: const Text(
+                  'Buy Now',
+                  style: TextStyle(fontSize: 17, color: Colors.white),
                 ),
-              ),
-              child: const Text(
-                'Buy Now',
-                style: TextStyle(fontSize: 17, color: Colors.white),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );
