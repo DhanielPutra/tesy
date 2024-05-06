@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:marketplace/checkout.dart';
 import 'package:marketplace/profile.dart';
 import 'package:marketplace/wishlist.dart';
 
@@ -200,6 +201,8 @@ class _CartState extends State<Cart> {
                     ElevatedButton(
                       onPressed: () {
                         // Handle checkout button pressed
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => Checkout()));
                       },
                       child: Text(
                         'Checkout',
@@ -326,21 +329,7 @@ class _CartState extends State<Cart> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      if (index == 0) {
-        // Navigator.of(context)
-        //     .push(MaterialPageRoute(builder: (context) => homepage()));
-      } else if (index == 1) {
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => Cart(
-                  postData: {},
-                )));
-      } else if (index == 2) {
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => Wishlist()));
-      } else if (index == 3) {
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => Profile()));
-      }
+      // Handle navigation based on index
     });
   }
 }
