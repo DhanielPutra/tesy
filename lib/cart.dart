@@ -3,8 +3,11 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:marketplace/checkout.dart';
+import 'package:marketplace/homepage.dart';
 import 'package:marketplace/profile.dart';
+import 'package:marketplace/user_services.dart';
 import 'package:marketplace/wishlist.dart';
+
 
 class Cart extends StatefulWidget {
   final Map<String, dynamic> postData;
@@ -21,12 +24,17 @@ class _CartState extends State<Cart> {
 
   Future<void> fetchCartData() async {
     final String url = 'https://barbeqshop.online/api/cart';
-
+  String token = await getToken();
     try {
-      final response = await http.get(Uri.parse(url));
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {'Authorization': 'Bearer $token'}, // Pass the token in the headers
+    );;
+       
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
+        print(response.statusCode);
         if (responseData['status'] == true) {
           setState(() {
             cartItems = responseData['data'];
@@ -329,7 +337,19 @@ class _CartState extends State<Cart> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      // Handle navigation based on index
+      if (index == 0) {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => homepage()));
+      } else if (index == 1) {
+        // Navigator.of(context)
+        //     .push(MaterialPageRoute(builder: (context) => Cart()));
+      } else if (index == 2) {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => Wishlist()));
+      } else if (index == 3) {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => Profile()));
+      }
     });
   }
 }

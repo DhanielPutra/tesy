@@ -31,18 +31,29 @@ void initState() {
   Future<void> addToCart() async {
     final String url = 'https://barbeqshop.online/api/cart';
 
+    int userId = await getUserId();
+    String token = await getToken();
+
     final Map<String, dynamic> bodyData = {
+      'user_id': userId.toString(), // Include the user ID in the request
       'gambar': widget.item['gambar'],
       'nama_produk': widget.item['nama_produk'],
       'harga': widget.item['harga'],
     };
 
     try {
-      final response = await http.post(Uri.parse(url), body: bodyData);
-
+      final response = await http.post(
+        Uri.parse(url),
+        body: bodyData,
+        headers: {
+          'Authorization': 'Bearer $token'
+        }, // Pass the token in the headers
+      );
       if (response.statusCode == 200) {
         print('Item added to cart successfully.');
-        // Optionally, you can navigate to the cart screen here
+      } else if (response.statusCode == 409) {
+        final responseBody = json.decode(response.body);
+        final String message = responseBody['message'];
       } else {
         print(
             'Failed to add item to cart. Status code: ${response.statusCode}');
@@ -442,8 +453,8 @@ Future<void> checkWishlist(int productId) async {
                 child: IconButton(
                   onPressed: () {
                     addToCart();
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) => Cart()));
+                    // Navigator.of(context)
+                    //     .push(MaterialPageRoute(builder: (context) => Cart()));
                   },
                   icon: const Icon(
                     Icons.shopping_cart_outlined,
