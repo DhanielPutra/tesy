@@ -2,14 +2,16 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
-import 'cart.dart';
-import 'checkout.dart';
+import 'package:marketplace/cart.dart';
+import 'package:marketplace/models/product.dart';
+import 'package:marketplace/user_services.dart'; // Import the method to get user ID and token
 
 class Detail extends StatefulWidget {
   final dynamic item;
+  final dynamic wishlistItem;
 
-  const Detail({Key? key, required this.item}) : super(key: key);
+  const Detail({Key? key, required this.item, required this.wishlistItem})
+      : super(key: key);
 
   @override
   State<Detail> createState() => _DetailState();
@@ -18,99 +20,192 @@ class Detail extends StatefulWidget {
 class _DetailState extends State<Detail> {
   int _selectedIndex = 0;
   bool isLiked = false;
+  List<Product> products = [];
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+  @override
+void initState() {
+  super.initState();
+  checkWishlist(widget.item['id']); // Assuming 'id' is the product ID
+}
 
-  Future<bool> checkWishlist() async {
+  Future<void> addToCart() async {
+    final String url = 'https://barbeqshop.online/api/cart';
+
+    final Map<String, dynamic> bodyData = {
+      'gambar': widget.item['gambar'],
+      'nama_produk': widget.item['nama_produk'],
+      'harga': widget.item['harga'],
+    };
+
     try {
-      var response = await http.get(
-        Uri.parse('https://barbeqshop.online/api/wishlist'),
-      );
+      final response = await http.post(Uri.parse(url), body: bodyData);
 
       if (response.statusCode == 200) {
-        var data = json.decode(response.body);
-
-        // Ensure data is a Map
-        if (data is Map) {
-          // Check if the product ID exists in the wishlist
-          if (data.containsKey(widget.item['id'])) {
-            return true; // Product is in the wishlist
-          }
-        } else {
-          print('Invalid data format: $data');
-        }
+        print('Item added to cart successfully.');
+        // Optionally, you can navigate to the cart screen here
       } else {
-        print('Failed to fetch wishlist data: ${response.statusCode}');
+        print(
+            'Failed to add item to cart. Status code: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error checking wishlist: $e');
+      print('Error adding item to cart: $e');
     }
-    return false; // Return false if there's an error or the product is not in the wishlist
   }
 
-Future<void> toggleWishlist() async {
-  try {
-    // Check if the product is already in the wishlist
-    bool isInWishlist = await checkWishlist();
-    if (isInWishlist) {
-      // If the product is already in the wishlist, remove it
-      var response = await http.post(
-        Uri.parse('https://barbeqshop.online/api/wishlist/${widget.item['id'].toString()}'),
-      );
-      if (response.statusCode == 200) {
-        setState(() {
-          isLiked = false;
-        });
-        print('Produk berhasil dihapus dari wishlist');
-      } else {
-        print('Gagal menghapus produk dari wishlist');
-      }
-    } else {
-      // If the product is not in the wishlist, add it
-      var productData = {
-       "id_produk" : widget.item['id'].toString(),
-        "nama_product": widget.item['nama_produk'],
-        "harga": widget.item['harga'],
-        "gambar": widget.item['gambar'],
-        "detail": widget.item['detail'],
-      };
+  Future<void> addToWishlist() async {
+    final String url = 'https://barbeqshop.online/api/wishlist';
 
-      var response = await http.post(
-        Uri.parse('https://barbeqshop.online/api/wishlist'),
-        body: productData,
+    // Get the user ID and token from SharedPreferences
+    int userId = await getUserId();
+    String token = await getToken();
+
+    final Map<String, dynamic> bodyData = {
+      'id_wish': widget.item['id'].toString(),
+      'user_id': userId.toString(), // Include the user ID in the request
+      'gambar': widget.item['gambar'],
+      'nama_product': widget.item['nama_produk'],
+      'harga': widget.item['harga'],
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        body: bodyData,
+        headers: {
+          'Authorization': 'Bearer $token'
+        }, // Pass the token in the headers
       );
 
       if (response.statusCode == 200) {
+        print('Item added to wishlist successfully.');
         setState(() {
           isLiked = true;
         });
-        print('Produk berhasil ditambahkan ke wishlist');
+      } else if (response.statusCode == 409) {
+        final responseBody = json.decode(response.body);
+        final String message = responseBody['message'];
+        if (message == 'Item already exists in wishlist') {
+          print('Item already exists in the wishlist.');
+          // Optionally, you can handle this case differently
+        } else {
+          print(
+              'Failed to add item to wishlist. Status code: ${response.statusCode}');
+        }
       } else {
-        print('Gagal menambahkan produk ke wishlist');
-        
+        print(
+            'Failed to add item to wishlist. Status code: ${response.statusCode}');
       }
+    } catch (e) {
+      print('Error adding item to wishlist: $e');
+    }
+  }
+
+ Future<void> removeFromWishlist(int productId) async {
+  try {
+    List<dynamic> wishlistItems = await fetchWishlistItems(productId);
+
+    print('Wishlist items in removeFromWishlist: $wishlistItems');
+
+    // Check if the wishlist item exists for the current product
+    if (wishlistItems.isNotEmpty) {
+      // Assuming the first item in the wishlist is the desired product
+      int wishlistItemId = wishlistItems[0]['id'];
+      await deleteFromWishlist(wishlistItemId);
+    } else {
+      print('Item not found in wishlist.');
     }
   } catch (e) {
-    print('Error: $e');
+    print('Error removing item from wishlist: $e');
+  }
+}
+Future<void> deleteFromWishlist(int wishlistItemId) async {
+  final String url = 'https://barbeqshop.online/api/wishlist/$wishlistItemId';
+
+  try {
+    final response = await http.delete(
+      Uri.parse(url),
+    );
+
+    if (response.statusCode == 200) {
+      setState(() {
+        isLiked = false;
+      });
+      print('Item deleted from wishlist successfully.');
+    } else {
+      print(
+          'Failed to delete item from wishlist. Status code: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Error deleting item from wishlist: $e');
   }
 }
 
 
 
-  @override
-  void initState() {
-    super.initState();
-    // Check the wishlist status when the widget is initialized
-    checkWishlist().then((isInWishlist) {
-      setState(() {
-        isLiked = isInWishlist;
-      });
-    });
+  // Update the fetchWishlistItems method to accept a product ID
+Future<List<dynamic>> fetchWishlistItems(int productId) async {
+  try {
+    String url = 'https://barbeqshop.online/api/wishlist?product_id=$productId'; // Pass the product ID in the URL
+    String token = await getToken();
+
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      // Parse the JSON response
+      dynamic responseData = json.decode(response.body);
+      List<dynamic> wishlistItems = [];
+
+      if (responseData is List<dynamic>) {
+        // If the response data is already a list, use it directly
+        wishlistItems = responseData;
+      } else if (responseData is Map<String, dynamic> &&
+          responseData.containsKey('data')) {
+        // If the response data is an object containing a list, extract the list
+        wishlistItems = responseData['data'];
+      }
+
+      print('Wishlist items: $wishlistItems');
+
+      return wishlistItems;
+    } else {
+      print('Failed to fetch wishlist. Status code: ${response.statusCode}');
+      return [];
+    }
+  } catch (e) {
+    print('Error fetching wishlist: $e');
+    return [];
   }
+}
+
+// Update the checkWishlist method to use the fetched wishlist items
+Future<void> checkWishlist(int productId) async {
+  try {
+    List<dynamic> wishlistItems = await fetchWishlistItems(productId);
+
+    print('Wishlist items in checkWishlist: $wishlistItems');
+
+    // Check if the wishlist item exists for the current product
+    if (wishlistItems.isNotEmpty) {
+      // Assuming the first item in the wishlist is the desired product
+      int wishlistItemId = wishlistItems[0]['id'];
+      print('Wishlist item ID: $wishlistItemId');
+      setState(() {
+        isLiked = true;
+      });
+    } else {
+      print('Wishlist is empty.');
+      setState(() {
+        isLiked = false;
+      });
+    }
+  } catch (e) {
+    print('Error checking wishlist: $e');
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -136,6 +231,7 @@ Future<void> toggleWishlist() async {
                     children: [
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        //gambar
                         children: [
                           Container(
                             decoration: BoxDecoration(
@@ -145,13 +241,13 @@ Future<void> toggleWishlist() async {
                                 bottomRight: Radius.circular(20.0),
                               ),
                               border: Border.all(
-                                color: const Color(0xFFE9EAEC).withOpacity(0.5),
-                                width: 2.0,
+                                color: const Color(0xFFE9EAEC).withOpacity(
+                                    0.5), // Warna border yang tersamarkan
+                                width: 2.0, // Lebar border
                               ),
                             ),
                             height: MediaQuery.of(context).size.height * 0.3,
                             child: Center(
-                              
                               child: Image.network(
                                 widget.item['gambar'],
                                 height: 250.0,
@@ -193,9 +289,14 @@ Future<void> toggleWishlist() async {
                             ),
                             onPressed: () {
                               setState(() {
+                                if (isLiked) {
+                                  removeFromWishlist(widget.item['id']);
+                                  
+                                } else {
+                                  addToWishlist();
+                                }
                                 isLiked = !isLiked;
                               });
-                              toggleWishlist();
                             },
                           ),
                         ],
@@ -203,6 +304,7 @@ Future<void> toggleWishlist() async {
                       const SizedBox(
                         height: 20,
                       ),
+                      //rating
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -217,24 +319,22 @@ Future<void> toggleWishlist() async {
                               Text(
                                 '4.6',
                                 style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 15,
-                                ),
+                                    fontWeight: FontWeight.w700, fontSize: 15),
                               ),
                             ],
                           ),
                           Text(
                             widget.item['harga'],
                             style: const TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
-                            ),
+                                fontWeight: FontWeight.w700, fontSize: 16),
                           ),
                         ],
                       ),
                       const SizedBox(
                         height: 10,
                       ),
+
+                      //warna produk
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -255,29 +355,27 @@ Future<void> toggleWishlist() async {
                           ),
                         ],
                       ),
+
                       const SizedBox(
                         height: 20,
                       ),
+
+                      //deskripsi barang
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
                             'Deskripsi Barang',
                             style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15,
-                            ),
+                                fontWeight: FontWeight.w600, fontSize: 15),
                           ),
-                          
                           const SizedBox(
                             height: 20,
                           ),
                           Text(
                             widget.item['detail'],
                             style: const TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
-                            ),
+                                fontWeight: FontWeight.w700, fontSize: 16),
                           ),
                         ],
                       )
@@ -289,79 +387,91 @@ Future<void> toggleWishlist() async {
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(50.0),
-            topRight: Radius.circular(50.0),
-          ),
-          border: Border.all(
-            color: Colors.black,
-            width: 1.5,
-          ),
-        ),
-        height: MediaQuery.of(context).size.height * 0.15,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                border: Border.all(
-                  color: Colors.black54,
-                  width: 1,
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.message,
-                  size: 20,
-                  color: Colors.black,
-                ),
-              ),
+      bottomNavigationBar: Positioned(
+        bottom: 0,
+        left: 0,
+        right: 0,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(50.0),
+              topRight: Radius.circular(50.0),
             ),
-            Container(
-              padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                border: Border.all(
-                  color: Colors.black54,
-                  width: 1,
+            border: Border.all(
+              color: Colors.black, // Warna border yang tersamarkan
+              width: 1.5, // Lebar border
+            ),
+          ),
+          height: MediaQuery.of(context).size.height * 0.15,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              //IB MESSAGE
+              Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  border: Border.all(
+                    color: Colors.black54,
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                borderRadius: BorderRadius.circular(8),
+                child: IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.message,
+                    size: 20,
+                    color: Colors.black,
+                  ),
+                ),
               ),
-              child: IconButton(
+
+              //IB CART
+              Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  border: Border.all(
+                    color: Colors.black54,
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: IconButton(
+                  onPressed: () {
+                    addToCart();
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) => Cart()));
+                  },
+                  icon: const Icon(
+                    Icons.shopping_cart_outlined,
+                    size: 20,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+              ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => Cart()));
+                  // Navigator.of(context).push(
+                  //     MaterialPageRoute(builder: (context) => Checkout()));
                 },
-                icon: const Icon(
-                  Icons.shopping_cart_outlined,
-                  size: 20,
-                  color: Colors.black,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFB50B0B),
+                  minimumSize: const Size(200, 60),
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(10.0), // Atur sesuai kebutuhan
+                  ),
                 ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => Checkout()));
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFB50B0B),
-                minimumSize: const Size(200, 60),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+                child: const Text(
+                  'Buy Now',
+                  style: TextStyle(fontSize: 17, color: Colors.white),
                 ),
-              ),
-              child: const Text(
-                'Buy Now',
-                style: TextStyle(fontSize: 17, color: Colors.white),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );

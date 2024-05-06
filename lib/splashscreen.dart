@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 // ignore: unused_import
 import 'package:marketplace/homepage.dart';
+import 'package:marketplace/user_services.dart';
 import 'dart:async';
 
 import 'package:marketplace/view/Register/login.dart';
@@ -22,7 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
       () => Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => homepage(),
+          builder: (context) => Login(),
         ),
       ),
     );

@@ -29,8 +29,8 @@ class _ProfileState extends State<Profile> {
         Navigator.of(context as BuildContext)
             .push(MaterialPageRoute(builder: (context) => const Cart()));
       } else if (index == 2) {
-        Navigator.of(context as BuildContext)
-            .push(MaterialPageRoute(builder: (context) => const Wishlist()));
+        // Navigator.of(context as BuildContext)
+        //     .push(MaterialPageRoute(builder: (context) => const Wishlist()));
       }
     });
   }

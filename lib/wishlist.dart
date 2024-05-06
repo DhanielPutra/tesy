@@ -1,37 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:marketplace/homepage.dart';
-import 'package:marketplace/profile.dart';
 import 'dart:convert';
 
-import 'cart.dart';
-import 'detail.dart'; // Import the Detail widget
-
-class Product {
-  final String id;
-  final String name;
-  final String imageUrl;
-  final String price;
-  final String detail; // Add detail field
-
-  Product({
-    required this.id,
-    required this.name,
-    required this.imageUrl,
-    required this.price,
-    required this.detail,
-  });
-
-  factory Product.fromJson(Map<String, dynamic> json) {
-    return Product(
-      id: json['id'].toString(),
-      name: json['nama_product'] ?? '',
-      imageUrl: json['gambar'] ?? '',
-      price: json['harga'].toString() ?? '',
-      detail: json['detail'] ?? '', // Assign detail field
-    );
-  }
-}
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:marketplace/cart.dart';
+import 'package:marketplace/homepage.dart';
+import 'package:marketplace/models/product.dart';
+import 'package:marketplace/profile.dart';
+import 'package:marketplace/user_services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Wishlist extends StatefulWidget {
   const Wishlist({Key? key}) : super(key: key);
@@ -40,37 +16,74 @@ class Wishlist extends StatefulWidget {
   _WishlistState createState() => _WishlistState();
 }
 
-class _WishlistState extends State<Wishlist> {
+ class _WishlistState extends State<Wishlist> {
   int _selectedIndex = 2;
   List<Product> products = [];
 
   @override
   void initState() {
     super.initState();
-    fetchData();
+    fetchWishlistData();
   }
 
-  Future<void> fetchData() async {
+
+Future<void> fetchWishlistData() async {
+  final String url = 'https://barbeqshop.online/api/wishlist';
+
+  // Get the user ID and token from SharedPreferences
+  int userId = await getUserId(); // Assuming getUserId() retrieves user ID from SharedPreferences
+  String token = await getToken(); // Assuming getToken() retrieves token from SharedPreferences
+
+  try {
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {'Authorization': 'Bearer $token'}, // Pass the token in the headers
+    );
+
+    if (response.statusCode == 200) {
+      // Parse response body
+      Map<String, dynamic> responseData = json.decode(response.body);
+      if (responseData['status'] == true) {
+        // Data retrieved successfully
+        List<dynamic> wishlistData = responseData['data'];
+        setState(() {
+          // Update products list with fetched data
+          products = wishlistData.map((data) => Product.fromJson(data)).toList();
+        });
+      } else {
+        print('Failed to fetch wishlist data: ${responseData['message']}');
+      }
+    } else {
+      print('Failed to fetch wishlist data. Status code: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Error fetching wishlist data: $e');
+  }
+}
+
+
+
+
+
+  Future<void> deleteFromWishlist(String productId) async {
     try {
-      final response =
-          await http.get(Uri.parse('https://barbeqshop.online/api/wishlist'));
+      final response = await http.delete(
+        Uri.parse(
+            'https://barbeqshop.online/api/wishlist/$productId'), // Modify the API endpoint if needed
+      );
 
       if (response.statusCode == 200) {
-        Map<String, dynamic> responseData = json.decode(response.body);
-        if (responseData['status'] == true) {
-          List<dynamic> productList = responseData['data'];
-          setState(() {
-            products =
-                productList.map((data) => Product.fromJson(data)).toList();
-          });
-        } else {
-          print('Error: ${responseData['message']}');
-        }
+        // Item deleted successfully, update the UI
+        setState(() {
+          products.removeWhere((product) => product.id == productId);
+        });
+        print('Item deleted from wishlist successfully.');
       } else {
-        throw Exception('Failed to load products');
+        print(
+            'Failed to delete item from wishlist. Status code: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error: $e');
+      print('Error deleting item from wishlist: $e');
     }
   }
 
@@ -114,9 +127,7 @@ class _WishlistState extends State<Wishlist> {
           final product = products[index];
           return GestureDetector(
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) =>
-                      Detail(item: product))); // Pass product to Detail widget
+              // Navigate to product detail page if needed
             },
             child: Container(
               height: 200,
@@ -165,7 +176,7 @@ class _WishlistState extends State<Wishlist> {
                               ),
                               IconButton(
                                 onPressed: () {
-                                  // Remove from wishlist functionality here
+                                  deleteFromWishlist(product.id);
                                 },
                                 icon: const Icon(Icons.close),
                               ),
@@ -243,26 +254,6 @@ class _WishlistState extends State<Wishlist> {
         unselectedItemColor: Color.fromARGB(207, 0, 0, 0),
         onTap: _onItemTapped,
       ),
-    );
-  }
-}
-
-class Product {
-  final String name;
-  final String imageUrl;
-  final double price;
-
-  Product({
-    required this.name,
-    required this.imageUrl,
-    required this.price,
-  });
-
-   factory Product.fromJson(Map<String, dynamic> json) {
-    return Product(
-      name: json['name'] ?? '',
-      imageUrl: json['imageUrl'] ?? '',
-      price: json['price'] != null ? json['price'].toDouble() : 0.0,
     );
   }
 }

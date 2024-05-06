@@ -79,11 +79,16 @@ class _LoginState extends State<Login> {
       // Login successful
       final responseData = jsonDecode(response.body);
       final String token = responseData['data']['token']; // Adjust this to match your API response structure
-      final int id = responseData['data']['user']['id']; // Adjust this to match your API response structure
+      final int id_user = responseData['data']['user']['id']; // Adjust this to match your API response structure
 
-      if (token != null && id != null) {
+      if (token != null && id_user != null) {
+        // Save token and user ID in SharedPreferences
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', token);
+        await prefs.setInt('userId', id_user);
+        
         _saveAndRedirectToHome();
-        print('Login successful! Token: $token, User ID: $id');
+        print('Login successful! Token: $token, User ID: $id_user');
       } else {
         setState(() {
           errorMessage = 'Failed to login: Token or user ID missing';
@@ -112,6 +117,7 @@ class _LoginState extends State<Login> {
     txtPassword.clear();
   }
 }
+
 
 
 

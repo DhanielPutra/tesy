@@ -157,6 +157,10 @@ Future<int> getUserId() async {
   SharedPreferences pref = await SharedPreferences.getInstance();
   return pref.getInt('id') ?? 0;
 }
+Future<int> getWishid() async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  return pref.getInt('id') ?? 0;
+}
 
 // logout
 Future<bool> logout() async {

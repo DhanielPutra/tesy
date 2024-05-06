@@ -1,13 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:marketplace/cart.dart';
-import 'package:marketplace/detail.dart';
-import 'package:marketplace/profile.dart';
-import 'package:marketplace/search.dart';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:marketplace/product.dart';
+import 'package:marketplace/profile.dart';
+import 'package:marketplace/search.dart';
 import 'package:marketplace/wishlist.dart';
+import 'cart.dart';
+import 'checkout.dart';
+import 'detail.dart'; // Import the detail page
 
 class homepage extends StatefulWidget {
   const homepage({Key? key}) : super(key: key);
@@ -18,22 +18,25 @@ class homepage extends StatefulWidget {
 
 class _homepageState extends State<homepage> {
   Color _cardColor = Colors.white;
-  String _selectedText = 'All'; // Initially set to 'All'
+  String _selectedText = 'All';
   List<List<String>> filteredItems = List.from(items);
   List<dynamic> products = [];
 
   Future<List<dynamic>> fetchData() async {
-    final response =
-        await http.get(Uri.parse('https://barbeqshop.online/api/produk'));
+    try {
+      final response =
+          await http.get(Uri.parse('https://barbeqshop.online/api/produk'));
 
-    if (response.statusCode == 200) {
-      // Jika berhasil, kembalikan data dari API
-      Map<String, dynamic> responseData = json.decode(response.body);
-      return responseData['data']; // Ambil data dari kunci 'data'
-    } else {
-      // API mengembalikan kode status yang tidak diharapkan
-      print('API mengembalikan kode status: ${response.statusCode}');
-      return []; // Kembalikan list kosong
+      if (response.statusCode == 200) {
+        Map<String, dynamic> responseData = json.decode(response.body);
+        return responseData['data'];
+      } else {
+        print('Failed to fetch data: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+      return [];
     }
   }
 
@@ -49,11 +52,11 @@ class _homepageState extends State<homepage> {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => Cart()));
       } else if (index == 2) {
-        Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => Wishlist()));
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => Wishlist()));
       } else if (index == 3) {
-        Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => Profile()));
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => Profile()));
       }
     });
   }
@@ -62,7 +65,7 @@ class _homepageState extends State<homepage> {
     setState(() {
       _selectedText = category;
       if (category == 'All') {
-        filteredItems = List.from(items); // Show all items
+        filteredItems = List.from(items);
       } else {
         filteredItems = items.where((item) => item[3] == category).toList();
       }
@@ -146,7 +149,7 @@ class _homepageState extends State<homepage> {
                 child: Image.asset(
                   'assets/disc.jpg',
                   fit: BoxFit.cover,
-                  height: 120, // Set the height of the image button
+                  height: 120,
                   width: double.infinity,
                 ),
               ),
@@ -156,7 +159,7 @@ class _homepageState extends State<homepage> {
               child: Row(
                 children: [
                   ClickableText(
-                    text: 'All', // Add 'All' option
+                    text: 'All',
                     isSelected: _selectedText == 'All',
                     onTap: () => filterItemsByCategory('All'),
                   ),
@@ -190,30 +193,27 @@ class _homepageState extends State<homepage> {
               future: fetchData(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  // Menampilkan indikator loading jika data sedang dimuat
                   return Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
-                  // Menampilkan pesan kesalahan jika terjadi kesalahan dalam memuat data
-                  return Center(
-                      child: Text('Terjadi kesalahan: ${snapshot.error}'));
+                  return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
-                  // Menampilkan data produk dari API menggunakan ListView
                   return Center(
                     child: Wrap(
-                      spacing: 20, // Jarak antar kartu
-                      runSpacing: 8, // Jarak antar baris
+                      spacing: 20,
+                      runSpacing: 8,
                       children: snapshot.data!.map<Widget>((product) {
                         return GestureDetector(
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => Detail(
-                                item: product,
+                                item: product, // Pass the product item data
+                                wishlistItem:
+                                    Wishlist, // Pass the wishlist item data
                               ),
                             ));
                           },
                           child: SizedBox(
-                            width: MediaQuery.of(context).size.width / 2 -
-                                30, // Membuat setiap kartu mengambil separuh lebar layar
+                            width: MediaQuery.of(context).size.width / 2 - 30,
                             child: Card(
                               color: _cardColor,
                               elevation: 5,
@@ -232,7 +232,7 @@ class _homepageState extends State<homepage> {
                                     ),
                                     const SizedBox(
                                       height: 8,
-                                    ), // Menambahkan jarak antara gambar dan teks
+                                    ),
                                     Align(
                                       alignment: Alignment.topLeft,
                                       child: Text(
@@ -243,8 +243,7 @@ class _homepageState extends State<homepage> {
                                           color: Colors.black,
                                         ),
                                         overflow: TextOverflow.ellipsis,
-                                        maxLines:
-                                            1, // Batasi teks menjadi 1 baris
+                                        maxLines: 1,
                                       ),
                                     ),
                                     Align(
@@ -274,9 +273,8 @@ class _homepageState extends State<homepage> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed, // Set type to fixed
-        backgroundColor: const Color.fromARGB(
-            255, 193, 24, 24), // Set the background color here
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: const Color.fromARGB(255, 193, 24, 24),
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -291,8 +289,8 @@ class _homepageState extends State<homepage> {
             label: 'Wishlist',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_rounded), // Add your new icon here
-            label: 'Profile', // Add the label for the new icon
+            icon: Icon(Icons.person_rounded),
+            label: 'Profile',
           ),
         ],
         currentIndex: _selectedIndex,
