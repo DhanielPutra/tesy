@@ -154,7 +154,7 @@ class _ProfileState extends State<Profile> {
                                 ? CircleAvatar(
                                     radius: 35.0,
                                     backgroundColor: Colors.transparent,
-                                    backgroundImage: FileImage(_image!),
+                                    backgroundImage: _userData!['gambar'],
                                   )
                                 : CircleAvatar(
                                     radius: 35.0,
