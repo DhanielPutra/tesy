@@ -165,7 +165,7 @@ Future<Map<String, dynamic>> fetchUserProfile() async {
                                   style: const TextStyle(color: Colors.white),
                                 ),
                                 Text(
-                                  _userData != null ? _userData!['no_tlp'] : 'Loading...',
+                                  _userData != null ? _userData!['email'] : 'Loading...',
                                   style: const TextStyle(color: Colors.white),
                                 ),
                               ],
