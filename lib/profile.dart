@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:marketplace/cart.dart';
@@ -20,66 +21,75 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   Map<String, dynamic>? _userData;
   int _selectedIndex = 3;
+  String text = '';
+  File? _image; // Variabel untuk menyimpan gambar profil
   bool _isLoading = true; // Add this line
 
   @override
-void initState() {
-  super.initState();
-  fetchUserProfile().then((userData) {
-    setState(() {
-      _userData = userData;
-      _isLoading = false; // Update the loading state
+  void initState() {
+    super.initState();
+    fetchUserProfile().then((userData) {
+      setState(() {
+        _userData = userData;
+        _isLoading = false; // Update the loading state
+        _image = _userData != null && _userData!['gambar'] != null
+            ? File(_userData!['gambar'])
+            : null; // Mengatur gambar profil
+        text =
+            '${_userData!['name']}\n${_userData!['no_tlp']}'; // Mengatur teks profil
+      });
+    }).catchError((error) {
+      print('Error fetching user profile: $error');
+      setState(() {
+        _isLoading = false; // Update the loading state
+      });
     });
-  }).catchError((error) {
-    print('Error fetching user profile: $error');
-    setState(() {
-      _isLoading = false; // Update the loading state
-    });
-  });
-}
+  }
 
 // Fetch user profile data
-Future<Map<String, dynamic>> fetchUserProfile() async {
-  String token = await getToken();
-  try {
-    final response = await http.get(
-      Uri.parse('https://barbeqshop.online/api/profile'),
-      headers: <String, String>{
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-    );
+  Future<Map<String, dynamic>> fetchUserProfile() async {
+    String token = await getToken();
+    try {
+      final response = await http.get(
+        Uri.parse('https://barbeqshop.online/api/profile'),
+        headers: <String, String>{
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
 
-    print('Response status code: ${response.statusCode}');
-    print('Response body: ${response.body}');
+      print('Response status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
-    if (response.statusCode == 200) {
-      Map<String, dynamic> data = jsonDecode(response.body);
-      if (data['success']) {
-        return data['data']['user'];
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = jsonDecode(response.body);
+        if (data['success']) {
+          return data['data']['user'];
+        } else {
+          throw Exception(data['message']);
+        }
       } else {
-        throw Exception(data['message']);
+        throw Exception('Failed to load user profile: ${response.statusCode}');
       }
-    } else {
-      throw Exception('Failed to load user profile: ${response.statusCode}');
+    } catch (error) {
+      throw Exception('Error fetching user profile: $error');
     }
-  } catch (error) {
-    throw Exception('Error fetching user profile: $error');
   }
-}
-
 
   // Handle bottom navigation bar item tap
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
       if (index == 0) {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => const homepage()));
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => const homepage()));
       } else if (index == 1) {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => const Cart()));
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => const Cart()));
       } else if (index == 2) {
         // Handle wishlist navigation
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => const Wishlist()));
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => const Wishlist()));
       }
     });
   }
@@ -140,20 +150,20 @@ Future<Map<String, dynamic>> fetchUserProfile() async {
                       children: [
                         Row(
                           children: [
-                            ClipOval(
-                              child: _userData != null && _userData!['gambar'] != null
-                                  ? Image.network(
-                                      _userData!['gambar'],
-                                      width: 50.0,
-                                      height: 50.0,
-                                      fit: BoxFit.cover,
-                                    )
-                                  : Container(
-                                      color: Colors.white,
-                                      width: 50.0,
-                                      height: 50.0,
+                            _image != null
+                                ? CircleAvatar(
+                                    radius: 35.0,
+                                    backgroundColor: Colors.transparent,
+                                    backgroundImage: FileImage(_image!),
+                                  )
+                                : CircleAvatar(
+                                    radius: 35.0,
+                                    backgroundColor: Colors.grey,
+                                    child: Icon(
+                                      Icons.person,
+                                      size: 35,
                                     ),
-                            ),
+                                  ),
                             const SizedBox(
                               width: 20,
                             ),
@@ -161,12 +171,9 @@ Future<Map<String, dynamic>> fetchUserProfile() async {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  _userData != null ? _userData!['name'] : 'Loading...',
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                                Text(
-                                  _userData != null ? _userData!['no_tlp'] : 'Loading...',
-                                  style: const TextStyle(color: Colors.white),
+                                  text,
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
                                 ),
                               ],
                             ),
@@ -174,7 +181,7 @@ Future<Map<String, dynamic>> fetchUserProfile() async {
                         ),
                         IconButton(
                           onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => const EditProfile()));
+                            _awaitReturnValueEditProfile(context);
                           },
                           icon: const Icon(
                             Icons.edit_outlined,
@@ -218,7 +225,9 @@ Future<Map<String, dynamic>> fetchUserProfile() async {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => const DaftarTransaksi()),
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const DaftarTransaksi()),
                             );
                           },
                           child: Row(
@@ -237,7 +246,8 @@ Future<Map<String, dynamic>> fetchUserProfile() async {
                         ),
                         InkWell(
                           onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => const Pembayaran()));
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => const Pembayaran()));
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -277,5 +287,31 @@ Future<Map<String, dynamic>> fetchUserProfile() async {
               ),
             ),
           );
+  }
+
+  void _awaitReturnValueEditProfile(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditProfile(
+          initialNama: _userData!['name'],
+          initialTelepon: _userData!['no_tlp'],
+          initialEmail: _userData!['email'],
+          initialImage: _image, // Mengirim gambar ke layar EditProfile
+        ),
+      ),
+    );
+
+    setState(() {
+      if (result != null) {
+        _userData!['name'] = result[0];
+        _userData!['no_tlp'] = result[1];
+        _userData!['email'] = result[2];
+        text =
+            '${_userData!['name']}\n${_userData!['no_tlp']}'; // Update the profile text
+        _image = result[3] ??
+            _image; // Menggunakan gambar yang dikirim kembali, atau mempertahankan gambar yang ada jika tidak ada perubahan
+      }
+    });
   }
 }

@@ -1,7 +1,52 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
-class EditProfile extends StatelessWidget {
-  const EditProfile({super.key});
+class EditProfile extends StatefulWidget {
+  final String initialNama;
+  final String initialTelepon;
+  final String initialEmail;
+  final File? initialImage; // Variabel untuk menyimpan gambar profil
+  const EditProfile(
+      {super.key,
+      required this.initialNama,
+      required this.initialTelepon,
+      required this.initialEmail,
+      this.initialImage});
+
+  @override
+  State<EditProfile> createState() => _EditProfileState();
+}
+
+class _EditProfileState extends State<EditProfile> {
+  TextEditingController namaController = TextEditingController();
+  TextEditingController teleponController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  File? _image; // Variabel untuk menyimpan gambar yang dipilih
+
+  @override
+  void initState() {
+    super.initState();
+    namaController.text = widget.initialNama;
+    teleponController.text = widget.initialTelepon;
+    emailController = TextEditingController(text: widget.initialEmail);
+    _image = widget
+        .initialImage; // Menggunakan gambar yang disediakan awal sebagai gambar default
+  }
+
+  Future<void> _getImageFromGallery() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedImage != null) {
+        _image = File(pickedImage.path);
+        print('Nama gambar terpilih: ${pickedImage.path.split('/').last}');
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +69,9 @@ class EditProfile extends StatelessWidget {
         )),
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              _sendDataBack(context);
+            },
             child: const Text(
               'SAVE',
               style: TextStyle(color: Colors.white),
@@ -53,18 +100,19 @@ class EditProfile extends StatelessWidget {
                             ),
                             height: MediaQuery.of(context).size.height * 0.3,
                             child: Center(
-                              child: ClipOval(
-                                child: Image.asset(
-                                  'assets/dn.jpg',
+                              child: GestureDetector(
+                                onTap: _getImageFromGallery,
+                                child: CircleAvatar(
+                                  radius: 80.0,
+                                  backgroundColor: Colors.grey,
+                                  backgroundImage: _image != null
+                                      ? FileImage(_image!)
+                                      : null,
+                                  child: _image == null
+                                      ? Icon(Icons.person, size: 80)
+                                      : null,
                                 ),
                               ),
-                              // child: Image.network(
-                              //   'https://th.bing.com/th/id/R.e5eece3464b4cc1ffa89d823f8aace44?rik=OkMVK4pPCgW6EQ&riu=http%3a%2f%2fwww.techpowerup.com%2fimg%2f06-08-24%2f12886.jpg&ehk=rgRfxllS%2bstUSt6vxZEfZQs7Ox%2fUb1CTYYquyoPDAgk%3d&risl=&pid=ImgRaw&r=0', // Ganti dengan URL gambar yang sebenarnya
-                              //   width:
-                              //       250.0, // Sesuaikan lebar gambar sesuai kebutuhan Anda
-                              //   height:
-                              //       250.0, // Sesuaikan tinggi gambar sesuai kebutuhan Anda
-                              // ),
                             ),
                           ),
                         ],
@@ -74,12 +122,13 @@ class EditProfile extends StatelessWidget {
                 ),
                 Container(
                   padding: const EdgeInsets.fromLTRB(30, 20, 30, 10),
-                  child: const Column(
+                  child: Column(
                     // mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Fullname'),
                       TextField(
+                        controller: namaController,
                         decoration: InputDecoration(),
                       ),
                       SizedBox(
@@ -87,6 +136,7 @@ class EditProfile extends StatelessWidget {
                       ),
                       Text('Phone number'),
                       TextField(
+                        controller: teleponController,
                         decoration: InputDecoration(),
                       ),
                       SizedBox(
@@ -94,6 +144,7 @@ class EditProfile extends StatelessWidget {
                       ),
                       Text('Email'),
                       TextField(
+                        controller: emailController,
                         decoration: InputDecoration(),
                       ),
                     ],
@@ -105,5 +156,14 @@ class EditProfile extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _sendDataBack(BuildContext context) {
+    Navigator.pop(context, [
+      namaController.text,
+      teleponController.text,
+      emailController.text,
+      _image, // Mengirim gambar kembali ke layar Profile
+    ]);
   }
 }
