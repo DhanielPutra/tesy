@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:marketplace/cart.dart';
+import 'package:marketplace/detail.dart';
 import 'package:marketplace/homepage.dart';
 import 'package:marketplace/models/product.dart';
 import 'package:marketplace/profile.dart';
@@ -33,7 +34,7 @@ Future<void> fetchWishlistData() async {
 
   // Get the user ID and token from SharedPreferences
   int userId = await getUserId(); // Assuming getUserId() retrieves user ID from SharedPreferences
-  String token = await getToken(); // Assuming getToken() retrieves token from SharedPreferences
+ String token = await getToken();  // Assuming getToken() retrieves token from SharedPreferences
 
   try {
     final response = await http.get(
@@ -62,15 +63,11 @@ Future<void> fetchWishlistData() async {
   }
 }
 
-
-
-
-
   Future<void> deleteFromWishlist(String productId) async {
     try {
       final response = await http.delete(
         Uri.parse(
-            'https://barbeqshop.online/api/wishlist/$productId'), // Modify the API endpoint if needed
+            'https://barbeqshop.online/api/wishlist/$productId'),
       );
 
       if (response.statusCode == 200) {
@@ -128,7 +125,8 @@ Future<void> fetchWishlistData() async {
           final product = products[index];
           return GestureDetector(
             onTap: () {
-              // Navigate to product detail page if needed
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => 
+              Detail(item: products, wishlistItem: widget)));
             },
             child: Container(
               height: 200,
