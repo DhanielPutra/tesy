@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:marketplace/models/api_response.dart';
+import 'package:marketplace/user_services.dart';
 
 class EditProfile extends StatefulWidget {
   final String initialNama;
@@ -48,6 +50,34 @@ class _EditProfileState extends State<EditProfile> {
     });
   }
 
+  Future<void> _updateProfile() async {
+    try {
+      ApiResponse response = await updateUser(
+        namaController.text,
+        teleponController.text,
+        emailController.text,
+        _image != null ? getStringImage(_image!) : null,
+      );
+      if (response.data != null) {
+        // Jika berhasil, tampilkan pesan sukses atau lakukan tindakan lain yang sesuai
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Profile updated successfully'),
+        ));
+      } else {
+        // Jika gagal, tampilkan pesan kesalahan
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(response.error ?? 'Failed to update profile'),
+        ));
+      }
+    } catch (e) {
+      // Tangani kesalahan jika terjadi
+      print('Error updating profile: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('An error occurred while updating profile'),
+      ));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,6 +101,7 @@ class _EditProfileState extends State<EditProfile> {
           TextButton(
             onPressed: () {
               _sendDataBack(context);
+              
             },
             child: const Text(
               'SAVE',
