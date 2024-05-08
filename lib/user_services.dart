@@ -109,7 +109,7 @@ Future<ApiResponse> getUserDetail() async {
 }
 
 // Update user
-Future<ApiResponse> updateUser(String name, String? image) async {
+Future<ApiResponse> updateUser(String name, String? image, String? s) async {
   ApiResponse apiResponse = ApiResponse();
   try {
     String token = await getToken();
