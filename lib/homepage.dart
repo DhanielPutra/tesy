@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:marketplace/product.dart';
 import 'package:marketplace/profile.dart';
 import 'package:marketplace/search.dart';
@@ -249,11 +250,11 @@ class _homepageState extends State<homepage> {
                                     Align(
                                       alignment: Alignment.topLeft,
                                       child: Text(
-                                        'Rp ${product['harga']}',
+                                        'Rp ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(double.parse(product['harga']))}',
                                         style: const TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.w400,
-                                          color: Color.fromARGB(255, 2, 2, 2),
+                                          color: Color.fromARGB(255, 193, 24, 24),
                                         ),
                                       ),
                                     ),

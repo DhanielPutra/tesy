@@ -55,7 +55,7 @@ class _CartState extends State<Cart> {
     final String url = 'https://barbeqshop.online/api/cart/$itemId';
 
     try {
-      final response = await http.post(Uri.parse(url));
+      final response = await http.delete(Uri.parse(url));
 
       if (response.statusCode == 200) {
         print('Item deleted successfully.');
@@ -187,7 +187,6 @@ class _CartState extends State<Cart> {
                                                 ),
                                               ),
                                               Text(
-                                                
                                                 'Rp. ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(getTotalPrice())},00',
                                               ),
                                             ],

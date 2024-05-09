@@ -224,7 +224,7 @@ Future<void> checkWishlist(int productId) async {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color(0xFFE9EAEC),
+        backgroundColor: Color.fromARGB(255, 206, 22, 22),
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
@@ -254,15 +254,15 @@ Future<void> checkWishlist(int productId) async {
                               ),
                               border: Border.all(
                                 color: const Color(0xFFE9EAEC).withOpacity(
-                                    0.5), // Warna border yang tersamarkan
-                                width: 2.0, // Lebar border
+                                    1.0), // Warna border yang tersamarkan
+                                width: 1.0, // Lebar border
                               ),
                             ),
-                            height: MediaQuery.of(context).size.height * 0.3,
+                            height: MediaQuery.of(context).size.height * 0.4,
                             child: Center(
                               child: Image.network(
                                 widget.item['gambar'],
-                                height: 250.0,
+                                // height: 350.0,
                               ),
                             ),
                           ),

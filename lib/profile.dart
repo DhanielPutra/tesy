@@ -163,11 +163,8 @@ Future<Map<String, dynamic>> fetchUserProfile() async {
                               children: [
                                 Text(
                                   _userData != null ? _userData!['name'] : 'Loading...',
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                                Text(
-                                  _userData != null ? _userData!['no_tlp'] : 'Loading...',
-                                  style: const TextStyle(color: Colors.white),
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
                                 ),
                               ],
                             ),
