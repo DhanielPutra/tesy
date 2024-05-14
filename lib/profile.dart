@@ -166,6 +166,11 @@ Future<Map<String, dynamic>> fetchUserProfile() async {
                                   style: TextStyle(
                                       fontSize: 18, color: Colors.white),
                                 ),
+                                Text(
+                                  _userData != null ? _userData!['email'] : 'Loading...',
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
+                                ),
                               ],
                             ),
                           ],
