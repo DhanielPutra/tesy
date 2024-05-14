@@ -63,6 +63,12 @@ class _EditProfileState extends State<EditProfile> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Profile updated successfully'),
         ));
+        Navigator.pop(context, [
+          namaController.text,
+          teleponController.text,
+          emailController.text,
+          _image, // Mengirim gambar kembali ke layar Profile
+        ]);
       } else {
         // Jika gagal, tampilkan pesan kesalahan
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -100,8 +106,7 @@ class _EditProfileState extends State<EditProfile> {
         actions: [
           TextButton(
             onPressed: () {
-              _sendDataBack(context);
-              
+              _updateProfile();
             },
             child: const Text(
               'SAVE',
@@ -137,7 +142,10 @@ class _EditProfileState extends State<EditProfile> {
                                   radius: 80.0,
                                   backgroundColor: Colors.grey,
                                   backgroundImage: _image != null
-                                      ? FileImage(_image!)
+                                      ? (_image!.path.startsWith('http')
+                                          ? NetworkImage(_image!.path)
+                                              as ImageProvider
+                                          : FileImage(_image!))
                                       : null,
                                   child: _image == null
                                       ? Icon(Icons.person, size: 80)
@@ -189,12 +197,4 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  void _sendDataBack(BuildContext context) {
-    Navigator.pop(context, [
-      namaController.text,
-      teleponController.text,
-      emailController.text,
-      _image, // Mengirim gambar kembali ke layar Profile
-    ]);
-  }
 }
