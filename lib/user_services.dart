@@ -106,7 +106,9 @@ Future<ApiResponse> updateUser(
   ApiResponse apiResponse = ApiResponse();
   try {
     String token = await getToken();
-    final Map<String, dynamic> requestBody = {
+    
+    // Ensure that the requestBody is a Map<String, String>
+    final Map<String, String> requestBody = {
       'name': name,
     };
     if (email != null) {
@@ -121,7 +123,10 @@ Future<ApiResponse> updateUser(
 
     final response = await http.put(
       Uri.parse(userURL),
-      headers: {'Accept': 'application/json', 'Authorization': 'Bearer $token'},
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token'
+      },
       body: requestBody,
     );
 
