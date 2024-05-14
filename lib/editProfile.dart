@@ -1,20 +1,16 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:marketplace/models/api_response.dart';
 import 'package:marketplace/user_services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfile extends StatefulWidget {
-  final String initialNama;
-  final String initialTelepon;
-  final String initialEmail;
-  final File? initialImage; // Variabel untuk menyimpan gambar profil
-  const EditProfile(
-      {super.key,
-      required this.initialNama,
-      required this.initialTelepon,
-      required this.initialEmail,
-      this.initialImage});
+  const EditProfile({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<EditProfile> createState() => _EditProfileState();
@@ -29,11 +25,7 @@ class _EditProfileState extends State<EditProfile> {
   @override
   void initState() {
     super.initState();
-    namaController.text = widget.initialNama;
-    teleponController.text = widget.initialTelepon;
-    emailController = TextEditingController(text: widget.initialEmail);
-    _image = widget
-        .initialImage; // Menggunakan gambar yang disediakan awal sebagai gambar default
+    // Menggunakan gambar yang disediakan awal sebagai gambar default
   }
 
   Future<void> _getImageFromGallery() async {
@@ -50,6 +42,35 @@ class _EditProfileState extends State<EditProfile> {
     });
   }
 
+  String apiUrl = "https://barbeqshop.online/api/user";
+
+  Future<ApiResponse> updateUser(
+      String name, String email, String phone, String? imageBase64) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString(
+        'token'); // Asumsikan kamu menggunakan token untuk autentikasi
+
+    final response = await http.put(
+      Uri.parse(apiUrl),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'image': imageBase64,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return ApiResponse.fromJson(jsonDecode(response.body));
+    } else {
+      return ApiResponse(error: 'Failed to update profile');
+    }
+  }
+
   Future<void> _updateProfile() async {
     try {
       ApiResponse response = await updateUser(
@@ -63,6 +84,12 @@ class _EditProfileState extends State<EditProfile> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Profile updated successfully'),
         ));
+        Navigator.pop(context, [
+          namaController.text,
+          teleponController.text,
+          emailController.text,
+          _image, // Mengirim gambar kembali ke layar Profile
+        ]);
       } else {
         // Jika gagal, tampilkan pesan kesalahan
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -100,8 +127,7 @@ class _EditProfileState extends State<EditProfile> {
         actions: [
           TextButton(
             onPressed: () {
-              _sendDataBack(context);
-              
+              _updateProfile();
             },
             child: const Text(
               'SAVE',
@@ -137,7 +163,10 @@ class _EditProfileState extends State<EditProfile> {
                                   radius: 80.0,
                                   backgroundColor: Colors.grey,
                                   backgroundImage: _image != null
-                                      ? FileImage(_image!)
+                                      ? (_image!.path.startsWith('http')
+                                          ? NetworkImage(_image!.path)
+                                              as ImageProvider
+                                          : FileImage(_image!))
                                       : null,
                                   child: _image == null
                                       ? Icon(Icons.person, size: 80)
@@ -187,14 +216,5 @@ class _EditProfileState extends State<EditProfile> {
         ],
       ),
     );
-  }
-
-  void _sendDataBack(BuildContext context) {
-    Navigator.pop(context, [
-      namaController.text,
-      teleponController.text,
-      emailController.text,
-      _image, // Mengirim gambar kembali ke layar Profile
-    ]);
   }
 }
