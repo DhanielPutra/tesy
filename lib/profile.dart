@@ -181,8 +181,30 @@ class _ProfileState extends State<Profile> {
                           ],
                         ),
                         IconButton(
-                          onPressed: () {
-                            _awaitReturnValueEditProfile(context);
+                          onPressed: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EditProfile(),
+                              ),
+                            );
+
+                            if (result != null) {
+                              fetchUserProfile().then((userData) {
+                                setState(() {
+                                  _userData = userData;
+                                  _image = _userData != null &&
+                                          _userData!['gambar'] != null
+                                      ? File(_userData!['gambar'])
+                                      : null;
+                                  text =
+                                      '${_userData!['name']}\n${_userData!['no_tlp']}';
+                                });
+                              }).catchError((error) {
+                                print(
+                                    'Error fetching updated user profile: $error');
+                              });
+                            }
                           },
                           icon: const Icon(
                             Icons.edit_outlined,
@@ -288,31 +310,5 @@ class _ProfileState extends State<Profile> {
               ),
             ),
           );
-  }
-
-  void _awaitReturnValueEditProfile(BuildContext context) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditProfile(
-          initialNama: _userData!['name'],
-          initialTelepon: _userData!['no_tlp'],
-          initialEmail: _userData!['email'],
-          initialImage: _image, // Mengirim gambar ke layar EditProfile
-        ),
-      ),
-    );
-
-    setState(() {
-      if (result != null) {
-        _userData!['name'] = result[0];
-        _userData!['no_tlp'] = result[1];
-        _userData!['email'] = result[2];
-        text =
-            '${_userData!['name']}\n${_userData!['no_tlp']}'; // Update the profile text
-        _image = result[3] ??
-            _image; // Menggunakan gambar yang dikirim kembali, atau mempertahankan gambar yang ada jika tidak ada perubahan
-      }
-    });
   }
 }

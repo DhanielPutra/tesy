@@ -1,20 +1,16 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:marketplace/models/api_response.dart';
 import 'package:marketplace/user_services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfile extends StatefulWidget {
-  final String initialNama;
-  final String initialTelepon;
-  final String initialEmail;
-  final File? initialImage; // Variabel untuk menyimpan gambar profil
-  const EditProfile(
-      {super.key,
-      required this.initialNama,
-      required this.initialTelepon,
-      required this.initialEmail,
-      this.initialImage});
+  const EditProfile({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<EditProfile> createState() => _EditProfileState();
@@ -29,11 +25,7 @@ class _EditProfileState extends State<EditProfile> {
   @override
   void initState() {
     super.initState();
-    namaController.text = widget.initialNama;
-    teleponController.text = widget.initialTelepon;
-    emailController = TextEditingController(text: widget.initialEmail);
-    _image = widget
-        .initialImage; // Menggunakan gambar yang disediakan awal sebagai gambar default
+    // Menggunakan gambar yang disediakan awal sebagai gambar default
   }
 
   Future<void> _getImageFromGallery() async {
@@ -48,6 +40,35 @@ class _EditProfileState extends State<EditProfile> {
         print('No image selected.');
       }
     });
+  }
+
+  String apiUrl = "https://barbeqshop.online/api/user";
+
+  Future<ApiResponse> updateUser(
+      String name, String email, String phone, String? imageBase64) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString(
+        'token'); // Asumsikan kamu menggunakan token untuk autentikasi
+
+    final response = await http.put(
+      Uri.parse(apiUrl),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'image': imageBase64,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return ApiResponse.fromJson(jsonDecode(response.body));
+    } else {
+      return ApiResponse(error: 'Failed to update profile');
+    }
   }
 
   Future<void> _updateProfile() async {
@@ -196,5 +217,4 @@ class _EditProfileState extends State<EditProfile> {
       ),
     );
   }
-
 }
