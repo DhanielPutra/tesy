@@ -124,7 +124,7 @@ class _PembayaranState extends State<Pembayaran> {
               },
               style: ElevatedButton.styleFrom(
                 fixedSize: const Size(400, 60),
-                backgroundColor: _selectedPaymentMethod != 'Cash on Delivery' ? Colors.red : Colors.white,
+                backgroundColor: _selectedPaymentMethod != 'Cash on Delivery' ? const Color.fromARGB(255, 173, 28, 18) : Colors.white,
                 foregroundColor: _selectedPaymentMethod != 'Cash on Delivery' ? Colors.white : Colors.red,
                 side: const BorderSide(color: Colors.red, width: 1),
                 shape: RoundedRectangleBorder(
