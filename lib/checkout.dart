@@ -1,7 +1,10 @@
  import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Checkout extends StatefulWidget {
-  const Checkout({super.key});
+  final double totalPayment;
+  const Checkout({super.key, required this.totalPayment});
+
 
   @override
   State<Checkout> createState() => _CheckoutState();
@@ -61,6 +64,13 @@ class _CheckoutState extends State<Checkout> {
                       horizontal: 16.0,
                     ),
                   ),
+                ),
+                SizedBox(
+                  height: 25,
+                ),
+                Text(
+                  'Total Pembayaran: Rp. ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(widget.totalPayment)},00',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 SizedBox(
                   height: 25,
