@@ -213,7 +213,8 @@ class _CartState extends State<Cart> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        _sendDataTotalToCheckout(context);
+                        _sendDataToCheckout(
+                            context); // Mengirim data ke halaman checkout
                       },
                       child: Text(
                         'Checkout',
@@ -381,9 +382,18 @@ class _CartState extends State<Cart> {
     });
   }
 
-  void _sendDataTotalToCheckout(BuildContext context) {
-    double totalPayment = getTotalPrice();
+  // void _sendDataTotalToCheckout(BuildContext context) {
+  //   double totalPayment = getTotalPrice();
+  //   Navigator.of(context).push(MaterialPageRoute(
+  //       builder: (context) => Checkout(totalPayment: totalPayment)));
+  // }
+  void _sendDataToCheckout(BuildContext context) {
     Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => Checkout(totalPayment: totalPayment)));
+      builder: (context) => Checkout(
+        CartItems:
+            cartItems.where((item) => item['isChecked'] == true).toList(),
+        totalPayment: getTotalPrice(),
+      ),
+    ));
   }
 }

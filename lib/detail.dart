@@ -40,6 +40,8 @@ void initState() {
       'gambar': widget.item['gambar'],
       'nama_produk': widget.item['nama_produk'],
       'harga': widget.item['harga'],
+      'penjual_id' : widget.item['user_id'],
+      'produk_id' : widget.item['id'].toString()
     };
 
     try {

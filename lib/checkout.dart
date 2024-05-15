@@ -1,10 +1,16 @@
- import 'package:flutter/material.dart';
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'package:marketplace/user_services.dart';
 
 class Checkout extends StatefulWidget {
   final double totalPayment;
-  const Checkout({super.key, required this.totalPayment});
+  final dynamic CartItems;
 
+  const Checkout(
+      {super.key, required this.totalPayment, required this.CartItems});
 
   @override
   State<Checkout> createState() => _CheckoutState();
@@ -14,6 +20,68 @@ class _CheckoutState extends State<Checkout> {
   TextEditingController alamatController = TextEditingController();
   String _selectedPaymentMethod = ''; // To store the selected payment method
   String _selectedBank = ''; // To store the selected bank
+  
+  @override
+  void initState() {
+    super.initState();
+    print('Received cart items: ${widget.CartItems}');
+    print('Total Payment: ${widget.totalPayment}');
+  }
+
+  Future<void> addToPesanan() async {
+  final String url = 'https://barbeqshop.online/api/pesanan';
+
+  int userId = await getUserId();
+  String token = await getToken();
+
+  String caraBayar = '1'; // Default to Cash on Delivery
+  if (_selectedPaymentMethod == '1') {
+    caraBayar = '1'; // ID for Cash on Delivery
+  } else if (_selectedPaymentMethod == '2') {
+    if (_selectedBank == 'Bank BNI') {
+      caraBayar = '2'; // ID for Bank BNI
+    } else if (_selectedBank == 'Bank BCA') {
+      caraBayar = '3'; // ID for Bank BCA
+    } else if (_selectedBank == 'Bank Mandiri') {
+      caraBayar = 'Bank Mandiri'; // ID for Bank Mandiri
+    }
+  }
+
+  final Map<String, dynamic> bodyData = {
+    'pembeli_id': userId.toString(),
+    'alamat': alamatController.text,
+    'produk_id': widget.CartItems[0]['produk_id'], // Access the first item in the list and get the produk_id
+    'user_id': widget.CartItems[0]['penjual_id'], // Access the first item in the list and get the penjual_id
+    'cara_bayar': caraBayar,
+  };
+
+  // Print the data before making the request
+  print('Posting data: $bodyData');
+
+  try {
+    final response = await http.post(
+      Uri.parse(url),
+      body: bodyData,
+      headers: {
+        'Authorization': 'Bearer $token'
+      },
+    );
+    if (response.statusCode == 200) {
+      print('Item added to cart successfully.');
+    } else if (response.statusCode == 409) {
+      final responseBody = json.decode(response.body);
+      final String message = responseBody['message'];
+    } else {
+      print('Failed to add item to cart. Status code: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Error adding item to cart: $e');
+  }
+}
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -213,11 +281,13 @@ class _CheckoutState extends State<Checkout> {
                         if (selectedMethod != null &&
                             selectedMethod.contains('Bank')) {
                           setState(() {
-                            _selectedPaymentMethod = '2'; // Menetapkan ID 2 untuk metode pembayaran transfer bank
+                            _selectedPaymentMethod =
+                                '2'; // Menetapkan ID 2 untuk metode pembayaran transfer bank
                             _selectedBank =
                                 selectedMethod; // Menetapkan nama bank yang dipilih
                           });
-                          print('Selected Payment Method ID: $_selectedPaymentMethod');
+                          print(
+                              'Selected Payment Method ID: $_selectedPaymentMethod');
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -255,24 +325,22 @@ class _CheckoutState extends State<Checkout> {
                 ),
                 Center(
                   child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        fixedSize: Size(400, 60),
-                        // Properti gaya tombol
-                        backgroundColor:
-                            Color(0xFFB50B0B), // Warna latar belakang tombol
-                        foregroundColor: Color(0xFFB50B0B),
-                        // Padding tombol
-
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4.0),
-                          // Bentuk tepi tombol
-                        ),
+                    onPressed: () {
+                      addToPesanan();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      fixedSize: Size(400, 60),
+                      backgroundColor: Color(0xFFB50B0B),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4.0),
                       ),
-                      child: Text(
-                        'Buat Pesanan',
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      )),
+                    ),
+                    child: Text(
+                      'Buat Pesanan',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                  ),
                 )
               ],
             ),
