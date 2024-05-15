@@ -8,7 +8,6 @@ import 'package:marketplace/profile.dart';
 import 'package:marketplace/user_services.dart';
 import 'package:marketplace/wishlist.dart';
 
-
 class Cart extends StatefulWidget {
   final Map<String, dynamic> postData;
 
@@ -24,13 +23,15 @@ class _CartState extends State<Cart> {
 
   Future<void> fetchCartData() async {
     final String url = 'https://barbeqshop.online/api/cart';
-  String token = await getToken();
+    String token = await getToken();
     try {
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {'Authorization': 'Bearer $token'}, // Pass the token in the headers
-    );;
-       
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $token'
+        }, // Pass the token in the headers
+      );
+      ;
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
@@ -38,6 +39,10 @@ class _CartState extends State<Cart> {
         if (responseData['status'] == true) {
           setState(() {
             cartItems = responseData['data'];
+            // Initialize the isChecked field for each item
+            for (var item in cartItems) {
+              item['isChecked'] = false;
+            }
           });
           print('Cart items: $cartItems');
         } else {
@@ -166,7 +171,7 @@ class _CartState extends State<Cart> {
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
-                                                'Total harga (${cartItems.length} produk)',
+                                                'Total harga (${getSelectedItemsCount()} produk)',
                                               ),
                                               Text(
                                                 'Rp. ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(getTotalPrice())},00',
@@ -208,9 +213,7 @@ class _CartState extends State<Cart> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        // Handle checkout button pressed
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => Checkout()));
+                        _sendDataTotalToCheckout(context);
                       },
                       child: Text(
                         'Checkout',
@@ -310,14 +313,27 @@ class _CartState extends State<Cart> {
                   ],
                 ),
               ),
-              IconButton(
-                icon: Icon(
-                  Icons.delete,
-                  color: Color(0xFFB50B0B),
-                ),
-                onPressed: () {
-                  deleteItem(product['id'].toString()); // Delete item by id
-                },
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Checkbox(
+                    value: product['isChecked'],
+                    onChanged: (bool? value) {
+                      setState(() {
+                        product['isChecked'] = value!;
+                      });
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.delete,
+                      color: Color(0xFFB50B0B),
+                    ),
+                    onPressed: () {
+                      deleteItem(product['id'].toString()); // Delete item by id
+                    },
+                  ),
+                ],
               ),
             ],
           ),
@@ -329,9 +345,21 @@ class _CartState extends State<Cart> {
   double getTotalPrice() {
     double total = 0.0;
     for (Map<String, dynamic> product in cartItems) {
-      total += double.parse(product['harga']);
+      if (product['isChecked']) {
+        total += double.parse(product['harga']);
+      }
     }
     return total;
+  }
+
+  int getSelectedItemsCount() {
+    int count = 0;
+    for (Map<String, dynamic> product in cartItems) {
+      if (product['isChecked']) {
+        count++;
+      }
+    }
+    return count;
   }
 
   void _onItemTapped(int index) {
@@ -351,5 +379,11 @@ class _CartState extends State<Cart> {
             .push(MaterialPageRoute(builder: (context) => Profile()));
       }
     });
+  }
+
+  void _sendDataTotalToCheckout(BuildContext context) {
+    double totalPayment = getTotalPrice();
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => Checkout(totalPayment: totalPayment)));
   }
 }
