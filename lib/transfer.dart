@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:marketplace/pesanan_berhasil.dart';
 
 class Transfer extends StatefulWidget {
   const Transfer({super.key});
@@ -101,6 +102,34 @@ class _TransferState extends State<Transfer> {
                 ),
               ),
             ),
+            SizedBox(
+              height: 15,
+            ),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => PesananBerhasil()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  fixedSize: Size(200, 50),
+                  // Properti gaya tombol
+                  backgroundColor:
+                      Colors.red[600], // Warna latar belakang tombol
+                  foregroundColor: Colors.red[600],
+                  // Padding tombol
+
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4.0),
+                    // Bentuk tepi tombol
+                  ),
+                ),
+                child: Text('Selesai',
+                    style: TextStyle(color: Colors.white, fontSize: 20)),
+              ),
+            )
           ],
         ),
       ),
