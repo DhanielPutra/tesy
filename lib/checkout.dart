@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:marketplace/pesanan_berhasil.dart';
 import 'package:marketplace/transfer.dart';
 import 'package:marketplace/user_services.dart';
 
@@ -327,11 +328,11 @@ class _CheckoutState extends State<Checkout> {
                       // Memeriksa metode pembayaran yang dipilih
                       if (_selectedPaymentMethod == '1') {
                         // Jika Cash on Delivery, navigasi ke halaman PesananBerhasil
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //       builder: (context) => PesananBerhasil()),
-                        // );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => PesananBerhasil()),
+                        );
                       } else if (_selectedPaymentMethod == '2') {
                         // Jika Transfer Bank, navigasi ke halaman Transfer
                         Navigator.push(
