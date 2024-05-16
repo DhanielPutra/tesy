@@ -121,7 +121,7 @@ class _CheckoutState extends State<Checkout> {
             bankName: _selectedBank,
             alamatPengiriman: alamatController.text,
             cartItems: widget.CartItems,
-            isFromCar: widget.isFromCart,
+            isFromCart: widget.isFromCart,
           ),
         ),
       );

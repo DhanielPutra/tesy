@@ -11,14 +11,14 @@ class Transfer extends StatefulWidget {
   final String bankName;
   final String alamatPengiriman;
   final dynamic cartItems;
-  final dynamic isFromCar;
+  final dynamic isFromCart;
 
   const Transfer({
     Key? key,
     required this.bankName,
     required this.alamatPengiriman,
     required this.cartItems,
-    required this.isFromCar,
+    required this.isFromCart,
   }) : super(key: key);
 
   @override
@@ -44,6 +44,7 @@ class _TransferState extends State<Transfer> {
     print('Bank Name: ${widget.bankName}');
     print('Alamat Pengiriman: ${widget.alamatPengiriman}');
     print('Cart Items: ${widget.cartItems}');
+    print('Is From Cart: ${widget.isFromCart}');
     return Scaffold(
       appBar: AppBar(
         title: Text('Transfer Bank'),
@@ -158,11 +159,22 @@ class _TransferState extends State<Transfer> {
     var request = http.MultipartRequest('POST', Uri.parse(url));
     request.headers['Authorization'] = 'Bearer $token';
 
+    String produkId;
+    String penjualId;
+    if (widget.isFromCart) {
+      // If the data is from the cart
+      produkId = widget.cartItems[0]['produk_id'].toString();
+      penjualId = widget.cartItems[0]['penjual_id'].toString();
+    } else {
+      // If the data is from product details
+      produkId = widget.cartItems['id'].toString();
+      penjualId = widget.cartItems['author']['id'].toString();
+    }
     // Add other data fields
     request.fields['pembeli_id'] = userId.toString();
     request.fields['alamat'] = widget.alamatPengiriman;
-    request.fields['produk_id'] = widget.cartItems['id'].toString();
-    request.fields['user_id'] = widget.cartItems['author']['id'].toString();
+    request.fields['produk_id'] = produkId.toString();
+    request.fields['user_id'] = penjualId.toString(); // Access the first item in the list and get the penjual_id
     request.fields['cara_bayar'] = '2'; // ID for Bank Transfer
 
     // Add the image file
