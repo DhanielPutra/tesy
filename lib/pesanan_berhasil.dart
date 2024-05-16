@@ -12,7 +12,13 @@ class _PesananBerhasilState extends State<PesananBerhasil> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pesanan Berhasil'),
+        leading: IconButton(
+          icon: Icon(Icons.close),
+          onPressed: () {
+            // Navigasi kembali ke halaman beranda
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          },
+        ),
       ),
       body: Center(
         child: Text(
