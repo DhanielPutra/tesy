@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:marketplace/cart.dart';
@@ -24,10 +25,10 @@ class _DetailState extends State<Detail> {
   List<Product> products = [];
 
   @override
-void initState() {
-  super.initState();
-  checkWishlist(widget.item['id']); // Assuming 'id' is the product ID
-}
+  void initState() {
+    super.initState();
+    checkWishlist(widget.item['id']); // Assuming 'id' is the product ID
+  }
 
   Future<void> addToCart() async {
     final String url = 'https://barbeqshop.online/api/cart';
@@ -40,8 +41,8 @@ void initState() {
       'gambar': widget.item['gambar'],
       'nama_produk': widget.item['nama_produk'],
       'harga': widget.item['harga'],
-      'penjual_id' : widget.item['user_id'],
-      'produk_id' : widget.item['id'].toString()
+      'penjual_id': widget.item['user_id'],
+      'produk_id': widget.item['id'].toString()
     };
 
     try {
@@ -53,7 +54,15 @@ void initState() {
         }, // Pass the token in the headers
       );
       if (response.statusCode == 200) {
-        print('Item added to cart successfully.');
+        Fluttertoast.showToast(
+          msg: "item added to cart",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Color.fromARGB(255, 23, 65, 162),
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
       } else if (response.statusCode == 409) {
         final responseBody = json.decode(response.body);
         final String message = responseBody['message'];
@@ -114,112 +123,111 @@ void initState() {
     }
   }
 
- Future<void> removeFromWishlist(int productId) async {
-  try {
-    List<dynamic> wishlistItems = await fetchWishlistItems(productId);
+  Future<void> removeFromWishlist(int productId) async {
+    try {
+      List<dynamic> wishlistItems = await fetchWishlistItems(productId);
 
-    print('Wishlist items in removeFromWishlist: $wishlistItems');
+      print('Wishlist items in removeFromWishlist: $wishlistItems');
 
-    // Check if the wishlist item exists for the current product
-    if (wishlistItems.isNotEmpty) {
-      // Assuming the first item in the wishlist is the desired product
-      int wishlistItemId = wishlistItems[0]['id'];
-      await deleteFromWishlist(wishlistItemId);
-    } else {
-      print('Item not found in wishlist.');
+      // Check if the wishlist item exists for the current product
+      if (wishlistItems.isNotEmpty) {
+        // Assuming the first item in the wishlist is the desired product
+        int wishlistItemId = wishlistItems[0]['id'];
+        await deleteFromWishlist(wishlistItemId);
+      } else {
+        print('Item not found in wishlist.');
+      }
+    } catch (e) {
+      print('Error removing item from wishlist: $e');
     }
-  } catch (e) {
-    print('Error removing item from wishlist: $e');
   }
-}
-Future<void> deleteFromWishlist(int wishlistItemId) async {
-  final String url = 'https://barbeqshop.online/api/wishlist/$wishlistItemId';
 
-  try {
-    final response = await http.delete(
-      Uri.parse(url),
-    );
+  Future<void> deleteFromWishlist(int wishlistItemId) async {
+    final String url = 'https://barbeqshop.online/api/wishlist/$wishlistItemId';
 
-    if (response.statusCode == 200) {
-      setState(() {
-        isLiked = false;
-      });
-      print('Item deleted from wishlist successfully.');
-    } else {
-      print(
-          'Failed to delete item from wishlist. Status code: ${response.statusCode}');
+    try {
+      final response = await http.delete(
+        Uri.parse(url),
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          isLiked = false;
+        });
+        print('Item deleted from wishlist successfully.');
+      } else {
+        print(
+            'Failed to delete item from wishlist. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error deleting item from wishlist: $e');
     }
-  } catch (e) {
-    print('Error deleting item from wishlist: $e');
   }
-}
-
-
 
   // Update the fetchWishlistItems method to accept a product ID
-Future<List<dynamic>> fetchWishlistItems(int productId) async {
-  try {
-    String url = 'https://barbeqshop.online/api/wishlist?product_id=$productId'; // Pass the product ID in the URL
-    String token = await getToken();
+  Future<List<dynamic>> fetchWishlistItems(int productId) async {
+    try {
+      String url =
+          'https://barbeqshop.online/api/wishlist?product_id=$productId'; // Pass the product ID in the URL
+      String token = await getToken();
 
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {'Authorization': 'Bearer $token'},
-    );
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {'Authorization': 'Bearer $token'},
+      );
 
-    if (response.statusCode == 200) {
-      // Parse the JSON response
-      dynamic responseData = json.decode(response.body);
-      List<dynamic> wishlistItems = [];
+      if (response.statusCode == 200) {
+        // Parse the JSON response
+        dynamic responseData = json.decode(response.body);
+        List<dynamic> wishlistItems = [];
 
-      if (responseData is List<dynamic>) {
-        // If the response data is already a list, use it directly
-        wishlistItems = responseData;
-      } else if (responseData is Map<String, dynamic> &&
-          responseData.containsKey('data')) {
-        // If the response data is an object containing a list, extract the list
-        wishlistItems = responseData['data'];
+        if (responseData is List<dynamic>) {
+          // If the response data is already a list, use it directly
+          wishlistItems = responseData;
+        } else if (responseData is Map<String, dynamic> &&
+            responseData.containsKey('data')) {
+          // If the response data is an object containing a list, extract the list
+          wishlistItems = responseData['data'];
+        }
+
+        print('Wishlist items: $wishlistItems');
+
+        return wishlistItems;
+      } else {
+        print('Failed to fetch wishlist. Status code: ${response.statusCode}');
+        return [];
       }
-
-      print('Wishlist items: $wishlistItems');
-
-      return wishlistItems;
-    } else {
-      print('Failed to fetch wishlist. Status code: ${response.statusCode}');
+    } catch (e) {
+      print('Error fetching wishlist: $e');
       return [];
     }
-  } catch (e) {
-    print('Error fetching wishlist: $e');
-    return [];
   }
-}
 
 // Update the checkWishlist method to use the fetched wishlist items
-Future<void> checkWishlist(int productId) async {
-  try {
-    List<dynamic> wishlistItems = await fetchWishlistItems(productId);
+  Future<void> checkWishlist(int productId) async {
+    try {
+      List<dynamic> wishlistItems = await fetchWishlistItems(productId);
 
-    print('Wishlist items in checkWishlist: $wishlistItems');
+      print('Wishlist items in checkWishlist: $wishlistItems');
 
-    // Check if the wishlist item exists for the current product
-    if (wishlistItems.isNotEmpty) {
-      // Assuming the first item in the wishlist is the desired product
-      int wishlistItemId = wishlistItems[0]['id'];
-      print('Wishlist item ID: $wishlistItemId');
-      setState(() {
-        isLiked = true;
-      });
-    } else {
-      print('Wishlist is empty.');
-      setState(() {
-        isLiked = false;
-      });
+      // Check if the wishlist item exists for the current product
+      if (wishlistItems.isNotEmpty) {
+        // Assuming the first item in the wishlist is the desired product
+        int wishlistItemId = wishlistItems[0]['id'];
+        print('Wishlist item ID: $wishlistItemId');
+        setState(() {
+          isLiked = true;
+        });
+      } else {
+        print('Wishlist is empty.');
+        setState(() {
+          isLiked = false;
+        });
+      }
+    } catch (e) {
+      print('Error checking wishlist: $e');
     }
-  } catch (e) {
-    print('Error checking wishlist: $e');
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -305,7 +313,6 @@ Future<void> checkWishlist(int productId) async {
                               setState(() {
                                 if (isLiked) {
                                   removeFromWishlist(widget.item['id']);
-                                  
                                 } else {
                                   addToWishlist();
                                 }

@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:marketplace/homepage.dart';
-import 'package:marketplace/models/user.dart';
 import 'package:marketplace/view/Register/register.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,19 +21,38 @@ class _LoginState extends State<Login> {
   TextEditingController txtPassword = TextEditingController();
   bool loading = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _getSavedCredentials();
+  }
+
+  void _getSavedCredentials() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      txtEmail.text = prefs.getString('email') ?? '';
+      txtPassword.text = prefs.getString('password') ?? '';
+      rememberMe = txtEmail.text.isNotEmpty && txtPassword.text.isNotEmpty;
+    });
+    if (rememberMe) {
+      _login();
+    }
+  }
+
   void _showInvalidCredentialsAlert() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title:const Text('Invalid Credentials'),
-          content:const Text('The email or password you entered is incorrect.'),
+          title: const Text('Invalid Credentials'),
+          content:
+              const Text('The email or password you entered is incorrect.'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child:const Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -59,67 +77,67 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> _login() async {
-  const apiUrl = 'https://barbeqshop.online/api/login';
-  setState(() {
-    loading = true;
-    errorMessage = '';
-  });
+    const apiUrl = 'https://barbeqshop.online/api/login';
+    setState(() {
+      loading = true;
+      errorMessage = '';
+    });
 
-  try {
-    final http.Response response = await http.post(
-      Uri.parse(apiUrl),
-      body: {
-        'email': txtEmail.text.toString(),
-        'password': txtPassword.text.toString(),
-      },
-    );
-    print(response.statusCode);
+    try {
+      final http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        body: {
+          'email': txtEmail.text.toString(),
+          'password': txtPassword.text.toString(),
+        },
+      );
+      print(response.statusCode);
 
-    if (response.statusCode == 200) {
-      // Login successful
-      final responseData = jsonDecode(response.body);
-      final String token = responseData['data']['token']; // Adjust this to match your API response structure
-      final int id_user = responseData['data']['user']['id']; // Adjust this to match your API response structure
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        final String token = responseData['data']['token'];
+        final int id_user = responseData['data']['user']['id'];
 
-      if (token != null && id_user != null) {
-        // Save token and user ID in SharedPreferences
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', token);
-        await prefs.setInt('userId', id_user);
-        
-        _saveAndRedirectToHome();
-        print('Login successful! Token: $token, User ID: $id_user');
+        if (token != null && id_user != null) {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', token);
+          await prefs.setInt('userId', id_user);
+
+          if (rememberMe) {
+            await prefs.setString('email', txtEmail.text.toString());
+            await prefs.setString('password', txtPassword.text.toString());
+          }
+
+          _saveAndRedirectToHome();
+          print('Login successful! Token: $token, User ID: $id_user');
+        } else {
+          setState(() {
+            errorMessage = 'Failed to login: Token or user ID missing';
+          });
+          print('Failed to login: Token or user ID missing');
+        }
       } else {
         setState(() {
-          errorMessage = 'Failed to login: Token or user ID missing';
+          errorMessage = 'Failed to login: ${response.reasonPhrase}';
         });
-        print('Failed to login: Token or user ID missing');
+        print('Failed to login: ${response.reasonPhrase}');
+        print('Response body: ${response.body}');
       }
-    } else {
+    } catch (e) {
       setState(() {
-        errorMessage = 'Failed to login: ${response.reasonPhrase}';
+        errorMessage = 'Failed to connect to the server: $e';
       });
-      print('Failed to login: ${response.reasonPhrase}');
-      print('Response body: ${response.body}');
+      print('Failed to connect to the server: $e');
+    } finally {
+      setState(() {
+        loading = false;
+      });
+      if (errorMessage.isNotEmpty) {
+        _showInvalidCredentialsAlert();
+      }
+      txtPassword.clear();
     }
-  } catch (e) {
-    setState(() {
-      errorMessage = 'Failed to connect to the server: $e';
-    });
-    print('Failed to connect to the server: $e');
-  } finally {
-    setState(() {
-      loading = false;
-    });
-    if (errorMessage.isNotEmpty) {
-      _showInvalidCredentialsAlert();
-    }
-    txtPassword.clear();
   }
-}
-
-
-
 
   void _saveAndRedirectToHome() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -145,22 +163,22 @@ class _LoginState extends State<Login> {
                   height: 130.0,
                 ),
               ),
-              const SizedBox(height: 20),
-              const Text(
+              SizedBox(height: 20),
+              Text(
                 "Welcome Back",
                 style: TextStyle(
                     color: Color.fromARGB(255, 0, 0, 0),
                     fontWeight: FontWeight.bold,
                     fontSize: 23),
               ),
-              const Text(
+              Text(
                 "Sign In to access your account!",
                 style: TextStyle(
                     color: Color.fromARGB(255, 0, 0, 0),
                     fontWeight: FontWeight.bold,
                     fontSize: 18),
               ),
-              const SizedBox(
+              SizedBox(
                 height: 50,
               ),
               Form(
@@ -168,25 +186,24 @@ class _LoginState extends State<Login> {
                 child: Column(
                   children: [
                     TextFormField(
-                      style: const TextStyle(height: 1.5),
+                      style: TextStyle(height: 1.5),
                       controller: txtEmail,
                       decoration: InputDecoration(
-                        fillColor: const Color(0xFFD9D9D9),
+                        fillColor: Color(0xFFD9D9D9),
                         filled: true,
-                        contentPadding: const EdgeInsets.all(20.0),
+                        contentPadding: EdgeInsets.all(20.0),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide:
-                              const BorderSide(color: Colors.transparent),
+                          borderSide: BorderSide(color: Colors.transparent),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Colors.black),
+                          borderSide: BorderSide(color: Colors.black),
                         ),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10)),
                         hintText: 'Enter e-Mail ',
-                        suffixIcon: const Icon(Icons.person_outline),
+                        suffixIcon: Icon(Icons.person_outline),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -195,25 +212,24 @@ class _LoginState extends State<Login> {
                         return null;
                       },
                     ),
-                    const SizedBox(
+                    SizedBox(
                       height: 15,
                     ),
                     TextFormField(
-                      style: const TextStyle(height: 1.5),
+                      style: TextStyle(height: 1.5),
                       controller: txtPassword,
                       obscureText: !_isPasswordVisible,
                       decoration: InputDecoration(
-                        fillColor: const Color(0xFFD9D9D9),
+                        fillColor: Color(0xFFD9D9D9),
                         filled: true,
-                        contentPadding: const EdgeInsets.all(20.0),
+                        contentPadding: EdgeInsets.all(20.0),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide:
-                              const BorderSide(color: Colors.transparent),
+                          borderSide: BorderSide(color: Colors.transparent),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Colors.black),
+                          borderSide: BorderSide(color: Colors.black),
                         ),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10)),
@@ -244,7 +260,7 @@ class _LoginState extends State<Login> {
                           });
                         },
                       ),
-                      const Text(
+                      Text(
                         'Remember me',
                         style: TextStyle(
                           fontSize: 14,
@@ -252,7 +268,7 @@ class _LoginState extends State<Login> {
                       ),
                     ],
                   ),
-                  const Text(
+                  Text(
                     'Forgot Password?',
                     style: TextStyle(
                       color: Colors.black,
@@ -260,13 +276,13 @@ class _LoginState extends State<Login> {
                   )
                 ],
               ),
-              const SizedBox(
+              SizedBox(
                 height: 55,
               ),
               Container(
                 height: 60,
                 width: 330,
-                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: SizedBox.expand(
                   child: ElevatedButton(
                     onPressed: () {
@@ -281,8 +297,8 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                     child: loading
-                        ? const CircularProgressIndicator()
-                        : const Text(
+                        ? CircularProgressIndicator()
+                        : Text(
                             'LOGIN',
                             style: TextStyle(
                                 fontWeight: FontWeight.w500,
@@ -293,11 +309,11 @@ class _LoginState extends State<Login> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       'New Member?',
                       style: TextStyle(color: Colors.black, fontSize: 15),
                     ),
@@ -306,7 +322,7 @@ class _LoginState extends State<Login> {
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => HalamanDaftar()));
                         },
-                        child: const Text(
+                        child: Text(
                           'Register Now!',
                           style: TextStyle(
                               color: Colors.red,
