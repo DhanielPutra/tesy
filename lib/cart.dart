@@ -212,10 +212,10 @@ class _CartState extends State<Cart> {
                       ],
                     ),
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: getTotalPrice() > 0 ? () {
                         _sendDataToCheckout(
                             context); // Mengirim data ke halaman checkout
-                      },
+                      } : null,
                       child: Text(
                         'Checkout',
                         style: TextStyle(
@@ -225,7 +225,7 @@ class _CartState extends State<Cart> {
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFB50B0B),
+                        backgroundColor: getTotalPrice() > 0 ? Color(0xFFB50B0B) : Colors.grey,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
