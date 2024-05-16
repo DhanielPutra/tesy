@@ -10,6 +10,7 @@ import 'package:marketplace/pembayaran.dart';
 import 'package:marketplace/user_services.dart';
 import 'package:marketplace/view/Register/login.dart';
 import 'package:marketplace/wishlist.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -75,6 +76,20 @@ class _ProfileState extends State<Profile> {
       throw Exception('Error fetching user profile: $error');
     }
   }
+
+  Future<void> _logout() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.remove('token');
+  await prefs.remove('userId');
+  await prefs.remove('email');
+  await prefs.remove('password');
+
+  Navigator.of(context).pushAndRemoveUntil(
+    MaterialPageRoute(builder: (context) => Login()), // Navigate to Login screen
+    (Route<dynamic> route) => false,
+  );
+}
+
 
   // Handle bottom navigation bar item tap
   void _onItemTapped(int index) {
@@ -296,7 +311,8 @@ class _ProfileState extends State<Profile> {
                   ),
                   InkWell(
                     onTap: () {
-                      // Handle Logout onTap
+                      
+                      _logout();
                     },
                     child: Container(
                       height: 60,

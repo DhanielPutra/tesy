@@ -224,7 +224,7 @@ class _homepageState extends State<homepage> {
                         fit: BoxFit.cover,
                       )
                     : _userData != null
-                        ? const Text('No Image')
+                        ? Image(image: AssetImage('assets/bbq.jpg'))
                         : const CircularProgressIndicator(),
               ),
             ),

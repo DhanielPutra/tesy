@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:marketplace/cart.dart';
@@ -54,7 +55,15 @@ class _DetailState extends State<Detail> {
         }, // Pass the token in the headers
       );
       if (response.statusCode == 200) {
-        print('Item added to cart successfully.');
+        Fluttertoast.showToast(
+          msg: "item added to cart",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Color.fromARGB(255, 23, 65, 162),
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
       } else if (response.statusCode == 409) {
         final responseBody = json.decode(response.body);
         final String message = responseBody['message'];
