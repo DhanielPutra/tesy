@@ -133,7 +133,7 @@ class _homepageState extends State<homepage> {
     setState(() {
       _selectedIndex = index;
       if (index == 0) {
-        // Do nothing, we're already on the homepage
+        RefreshIndicatorTriggerMode;
       } else if (index == 1) {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => const Cart()));

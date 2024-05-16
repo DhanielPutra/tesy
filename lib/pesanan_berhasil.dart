@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:marketplace/daftarTransaksi.dart';
 
 class PesananBerhasil extends StatefulWidget {
   const PesananBerhasil({super.key});
@@ -16,7 +17,7 @@ class _PesananBerhasilState extends State<PesananBerhasil> {
           icon: Icon(Icons.close),
           onPressed: () {
             // Navigasi kembali ke halaman beranda
-            Navigator.of(context).popUntil((route) => route.isFirst);
+            Navigator.of(context)..push(MaterialPageRoute(builder: (context) => const DaftarTransaksi()));
           },
         ),
       ),
