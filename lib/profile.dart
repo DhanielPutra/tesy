@@ -78,18 +78,18 @@ class _ProfileState extends State<Profile> {
   }
 
   Future<void> _logout() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.remove('token');
-  await prefs.remove('userId');
-  await prefs.remove('email');
-  await prefs.remove('password');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+    await prefs.remove('userId');
+    await prefs.remove('email');
+    await prefs.remove('password');
 
-  Navigator.of(context).pushAndRemoveUntil(
-    MaterialPageRoute(builder: (context) => Login()), // Navigate to Login screen
-    (Route<dynamic> route) => false,
-  );
-}
-
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+          builder: (context) => Login()), // Navigate to Login screen
+      (Route<dynamic> route) => false,
+    );
+  }
 
   // Handle bottom navigation bar item tap
   void _onItemTapped(int index) {
@@ -188,11 +188,6 @@ class _ProfileState extends State<Profile> {
                               children: [
                                 Text(
                                   text,
-                                  style: TextStyle(
-                                      fontSize: 18, color: Colors.white),
-                                ),
-                                Text(
-                                  _userData != null ? _userData!['email'] : 'Loading...',
                                   style: TextStyle(
                                       fontSize: 18, color: Colors.white),
                                 ),
@@ -311,7 +306,6 @@ class _ProfileState extends State<Profile> {
                   ),
                   InkWell(
                     onTap: () {
-                      
                       _logout();
                     },
                     child: Container(
