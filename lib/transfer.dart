@@ -5,7 +5,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:marketplace/pesanan_berhasil.dart';
 
 class Transfer extends StatefulWidget {
-  const Transfer({super.key});
+  final String bankName;
+  const Transfer({super.key, required this.bankName});
 
   @override
   State<Transfer> createState() => _TransferState();
@@ -23,6 +24,13 @@ class _TransferState extends State<Transfer> {
       });
     }
   }
+
+  // Map untuk menyimpan nomor rekening berdasarkan bank
+  final Map<String, String> bankAccounts = {
+    'Bank BNI': '217-04057-68',
+    'Bank BCA': '123-45678-90',
+    'Bank Mandiri': '098-76543-21'
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -56,9 +64,9 @@ class _TransferState extends State<Transfer> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Bank BNI'),
+                        Text(widget.bankName),
                         Text(' : '),
-                        Text('217-04057-68')
+                        Text(bankAccounts[widget.bankName] ?? 'No Account')
                       ],
                     ),
                   ),

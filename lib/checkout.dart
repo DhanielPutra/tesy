@@ -337,7 +337,7 @@ class _CheckoutState extends State<Checkout> {
                         // Jika Transfer Bank, navigasi ke halaman Transfer
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => Transfer()),
+                          MaterialPageRoute(builder: (context) => Transfer(bankName: _selectedBank)),
                         );
                       } else {
                         // Tampilkan pesan jika tidak ada metode pembayaran yang dipilih
