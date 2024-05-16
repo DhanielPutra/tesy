@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:marketplace/cart.dart';
 import 'package:marketplace/checkout.dart';
 import 'package:marketplace/models/product.dart';
+import 'package:marketplace/product.dart';
 import 'package:marketplace/user_services.dart'; // Import the method to get user ID and token
 
 class Detail extends StatefulWidget {
@@ -24,6 +25,8 @@ class _DetailState extends State<Detail> {
   int _selectedIndex = 0;
   bool isLiked = false;
   List<Product> products = [];
+  List<Product> cartItems = [];
+  
 
   @override
   void initState() {
@@ -502,7 +505,9 @@ class _DetailState extends State<Detail> {
   void _sendDataTotalToCheckout(BuildContext context, double itemPrice) {
     double totalPayment = itemPrice;
     Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => Checkout(totalPayment: totalPayment, CartItems: null,),
+      builder: (context) => Checkout(totalPayment: totalPayment, CartItems: widget.item,isFromCart: false,),
     ));
   }
 }
+
+
