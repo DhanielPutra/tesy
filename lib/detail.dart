@@ -480,14 +480,7 @@ class _DetailState extends State<Detail> {
               ElevatedButton(
                 onPressed: () {
                   double itemPrice = double.parse(widget.item['harga']);
-                  Map<String, dynamic> productData = {
-                    'gambar': widget.item['gambar'],
-                    'nama_produk': widget.item['nama_produk'],
-                    'harga': widget.item['harga'],
-                    'penjual_id': widget.item['user_id'],
-                    'produk_id': widget.item['id'].toString()
-                  };
-                  _sendDataTotalToCheckout(context, itemPrice, productData);
+                  _sendDataTotalToCheckout(context, itemPrice);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFB50B0B),
@@ -509,11 +502,10 @@ class _DetailState extends State<Detail> {
     );
   }
 
-  void _sendDataTotalToCheckout(BuildContext context, double itemPrice,
-      Map<String, dynamic> productData) {
+  void _sendDataTotalToCheckout(BuildContext context, double itemPrice) {
     double totalPayment = itemPrice;
     Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => Checkout(totalPayment: totalPayment, CartItems: null,),
+      builder: (context) => Checkout(totalPayment: totalPayment, CartItems: widget.item,isFromCart: false,),
     ));
   }
 }
