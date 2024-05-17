@@ -7,11 +7,13 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:marketplace/pesanan_berhasil.dart';
 import 'package:marketplace/transfer.dart';
+import 'package:marketplace/user_services.dart';
 
 class Checkout extends StatefulWidget {
   final double totalPayment;
   final dynamic CartItems;
-  final bool isFromCart; // Indicator to check if the data is from the cart or product details
+  final bool
+      isFromCart; // Indicator to check if the data is from the cart or product details
 
   const Checkout({
     Key? key,
@@ -36,77 +38,69 @@ class _CheckoutState extends State<Checkout> {
     print('Total Payment: ${widget.totalPayment}');
   }
 
-  Future<int> getUserId() async {
-    // Implement your logic to get user ID
-    return 1;
-  }
-
-  Future<String> getToken() async {
-    // Implement your logic to get token
-    return 'your_token';
-  }
-
   Future<void> addToPesanan() async {
-    final String url = 'https://barbeqshop.online/api/pesanan';
+  final String url = 'https://barbeqshop.online/api/pesanan';
 
-    int userId = await getUserId();
-    String token = await getToken();
+  int userId = await getUserId();
+  String token = await getToken();
 
-    String caraBayar = '1'; // Default to Cash on Delivery
-    if (_selectedPaymentMethod == '1') {
-      caraBayar = '1'; // ID for Cash on Delivery
-    } else if (_selectedPaymentMethod == '2') {
-      if (_selectedBank == 'Bank BNI') {
-        caraBayar = '2'; // ID for Bank BNI
-      } else if (_selectedBank == 'Bank BCA') {
-        caraBayar = '3'; // ID for Bank BCA
-      } else if (_selectedBank == 'Bank Mandiri') {
-        caraBayar = 'Bank Mandiri'; // ID for Bank Mandiri
-      }
-    }
-
-    String produkId;
-    String penjualId;
-    if (widget.isFromCart) {
-      // If the data is from the cart
-      produkId = widget.CartItems[0]['produk_id'].toString();
-      penjualId = widget.CartItems[0]['penjual_id'].toString();
-    } else {
-      // If the data is from product details
-      produkId = widget.CartItems['id'].toString();
-      penjualId = widget.CartItems['author']['id'].toString();
-    }
-
-    final Map<String, dynamic> bodyData = {
-      'pembeli_id': userId.toString(),
-      'alamat': alamatController.text,
-      'produk_id': produkId.toString(),
-      'user_id': penjualId, // Access the first item in the list and get the penjual_id
-      'cara_bayar': caraBayar,
-    };
-
-    // Print the data before making the request
-    print('Posting data: $bodyData');
-
-    try {
-      final response = await http.post(
-        Uri.parse(url),
-        body: bodyData,
-        headers: {'Authorization': 'Bearer $token'},
-      );
-      if (response.statusCode == 200) {
-        print('Order created successfully.');
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => PesananBerhasil()),
-        );
-      } else {
-        print('Failed to create order. Status code: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error creating order: $e');
+  String caraBayar = '1'; // Default to Cash on Delivery
+  if (_selectedPaymentMethod == '1') {
+    caraBayar = '1'; // ID for Cash on Delivery
+  } else if (_selectedPaymentMethod == '2') {
+    if (_selectedBank == 'Bank BNI') {
+      caraBayar = '2'; // ID for Bank BNI
+    } else if (_selectedBank == 'Bank BCA') {
+      caraBayar = '3'; // ID for Bank BCA
+    } else if (_selectedBank == 'Bank Mandiri') {
+      caraBayar = '4'; // ID for Bank Mandiri (assuming 4 for Mandiri)
     }
   }
+
+  String produkId;
+  String penjualId;
+  if (widget.isFromCart) {
+    // If the data is from the cart
+    produkId = widget.CartItems[0]['produk_id'].toString();
+    penjualId = widget.CartItems[0]['penjual_id'].toString();
+  } else {
+    // If the data is from product details
+    produkId = widget.CartItems['id'].toString();
+    penjualId = widget.CartItems['author']['id'].toString();
+  }
+
+  final Map<String, dynamic> bodyData = {
+    'pembeli_id': userId.toString(),
+    'alamat': alamatController.text,
+    'produk_id': produkId,
+    'user_id': penjualId,
+    'cara_bayar': caraBayar,
+  };
+
+  // Print the data before making the request
+  print('Posting data: $bodyData');
+
+  try {
+    final response = await http.post(
+      Uri.parse(url),
+      body: bodyData,
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (response.statusCode == 200) {
+      print('Order created successfully.');
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => PesananBerhasil()),
+      );
+    } else {
+      print('Failed to create order. Status code: ${response.statusCode}');
+      print('Response body: ${response.body}'); // Debugging the response body
+    }
+  } catch (e) {
+    print('Error creating order: $e');
+  }
+}
+
 
   void handlePayment() {
     if (_selectedPaymentMethod == '1') {
@@ -180,7 +174,7 @@ class _CheckoutState extends State<Checkout> {
                   ),
                 ),
                 SizedBox(
- height: 25,
+                  height: 25,
                 ),
                 Text(
                   'Total Pembayaran: Rp. ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(widget.totalPayment)},00',
@@ -205,18 +199,25 @@ class _CheckoutState extends State<Checkout> {
                     ElevatedButton(
                       onPressed: () {
                         setState(() {
-                          _selectedPaymentMethod = '1'; // Menetapkan ID 1 untuk Cash on Delivery
-                          _selectedBank = ''; // Reset selected bank when cash on delivery is chosen
+                          _selectedPaymentMethod =
+                              '1'; // Menetapkan ID 1 untuk Cash on Delivery
+                          _selectedBank =
+                              ''; // Reset selected bank when cash on delivery is chosen
                         });
-                        print('Selected Payment Method ID: $_selectedPaymentMethod');
+                        print(
+                            'Selected Payment Method ID: $_selectedPaymentMethod');
                       },
                       style: ElevatedButton.styleFrom(
                         fixedSize: const Size(400, 60),
-                        backgroundColor: _selectedPaymentMethod == '1' // Memeriksa apakah ID adalah 1
-                            ? Color(0xFFB50B0B) // Jika ID adalah 1, warna latar belakang menjadi merah
+                        backgroundColor: _selectedPaymentMethod ==
+                                '1' // Memeriksa apakah ID adalah 1
+                            ? Color(
+                                0xFFB50B0B) // Jika ID adalah 1, warna latar belakang menjadi merah
                             : Colors.white,
-                        foregroundColor: _selectedPaymentMethod == '1' // Memeriksa apakah ID adalah 1
-                            ? Colors.white // Jika ID adalah 1, warna teks menjadi putih
+                        foregroundColor: _selectedPaymentMethod ==
+                                '1' // Memeriksa apakah ID adalah 1
+                            ? Colors
+                                .white // Jika ID adalah 1, warna teks menjadi putih
                             : Color(0xFFB50B0B),
                         side: const BorderSide(color: Colors.red, width: 1),
                         shape: RoundedRectangleBorder(
@@ -238,7 +239,8 @@ class _CheckoutState extends State<Checkout> {
                           position: const RelativeRect.fromLTRB(5, 200, 0, 0),
                           items: <PopupMenuEntry<String>>[
                             PopupMenuItem<String>(
-                              value: 'Bank BNI', // Menetapkan ID 2 untuk Bank BNI
+                              value:
+                                  'Bank BNI', // Menetapkan ID 2 untuk Bank BNI
                               height: 50,
                               child: Container(
                                 decoration: BoxDecoration(
@@ -252,8 +254,10 @@ class _CheckoutState extends State<Checkout> {
                                   child: Text(
                                     'Transfer Bank BNI',
                                     style: TextStyle(
-                                      color: _selectedPaymentMethod == 'Bank BNI' // Memeriksa apakah ID adalah 2
-                                          ? Color(0xFFB50B0B) // Jika ID adalah 2, warna teks menjadi merah
+                                      color: _selectedPaymentMethod ==
+                                              'Bank BNI' // Memeriksa apakah ID adalah 2
+                                          ? Color(
+                                              0xFFB50B0B) // Jika ID adalah 2, warna teks menjadi merah
                                           : null,
                                     ),
                                   ),
@@ -261,7 +265,8 @@ class _CheckoutState extends State<Checkout> {
                               ),
                             ),
                             PopupMenuItem<String>(
-                              value: 'Bank BCA', // Menetapkan ID 2 untuk Bank BCA
+                              value:
+                                  'Bank BCA', // Menetapkan ID 2 untuk Bank BCA
                               height: 50,
                               child: Container(
                                 decoration: BoxDecoration(
@@ -275,8 +280,10 @@ class _CheckoutState extends State<Checkout> {
                                   child: Text(
                                     'Transfer Bank BCA',
                                     style: TextStyle(
-                                      color: _selectedPaymentMethod == 'Bank BCA' // Memeriksa apakah ID adalah 2
-                                          ? Color.fromARGB(255, 19, 65, 204) // Jika ID adalah 2, warna teks sesuai dengan kebutuhan
+                                      color: _selectedPaymentMethod ==
+                                              'Bank BCA' // Memeriksa apakah ID adalah 2
+                                          ? Color.fromARGB(255, 19, 65,
+                                              204) // Jika ID adalah 2, warna teks sesuai dengan kebutuhan
                                           : null,
                                     ),
                                   ),
@@ -284,7 +291,8 @@ class _CheckoutState extends State<Checkout> {
                               ),
                             ),
                             PopupMenuItem<String>(
-                              value: 'Bank Mandiri', // Menetapkan ID 2 untuk Bank Mandiri
+                              value:
+                                  'Bank Mandiri', // Menetapkan ID 2 untuk Bank Mandiri
                               height: 50,
                               child: Container(
                                 decoration: BoxDecoration(
@@ -298,8 +306,10 @@ class _CheckoutState extends State<Checkout> {
                                   child: Text(
                                     'Transfer Bank Mandiri',
                                     style: TextStyle(
-                                      color: _selectedPaymentMethod == 'Bank Mandiri' // Memeriksa apakah ID adalah 2
-                                          ? const Color.fromARGB(255, 15, 3, 255) // Jika ID adalah 2, warna teks sesuai dengan kebutuhan
+                                      color: _selectedPaymentMethod ==
+                                              'Bank Mandiri' // Memeriksa apakah ID adalah 2
+                                          ? const Color.fromARGB(255, 15, 3,
+                                              255) // Jika ID adalah 2, warna teks sesuai dengan kebutuhan
                                           : null,
                                     ),
                                   ),
@@ -308,23 +318,32 @@ class _CheckoutState extends State<Checkout> {
                             ),
                           ],
                         );
-                        if (selectedMethod != null && selectedMethod.contains('Bank')) {
+                        if (selectedMethod != null &&
+                            selectedMethod.contains('Bank')) {
                           setState(() {
-                            _selectedPaymentMethod = '2'; // Menetapkan ID 2 untuk metode pembayaran transfer bank
-                            _selectedBank = selectedMethod; // Menetapkan nama bank yang dipilih
+                            _selectedPaymentMethod =
+                                '2'; // Menetapkan ID 2 untuk metode pembayaran transfer bank
+                            _selectedBank =
+                                selectedMethod; // Menetapkan nama bank yang dipilih
                           });
-                          print('Selected Payment Method ID: $_selectedPaymentMethod');
+                          print(
+                              'Selected Payment Method ID: $_selectedPaymentMethod');
                         }
                       },
                       style: ElevatedButton.styleFrom(
                         fixedSize: const Size(400, 60),
-                        backgroundColor: _selectedPaymentMethod != '1' // Memeriksa apakah ID bukan 1
-                            ? Color(0xFFB50B0B) // Jika bukan 1, warna latar belakang menjadi merah
+                        backgroundColor: _selectedPaymentMethod !=
+                                '1' // Memeriksa apakah ID bukan 1
+                            ? Color(
+                                0xFFB50B0B) // Jika bukan 1, warna latar belakang menjadi merah
                             : Colors.white,
-                        foregroundColor: _selectedPaymentMethod != '1' // Memeriksa apakah ID bukan 1
-                            ? Colors.white // Jika bukan 1, warna teks menjadi putih
+                        foregroundColor: _selectedPaymentMethod !=
+                                '1' // Memeriksa apakah ID bukan 1
+                            ? Colors
+                                .white // Jika bukan 1, warna teks menjadi putih
                             : Color(0xFFB50B0B),
-                        side: const BorderSide(color: Color(0xFFB50B0B), width: 1),
+                        side: const BorderSide(
+                            color: Color(0xFFB50B0B), width: 1),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4.0),
                         ),
@@ -332,7 +351,9 @@ class _CheckoutState extends State<Checkout> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(_selectedBank.isNotEmpty ? _selectedBank : 'Transfer Bank'), // Menampilkan nama bank yang dipilih atau teks default
+                          Text(_selectedBank.isNotEmpty
+                              ? _selectedBank
+                              : 'Transfer Bank'), // Menampilkan nama bank yang dipilih atau teks default
                           const Icon(Icons.arrow_drop_down),
                         ],
                       ),

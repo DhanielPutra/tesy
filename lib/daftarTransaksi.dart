@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:indexed/indexed.dart';
 import 'package:marketplace/detail.dart';
+import 'package:marketplace/homepage.dart';
 import 'package:marketplace/product.dart';
+import 'package:marketplace/profile.dart';
 import 'package:marketplace/rincianPesanan.dart';
 
 class DaftarTransaksi extends StatefulWidget {
@@ -25,7 +27,8 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> {
           title: const Text('Daftar Transaksi'),
           leading: IconButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context
+                ) => Profile()));
               },
               icon: Icon(Icons.arrow_back)), // Tombol kembali di AppBar
         ),
