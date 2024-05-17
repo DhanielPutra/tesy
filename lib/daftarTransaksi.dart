@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:indexed/indexed.dart';
-import 'package:marketplace/detail.dart';
-import 'package:marketplace/homepage.dart';
 import 'package:marketplace/product.dart';
 import 'package:marketplace/profile.dart';
 import 'package:marketplace/rincianPesanan.dart';
