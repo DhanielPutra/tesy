@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:marketplace/profile.dart';
 import 'dart:convert';
 import 'package:marketplace/user_services.dart';
 
@@ -55,8 +56,20 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+       appBar: AppBar(
         title: const Text('Daftar Transaksi'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pushAndRemoveUntil(
+        PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) => Profile(),
+          transitionDuration: Duration(milliseconds: 0),
+        ),
+        (route) => false,
+      );
+          },
+        ),
       ),
       body: Column(
         children: [
