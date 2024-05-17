@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:marketplace/user_services.dart';
 import 'package:indexed/indexed.dart';
 import 'package:marketplace/detail.dart';
 import 'package:marketplace/homepage.dart';
@@ -14,9 +17,49 @@ class DaftarTransaksi extends StatefulWidget {
 }
 
 class _DaftarTransaksiState extends State<DaftarTransaksi> {
-  List<List<String>> filteredItems =
-      List.from(items); // Variabel untuk menyimpan daftar item yang difilter
+  List<dynamic>? items;
+  List<dynamic>? inProcessItems;
+  List<dynamic>? completedItems;
+  List<dynamic>? canceledItems;
   int _selectedIndex = 0; // Variabel untuk menyimpan indeks yang dipilih
+
+  @override
+  void initState() {
+    super.initState();
+    fetchItems();
+  }
+
+  Future<void> fetchItems() async {
+    final String url = 'https://barbeqshop.online/api/pesanan';
+    String token = await getToken();
+
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $token'
+        }, // Pass the token in the headers
+      );
+      ;
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body)['data'];
+        setState(() {
+          items = data;
+          inProcessItems =
+              items!.where((item) => item['status_id'] == '1').toList();
+          completedItems =
+              items!.where((item) => item['status_id'] == '2').toList();
+          canceledItems =
+              items!.where((item) => item['status_id'] == '3').toList();
+        });
+      } else {
+        throw Exception('Failed to load items');
+      }
+    } catch (e) {
+      print('Error fetching cart data: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +70,8 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> {
           title: const Text('Daftar Transaksi'),
           leading: IconButton(
               onPressed: () {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context
-                ) => Profile()));
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => Profile()));
               },
               icon: Icon(Icons.arrow_back)), // Tombol kembali di AppBar
         ),
@@ -83,302 +126,58 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> {
               ),
             ),
             // Bagian tengah: konten sesuai dengan indeks yang dipilih
-            Indexed(
-                index: 0,
-                child: _selectedIndex == 0
-                    ? Expanded(
-                        child: ListView.builder(
-                          itemCount: filteredItems.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            final product =
-                                filteredItems[index]; // Mengambil data item
-                            return GestureDetector(
-                              onTap: () {
-                                // Navigate to the detail page when the card is tapped
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) =>
-                                        RincianPesanan())); // Navigasi ke halaman detail
-                              },
-                              child: Container(
-                                height: 200,
-                                width: double.infinity,
-                                child: Card(
-                                  margin:
-                                      const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(0),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        color: const Color.fromARGB(
-                                                255, 255, 255, 255)
-                                            .withOpacity(0.5),
-                                        width: 150,
-                                        height: double.infinity,
-                                        child: Image.asset(
-                                          product[0], // Mengambil URL gambar
-                                          width: 150,
-                                          height: double.infinity,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Expanded(
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            top: 10, right: 40),
-                                                    child: Text(
-                                                      product[
-                                                          1], // Mengambil nama produk
-                                                      style: const TextStyle(
-                                                        color: Colors.black,
-                                                        fontSize: 20,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      maxLines: 1,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.only(top: 3),
-                                              child: Text(
-                                                product[
-                                                    3], // Mengambil deskripsi produk
-                                                style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 17,
-                                                  fontWeight: FontWeight.normal,
-                                                ),
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 1,
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.only(top: 3),
-                                              child: Text(
-                                                product[
-                                                    2], // Mengambil harga produk
-                                                style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 17,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 1,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 15,
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      0, 7, 0, 5),
-                                              child: SizedBox(
-                                                width: 200,
-                                                height: 35,
-                                                child: ElevatedButton(
-                                                  onPressed: () {
-                                                    // Add functionality to order the product
-                                                  },
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              5),
-                                                    ),
-                                                    backgroundColor:
-                                                        Color.fromARGB(
-                                                            255, 208, 9, 9),
-                                                  ),
-                                                  child: const Text(
-                                                    'Pesanan Diproses',
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
+            Expanded(
+              child: ListView.builder(
+                itemCount: _getItemsForSelectedIndex().length,
+                itemBuilder: (BuildContext context, int index) {
+                  final product = _getItemsForSelectedIndex()[index];
+                  return GestureDetector(
+                    onTap: () {},
+                    child: Container(
+                      height: 200,
+                      width: double.infinity,
+                      child: Card(
+                        margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(0),
                         ),
-                      )
-                    : Expanded(
-                        child: ListView.builder(
-                          itemCount: filteredItems.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            final product =
-                                filteredItems[index]; // Mengambil data item
-                            return GestureDetector(
-                              onTap: () {
-                                // Navigate to the detail page when the card is tapped
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) =>
-                                        RincianPesanan())); // Navigasi ke halaman detail
-                              },
-                              child: Container(
-                                height: 200,
-                                width: double.infinity,
-                                child: Card(
-                                  margin:
-                                      const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(0),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        color: const Color.fromARGB(
-                                                255, 255, 255, 255)
-                                            .withOpacity(0.5),
-                                        width: 150,
-                                        height: double.infinity,
-                                        child: Image.asset(
-                                          product[0], // Mengambil URL gambar
-                                          width: 150,
-                                          height: double.infinity,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Expanded(
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            top: 10, right: 40),
-                                                    child: Text(
-                                                      product[
-                                                          1], // Mengambil nama produk
-                                                      style: const TextStyle(
-                                                        color: Colors.black,
-                                                        fontSize: 20,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      maxLines: 1,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.only(top: 3),
-                                              child: Text(
-                                                product[
-                                                    3], // Mengambil deskripsi produk
-                                                style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 17,
-                                                  fontWeight: FontWeight.normal,
-                                                ),
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 1,
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.only(top: 3),
-                                              child: Text(
-                                                product[
-                                                    2], // Mengambil harga produk
-                                                style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 17,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 1,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 15,
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      0, 7, 0, 5),
-                                              child: SizedBox(
-                                                width: 200,
-                                                height: 35,
-                                                child: ElevatedButton(
-                                                  onPressed: () {
-                                                    // Add functionality to order the product
-                                                  },
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              5),
-                                                    ),
-                                                    backgroundColor:
-                                                        Color.fromARGB(
-                                                            255, 208, 9, 9),
-                                                  ),
-                                                  child: const Text(
-                                                    'Pesanan Diproses',
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
+                        child: Column(
+                          children: [
+                            product['gambar'] != null
+                                ? Image.network(
+                                    product['gambar'],
+                                    width: 150,
+                                    height: double.infinity,
+                                  )
+                                : Container(),
+                          ],
                         ),
-                      )
-                // Container(
-                //     color: Colors.green,
-                //     height: 200,
-                //     child: Center(
-                //       child: Text('Daftar Barang Selesai'),
-                //     ),
-                //   ),
-                ),
+                      ),
+                    ),
+                  );
+                  // return ListTile(
+                  //   title: Text(product['alamat'] ?? ''),
+                  //   subtitle: Text(product['cara_bayar'] ?? ''),
+                  // );
+                },
+              ),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  List<dynamic> _getItemsForSelectedIndex() {
+    switch (_selectedIndex) {
+      case 0:
+        return inProcessItems ?? [];
+      case 1:
+        return completedItems ?? [];
+      case 2:
+        return canceledItems ?? [];
+      default:
+        return [];
+    }
   }
 }
