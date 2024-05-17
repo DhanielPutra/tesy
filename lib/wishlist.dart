@@ -9,7 +9,7 @@ import 'package:marketplace/homepage.dart';
 import 'package:marketplace/models/product.dart';
 import 'package:marketplace/profile.dart';
 import 'package:marketplace/user_services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 
 class Wishlist extends StatefulWidget {
   const Wishlist({Key? key}) : super(key: key);
@@ -33,7 +33,6 @@ Future<void> fetchWishlistData() async {
   final String url = 'https://barbeqshop.online/api/wishlist';
 
   // Get the user ID and token from SharedPreferences
-  int userId = await getUserId(); // Assuming getUserId() retrieves user ID from SharedPreferences
  String token = await getToken();  // Assuming getToken() retrieves token from SharedPreferences
 
   try {
