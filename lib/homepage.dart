@@ -2,26 +2,55 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:marketplace/bannerDetail.dart';
 import 'package:marketplace/profile.dart';
 import 'package:marketplace/search.dart';
 import 'package:marketplace/user_services.dart';
 import 'package:marketplace/wishlist.dart';
 import 'cart.dart';
-import 'detail.dart'; // Import the detail page
+import 'detail.dart';
 
-class homepage extends StatefulWidget {
-  const homepage({Key? key}) : super(key: key);
+class Homepage extends StatefulWidget {
+  const Homepage({Key? key}) : super(key: key);
 
   @override
-  State<homepage> createState() => _homepageState();
+  State<Homepage> createState() => _HomepageState();
 }
 
-class _homepageState extends State<homepage> {
+class _HomepageState extends State<Homepage> {
   Color _cardColor = Colors.white;
   String _selectedCategoryId = 'All';
   List<dynamic> filteredItems = [];
   List<dynamic> products = [];
   Map<String, dynamic>? _userData;
+  List<dynamic> banners = [];
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 0.8);
+    fetchUserProfile().then((userData) {
+      setState(() {
+        _userData = userData;
+      });
+    }).catchError((error) {
+      print('Error fetching user profile: $error');
+    });
+    fetchData().then((data) {
+      setState(() {
+        products = data;
+        filteredItems = data;
+      });
+    });
+    getBanners().then((data) {
+      setState(() {
+        banners = data;
+      });
+    }).catchError((error) {
+      print('Error fetching banners: $error');
+    });
+  }
 
   Future<List<dynamic>> fetchData() async {
     try {
@@ -30,6 +59,24 @@ class _homepageState extends State<homepage> {
 
       if (response.statusCode == 200) {
         Map<String, dynamic> responseData = json.decode(response.body);
+        return responseData['data'];
+      } else {
+        print('Failed to fetch data: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+      return [];
+    }
+  }
+
+  Future<List<dynamic>> getBanners() async {
+    try {
+      final response =
+          await http.get(Uri.parse('https://barbeqshop.online/api/banner'));
+      if (response.statusCode == 200) {
+        Map<String, dynamic> responseData = json.decode(response.body);
+        print(responseData);
         return responseData['data'];
       } else {
         print('Failed to fetch data: ${response.statusCode}');
@@ -82,10 +129,8 @@ class _homepageState extends State<homepage> {
     setState(() {
       _selectedCategoryId = categoryId;
       if (categoryId == 'All') {
-        // Show all products when 'All' is selected
         filteredItems = List.from(products);
       } else {
-        // Fetch products by category ID
         fetchDataByCategory(categoryId).then((categoryProducts) {
           setState(() {
             filteredItems = categoryProducts;
@@ -94,7 +139,6 @@ class _homepageState extends State<homepage> {
           print('Error fetching category products: $error');
         });
       }
-      print(filteredItems);
     });
   }
 
@@ -109,11 +153,9 @@ class _homepageState extends State<homepage> {
         },
       );
 
-      print('Response status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
-
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
+        print(response.body);
         if (data['success']) {
           return data['data']['user'];
         } else {
@@ -130,39 +172,43 @@ class _homepageState extends State<homepage> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      if (index == 0) {
-        RefreshIndicatorTriggerMode;
-      } else if (index == 1) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => const Cart()));
-      } else if (index == 2) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => const Wishlist()));
-      } else if (index == 3) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => const Profile()));
-      }
-    });
-  }
+  setState(() {
+    _selectedIndex = index;
+    if (index == 0) {
+     
+    } else if (index == 1) {
+      Navigator.of(context).pushAndRemoveUntil(
+        PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) => Cart(),
+          transitionDuration: Duration(milliseconds: 0),
+        ),
+        (route) => false,
+      );
+    } else if (index == 2) {
+       Navigator.of(context).pushAndRemoveUntil(
+        PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) => Wishlist(),
+          transitionDuration: Duration(milliseconds: 0),
+        ),
+        (route) => false,
+      );
+    } else if (index == 3) {
+      Navigator.of(context).pushAndRemoveUntil(
+        PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) => Profile(),
+          transitionDuration: Duration(milliseconds: 0),
+        ),
+        (route) => false,
+      );
+    }
+  });
+}
+
 
   @override
-  void initState() {
-    super.initState();
-    fetchUserProfile().then((userData) {
-      setState(() {
-        _userData = userData;
-      });
-    }).catchError((error) {
-      print('Error fetching user profile: $error');
-    });
-    fetchData().then((data) {
-      setState(() {
-        products = data;
-        filteredItems = data;
-      });
-    });
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
@@ -176,7 +222,7 @@ class _homepageState extends State<homepage> {
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) =>  SearchForm()));
+                      MaterialPageRoute(builder: (context) => SearchForm()));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 235, 226, 226),
@@ -224,7 +270,7 @@ class _homepageState extends State<homepage> {
                         fit: BoxFit.cover,
                       )
                     : _userData != null
-                        ? Image(image: AssetImage('assets/bbq.jpg'))
+                        ? const Image(image: AssetImage('assets/bbq.jpg'))
                         : const CircularProgressIndicator(),
               ),
             ),
@@ -236,25 +282,34 @@ class _homepageState extends State<homepage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            GestureDetector(
-              onTap: () {
-                // Handle the tap event for the image button
-                print('ImageButton tapped');
-              },
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(5, 10, 10, 10),
-                child: Image.asset(
-                  'assets/disc.jpg',
-                  fit: BoxFit.cover,
-                  height: 120,
-                  width: double.infinity,
-                ),
-              ),
+            SizedBox(
+              height: 200,
+              child: banners.isNotEmpty
+                  ? PageView.builder(
+                      controller: _pageController,
+                      itemCount: banners.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => BannerDetail(banner: banners[index])));
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(5, 10, 10, 10),
+                            child: Image.network(
+                              banners[index]['gambar'],
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  : const SizedBox.shrink(),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(120, 10, 5, 10),
               child: FutureBuilder<List<dynamic>>(
-                future: fetchCategories(), // Fetch the categories
+                future: fetchCategories(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
@@ -276,9 +331,11 @@ class _homepageState extends State<homepage> {
                           ),
                           ...categories.map<Widget>((category) {
                             return ClickableText(
-                              text: category['nama_kategori'], // Display category name
-                              isSelected: _selectedCategoryId == category['id'].toString(),
-                              onTap: () => filterItemsByCategory(category['id'].toString()),
+                              text: category['nama_kategori'],
+                              isSelected: _selectedCategoryId ==
+                                  category['id'].toString(),
+                              onTap: () => filterItemsByCategory(
+                                  category['id'].toString()),
                             );
                           }).toList(),
                         ],
@@ -300,8 +357,8 @@ class _homepageState extends State<homepage> {
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => Detail(
-                          item: product, // Pass the product item data
-                          wishlistItem: const Wishlist(), // Pass the wishlist item data
+                          item: product,
+                          wishlistItem: const Wishlist(),
                         ),
                       ));
                     },

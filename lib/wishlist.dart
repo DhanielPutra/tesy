@@ -85,23 +85,38 @@ Future<void> fetchWishlistData() async {
     }
   }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      if (index == 0) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => homepage()));
-      } else if (index == 1) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Cart()));
-      } else if (index == 2) {
-        // Wishlist page, do nothing as we are already on this page
-      } else if (index == 3) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Profile()));
-      }
-    });
-  }
+ void _onItemTapped(int index) {
+  setState(() {
+    _selectedIndex = index;
+    if (index == 0) {
+      Navigator.of(context).pushAndRemoveUntil(
+        PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) => Homepage(),
+          transitionDuration: Duration(milliseconds: 0),
+        ),
+        (route) => false,
+      );
+    } else if (index == 1) {
+      Navigator.of(context).pushAndRemoveUntil(
+        PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) => Cart(),
+          transitionDuration: Duration(milliseconds: 0),
+        ),
+        (route) => false,
+      );
+    } else if (index == 2) {
+      // Wishlist page, do nothing as we are already on this page
+    } else if (index == 3) {
+      Navigator.of(context).pushAndRemoveUntil(
+        PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) => Profile(),
+          transitionDuration: Duration(milliseconds: 0),
+        ),
+        (route) => false,
+      );
+    }
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +124,7 @@ Future<void> fetchWishlistData() async {
       appBar: AppBar(
         automaticallyImplyLeading: false, // Remove the back arrow button
         elevation: 5,
-        backgroundColor: Color.fromARGB(255, 206, 22, 22),
+        backgroundColor: Color.fromARGB(255, 163, 6, 6),
         title: const Text(
           'Wishlist',
           style: TextStyle(

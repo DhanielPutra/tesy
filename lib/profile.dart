@@ -93,21 +93,37 @@ class _ProfileState extends State<Profile> {
 
   // Handle bottom navigation bar item tap
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      if (index == 0) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => const homepage()));
-      } else if (index == 1) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => const Cart()));
-      } else if (index == 2) {
-        // Handle wishlist navigation
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => const Wishlist()));
-      }
-    });
-  }
+  setState(() {
+    _selectedIndex = index;
+    if (index == 0) {
+      Navigator.of(context).pushAndRemoveUntil(
+        PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) => Homepage(),
+          transitionDuration: Duration(milliseconds: 0),
+        ),
+        (route) => false,
+      );
+    } else if (index == 1) {
+      Navigator.of(context).pushAndRemoveUntil(
+        PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) => Cart(),
+          transitionDuration: Duration(milliseconds: 0),
+        ),
+        (route) => false,
+      );
+    } else if (index == 2) {
+      Navigator.of(context).pushAndRemoveUntil(
+        PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) => Wishlist(),
+          transitionDuration: Duration(milliseconds: 0),
+        ),
+        (route) => false,
+      );
+    } else if (index == 3) {
+      
+    }
+  });
+}
 
   @override
   Widget build(BuildContext context) {

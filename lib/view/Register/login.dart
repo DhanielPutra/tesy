@@ -143,7 +143,7 @@ class _LoginState extends State<Login> {
     SharedPreferences pref = await SharedPreferences.getInstance();
 
     Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => homepage()), (route) => false);
+        MaterialPageRoute(builder: (context) => Homepage()), (route) => false);
   }
 
   @override

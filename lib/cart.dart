@@ -87,16 +87,11 @@ class _CartState extends State<Cart> {
       home: Scaffold(
         appBar: AppBar(
           elevation: 0,
-          backgroundColor: Colors.transparent,
-          leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(Icons.arrow_back),
-          ),
+          backgroundColor: Color.fromARGB(255, 163, 6, 6),
+          
           title: Text(
             'My Cart',
-            style: TextStyle(color: Colors.black),
+            style: TextStyle(color: const Color.fromARGB(255, 255, 255, 255)),
           ),
         ),
         body: Stack(
@@ -364,23 +359,37 @@ class _CartState extends State<Cart> {
   }
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      if (index == 0) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => homepage()));
-      } else if (index == 1) {
-        // Navigator.of(context)
-        //     .push(MaterialPageRoute(builder: (context) => Cart()));
-      } else if (index == 2) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Wishlist()));
-      } else if (index == 3) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Profile()));
-      }
-    });
-  }
+  setState(() {
+    _selectedIndex = index;
+    if (index == 0) {
+     Navigator.of(context).pushAndRemoveUntil(
+        PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) => Homepage(),
+          transitionDuration: Duration(milliseconds: 0),
+        ),
+        (route) => false,
+      );
+    } else if (index == 1) {
+      //////
+    } else if (index == 2) {
+       Navigator.of(context).pushAndRemoveUntil(
+        PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) => Wishlist(),
+          transitionDuration: Duration(milliseconds: 0),
+        ),
+        (route) => false,
+      );
+    } else if (index == 3) {
+      Navigator.of(context).pushAndRemoveUntil(
+        PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) => Profile(),
+          transitionDuration: Duration(milliseconds: 0),
+        ),
+        (route) => false,
+      );
+    }
+  });
+}
 
   // void _sendDataTotalToCheckout(BuildContext context) {
   //   double totalPayment = getTotalPrice();
