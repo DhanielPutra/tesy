@@ -11,13 +11,14 @@ class DaftarTransaksi extends StatefulWidget {
   State<DaftarTransaksi> createState() => _DaftarTransaksiState();
 }
 
-class _DaftarTransaksiState extends State<DaftarTransaksi> {
+class _DaftarTransaksiState extends State<DaftarTransaksi> with SingleTickerProviderStateMixin {
   List<dynamic>? items;
-  int _selectedStatusIndex = 0; // Index for selected status type
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 3, vsync: this);
     fetchItems();
   }
 
@@ -56,157 +57,124 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       appBar: AppBar(
+      appBar: AppBar(
         title: const Text('Daftar Transaksi'),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pushAndRemoveUntil(
-        PageRouteBuilder(
-          pageBuilder: (context, animation1, animation2) => Profile(),
-          transitionDuration: Duration(milliseconds: 0),
-        ),
-        (route) => false,
-      );
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => Profile(),
+                transitionDuration: Duration(milliseconds: 0),
+              ),
+              (route) => false,
+            );
           },
         ),
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: Colors.red,
+          labelColor: Colors.red, // Add this line to change the selected tab label color to red
+          unselectedLabelColor: Colors.black, // Optionally set the color for unselected tabs
+          tabs: const [
+            Tab(text: 'Diproses'),
+            Tab(text: 'Dikirim'),
+            Tab(text: 'Selesai'),
+          ],
+        ),
       ),
-      body: Column(
+      body: TabBarView(
+        controller: _tabController,
         children: [
-          // Segment control for selecting status type
-          Padding(
-            padding: const EdgeInsets.all(16.0),
+          buildListView(0),
+          buildListView(1),
+          buildListView(2),
+        ],
+      ),
+    );
+  }
+
+  Widget buildListView(int statusIndex) {
+    return ListView.builder(
+      itemCount: items?.length ?? 0,
+      itemBuilder: (BuildContext context, int index) {
+        final item = items![index];
+        final product = item['produk'];
+
+        // Check if the item matches the selected status type
+        if (statusIndex == 0) {
+          // Show items with status ID '1' or null
+          if (item['status_id'] != '1' && item['status_id'] != null) {
+            return Container(); // Return empty container if not 'Diproses'
+          }
+        } else if (statusIndex == 1 && item['status_id'] != '2') {
+          return Container(); // Return empty container if not 'Dikirim'
+        } else if (statusIndex == 2 && item['status_id'] != '3') {
+          return Container(); // Return empty container if not 'Selesai'
+        }
+
+        return GestureDetector(
+          onTap: () {
+            // Navigate to transaction detail page here
+          },
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _selectedStatusIndex = 0;
-                      });
-                    },
-                    child: const Text('Diproses'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _selectedStatusIndex == 0 ? Colors.blue : null,
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    image: DecorationImage(
+                      image: NetworkImage(product['gambar']),
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _selectedStatusIndex = 1;
-                      });
-                    },
-                    child: const Text('Dikirim'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _selectedStatusIndex == 1 ? Colors.blue : null,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _selectedStatusIndex = 2;
-                      });
-                    },
-                    child: const Text('Selesai'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _selectedStatusIndex == 2 ? Colors.blue : null,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        product['nama_produk'],
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Price: Rp. ${product['harga']}',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Detail: ${product['detail']}',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: items?.length ?? 0,
-              itemBuilder: (BuildContext context, int index) {
-                final item = items![index];
-                final product = item['produk'];
-
-                // Check if the item matches the selected status type
-                if (_selectedStatusIndex == 0) {
-                  // Show items with status ID '1' or null
-                  if (item['status_id'] != '1' && item['status_id'] != null) {
-                    return Container(); // Return empty container if not 'Diproses'
-                  }
-                } else if (_selectedStatusIndex == 1 && item['status_id'] != '2') {
-                  return Container(); // Return empty container if not 'Dikirim'
-                } else if (_selectedStatusIndex == 2 && item['status_id'] != '3') {
-                  return Container(); // Return empty container if not 'Selesai'
-                }
-
-                return GestureDetector(
-                  onTap: () {
-                    // Navigate to transaction detail page here
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 120,
-                          height: 120,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            image: DecorationImage(
-                              image: NetworkImage(product['gambar']),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                product['nama_produk'],
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Price: Rp. ${product['harga']}',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Detail: ${product['detail']}',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
