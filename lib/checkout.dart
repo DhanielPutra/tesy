@@ -75,6 +75,7 @@ class _CheckoutState extends State<Checkout> {
     'produk_id': produkId,
     'user_id': penjualId,
     'cara_bayar': caraBayar,
+    'status_id': '1',
   };
 
   // Print the data before making the request
