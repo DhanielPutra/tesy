@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 // ignore: unused_import
 import 'package:marketplace/homepage.dart';
 import 'package:marketplace/user_services.dart';
@@ -40,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen> {
           children: <Widget>[
             // Add your splash screen content her
             Image.asset('assets/bbq.jpg', width: 300, height: 300),
-            CircularProgressIndicator(),
+            Lottie.asset('assets/load.json', width: 80, height: 80),
           ],
         ),
       ),

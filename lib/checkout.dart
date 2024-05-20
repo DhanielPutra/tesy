@@ -12,14 +12,15 @@ import 'package:marketplace/user_services.dart';
 class Checkout extends StatefulWidget {
   final double totalPayment;
   final dynamic CartItems;
-  final bool
-      isFromCart; // Indicator to check if the data is from the cart or product details
+  final bool isFromCart; // Indicator to check if the data is from the cart or product details
+  final bool isFromWIsh;
 
   const Checkout({
     Key? key,
     required this.totalPayment,
     required this.CartItems,
-    required this.isFromCart, // Add this parameter to indicate the data source
+    required this.isFromCart, 
+    required this.isFromWIsh, // Add this parameter to indicate the data source
   }) : super(key: key);
 
   @override
@@ -42,7 +43,16 @@ class _CheckoutState extends State<Checkout> {
   final String url = 'https://barbeqshop.online/api/pesanan';
 
   int userId = await getUserId();
+  if (userId == null) {
+    print('Error: User ID is null.');
+    return;
+  }
+
   String token = await getToken();
+  if (token == null) {
+    print('Error: Token is null.');
+    return;
+  }
 
   String caraBayar = '1'; // Default to Cash on Delivery
   if (_selectedPaymentMethod == '1') {
@@ -63,8 +73,11 @@ class _CheckoutState extends State<Checkout> {
     // If the data is from the cart
     produkId = widget.CartItems[0]['produk_id'].toString();
     penjualId = widget.CartItems[0]['penjual_id'].toString();
-  } else {
+  } else if(widget.isFromWIsh){
     // If the data is from product details
+    produkId = widget.CartItems[0]['id_wish'].toString();
+    penjualId = widget.CartItems[0]['id_penjual'].toString();
+  }else{
     produkId = widget.CartItems['id'].toString();
     penjualId = widget.CartItems['author']['id'].toString();
   }
@@ -117,6 +130,7 @@ class _CheckoutState extends State<Checkout> {
             alamatPengiriman: alamatController.text,
             cartItems: widget.CartItems,
             isFromCart: widget.isFromCart,
+            isFromWish: widget.isFromWIsh,
           ),
         ),
       );

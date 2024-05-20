@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:marketplace/cart.dart';
 import 'package:marketplace/checkout.dart';
 import 'package:marketplace/models/product.dart';
-import 'package:marketplace/product.dart';
 import 'package:marketplace/user_services.dart'; // Import the method to get user ID and token
 
 class Detail extends StatefulWidget {
@@ -92,6 +90,7 @@ class _DetailState extends State<Detail> {
       'gambar': widget.item['gambar'],
       'nama_product': widget.item['nama_produk'],
       'harga': widget.item['harga'],
+      'penjual_id' : widget.item['user_id']
     };
 
     try {
@@ -505,7 +504,7 @@ class _DetailState extends State<Detail> {
   void _sendDataTotalToCheckout(BuildContext context, double itemPrice) {
     double totalPayment = itemPrice;
     Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => Checkout(totalPayment: totalPayment, CartItems: widget.item,isFromCart: false,),
+      builder: (context) => Checkout(totalPayment: totalPayment, CartItems: widget.item,isFromCart: false,isFromWIsh: false,),
     ));
   }
 }

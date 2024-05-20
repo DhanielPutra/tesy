@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:marketplace/cart.dart';
 import 'package:marketplace/daftarTransaksi.dart';
 import 'package:marketplace/editProfile.dart';
@@ -130,7 +131,11 @@ class _ProfileState extends State<Profile> {
     return _isLoading
         ? Scaffold(
             body: Center(
-              child: CircularProgressIndicator(),
+              child: Lottie.asset(
+                'assets/load.json', 
+                width: 100, 
+                height: 100
+              ),
             ),
           )
         : Scaffold(
