@@ -162,7 +162,7 @@ class _ProfileState extends State<Profile> {
               onTap: _onItemTapped,
             ),
             body: Container(
-              padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
+              padding: const EdgeInsets.fromLTRB(20, 40, 20, 30),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

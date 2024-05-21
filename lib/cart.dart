@@ -91,7 +91,7 @@ class _CartState extends State<Cart> {
           
           title: Text(
             'My Cart',
-            style: TextStyle(color: const Color.fromARGB(255, 255, 255, 255)),
+            style: TextStyle(color: const Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.bold),
           ),
         ),
         body: Stack(

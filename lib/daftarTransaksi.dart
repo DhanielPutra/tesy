@@ -120,7 +120,7 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> with SingleTickerProv
           child: Container(
             margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(5),
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
@@ -138,7 +138,7 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> with SingleTickerProv
                   width: 120,
                   height: 120,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(5),
                     image: DecorationImage(
                       image: NetworkImage(product['gambar']),
                       fit: BoxFit.cover,
