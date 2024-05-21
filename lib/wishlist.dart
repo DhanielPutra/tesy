@@ -1,15 +1,17 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:marketplace/cart.dart';
+import 'package:marketplace/checkout.dart';
 import 'package:marketplace/detail.dart';
 import 'package:marketplace/homepage.dart';
 import 'package:marketplace/models/product.dart';
+import 'package:marketplace/product.dart';
 import 'package:marketplace/profile.dart';
 import 'package:marketplace/user_services.dart';
-
 
 class Wishlist extends StatefulWidget {
   const Wishlist({Key? key}) : super(key: key);
@@ -18,7 +20,7 @@ class Wishlist extends StatefulWidget {
   _WishlistState createState() => _WishlistState();
 }
 
- class _WishlistState extends State<Wishlist> {
+class _WishlistState extends State<Wishlist> {
   int _selectedIndex = 2;
   List<Product> products = [];
 
@@ -28,45 +30,87 @@ class Wishlist extends StatefulWidget {
     fetchWishlistData();
   }
 
+  Future<void> fetchWishlistData() async {
+    final String url = 'https://barbeqshop.online/api/wishlist';
 
-Future<void> fetchWishlistData() async {
-  final String url = 'https://barbeqshop.online/api/wishlist';
+    // Get the user ID and token from SharedPreferences
+    String token =
+        await getToken(); // Assuming getToken() retrieves token from SharedPreferences
 
-  // Get the user ID and token from SharedPreferences
- String token = await getToken();  // Assuming getToken() retrieves token from SharedPreferences
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $token'
+        }, // Pass the token in the headers
+      );
 
-  try {
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {'Authorization': 'Bearer $token'}, // Pass the token in the headers
-    );
-
-    if (response.statusCode == 200) {
-      // Parse response body
-      Map<String, dynamic> responseData = json.decode(response.body);
-      if (responseData['status'] == true) {
-        // Data retrieved successfully
-        List<dynamic> wishlistData = responseData['data'];
-        setState(() {
-          // Update products list with fetched data
-          products = wishlistData.map((data) => Product.fromJson(data)).toList();
-        });
+      if (response.statusCode == 200) {
+        // Parse response body
+        Map<String, dynamic> responseData = json.decode(response.body);
+        if (responseData['status'] == true) {
+          // Data retrieved successfully
+          print(responseData);
+          List<dynamic> wishlistData = responseData['data'];
+          setState(() {
+            // Update products list with fetched data
+            products =
+                wishlistData.map((data) => Product.fromJson(data)).toList();
+          });
+        } else {
+          print('Failed to fetch wishlist data: ${responseData['message']}');
+        }
       } else {
-        print('Failed to fetch wishlist data: ${responseData['message']}');
+        print(
+            'Failed to fetch wishlist data. Status code: ${response.statusCode}');
       }
-    } else {
-      print('Failed to fetch wishlist data. Status code: ${response.statusCode}');
+    } catch (e) {
+      print('Error fetching wishlist data: $e');
     }
-  } catch (e) {
-    print('Error fetching wishlist data: $e');
   }
-}
+
+  Future<List<dynamic>> fetchProdukItems(String idWish) async {
+    try {
+      String url =
+          'https://barbeqshop.online/api/produk/$idWish'; // Pass the id_wish in the URL
+      String token = await getToken();
+
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (response.statusCode == 200) {
+        // Parse the JSON response
+        dynamic responseData = json.decode(response.body);
+        List<dynamic> wishlistItems = [];
+
+        if (responseData is List<dynamic>) {
+          // If the response data is already a list, use it directly
+          wishlistItems = responseData;
+        } else if (responseData is Map<String, dynamic> &&
+            responseData.containsKey('data')) {
+          // If the response data is an object containing a list, extract the list
+          wishlistItems = responseData['data'];
+        }
+
+        print('Wishlist items: $wishlistItems');
+
+        return wishlistItems;
+      } else {
+        print('Failed to fetch wishlist. Status code: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      print('Error fetching wishlist: $e');
+      return [];
+    }
+  }
 
   Future<void> deleteFromWishlist(String productId) async {
     try {
       final response = await http.delete(
-        Uri.parse(
-            'https://barbeqshop.online/api/wishlist/$productId'),
+        Uri.parse('https://barbeqshop.online/api/wishlist/$productId'),
       );
 
       if (response.statusCode == 200) {
@@ -84,38 +128,38 @@ Future<void> fetchWishlistData() async {
     }
   }
 
- void _onItemTapped(int index) {
-  setState(() {
-    _selectedIndex = index;
-    if (index == 0) {
-      Navigator.of(context).pushAndRemoveUntil(
-        PageRouteBuilder(
-          pageBuilder: (context, animation1, animation2) => Homepage(),
-          transitionDuration: Duration(milliseconds: 0),
-        ),
-        (route) => false,
-      );
-    } else if (index == 1) {
-      Navigator.of(context).pushAndRemoveUntil(
-        PageRouteBuilder(
-          pageBuilder: (context, animation1, animation2) => Cart(),
-          transitionDuration: Duration(milliseconds: 0),
-        ),
-        (route) => false,
-      );
-    } else if (index == 2) {
-      // Wishlist page, do nothing as we are already on this page
-    } else if (index == 3) {
-      Navigator.of(context).pushAndRemoveUntil(
-        PageRouteBuilder(
-          pageBuilder: (context, animation1, animation2) => Profile(),
-          transitionDuration: Duration(milliseconds: 0),
-        ),
-        (route) => false,
-      );
-    }
-  });
-}
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      if (index == 0) {
+        Navigator.of(context).pushAndRemoveUntil(
+          PageRouteBuilder(
+            pageBuilder: (context, animation1, animation2) => Homepage(),
+            transitionDuration: Duration(milliseconds: 0),
+          ),
+          (route) => false,
+        );
+      } else if (index == 1) {
+        Navigator.of(context).pushAndRemoveUntil(
+          PageRouteBuilder(
+            pageBuilder: (context, animation1, animation2) => Cart(),
+            transitionDuration: Duration(milliseconds: 0),
+          ),
+          (route) => false,
+        );
+      } else if (index == 2) {
+        // Wishlist page, do nothing as we are already on this page
+      } else if (index == 3) {
+        Navigator.of(context).pushAndRemoveUntil(
+          PageRouteBuilder(
+            pageBuilder: (context, animation1, animation2) => Profile(),
+            transitionDuration: Duration(milliseconds: 0),
+          ),
+          (route) => false,
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -139,8 +183,6 @@ Future<void> fetchWishlistData() async {
           final product = products[index];
           return GestureDetector(
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => 
-              Detail(item: products, wishlistItem: widget)));
             },
             child: Container(
               height: 200,
@@ -185,11 +227,8 @@ Future<void> fetchWishlistData() async {
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
                                   ),
-                                  
                                 ),
-                                
                               ),
-                              
                               IconButton(
                                 onPressed: () {
                                   deleteFromWishlist(product.id);
@@ -231,7 +270,7 @@ Future<void> fetchWishlistData() async {
                               height: 35,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  // Add functionality to order the product
+                                  _sendDataTotalToCheckout(context, product);
                                 },
                                 style: ElevatedButton.styleFrom(
                                   shape: RoundedRectangleBorder(
@@ -284,5 +323,34 @@ Future<void> fetchWishlistData() async {
         onTap: _onItemTapped,
       ),
     );
+  }
+
+  void _sendDataTotalToCheckout(BuildContext context, Product selectedProduct) {
+    // Calculate total payment
+    double totalPayment = double.parse(selectedProduct.price);
+
+    // Convert selected product into a map
+    Map<String, dynamic> selectedProductMap = {
+      'id': selectedProduct.id,
+      'id_wish': selectedProduct.id_wish,
+      'nama_product': selectedProduct.name,
+      'detail': selectedProduct.detail,
+      'harga': selectedProduct.price,
+      'gambar': selectedProduct.imageUrl,
+      'id_penjual': selectedProduct.id_penjual,
+      "user_id": selectedProduct.id_user
+    };
+
+    // Pass the selected product map as a list
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => Checkout(
+        totalPayment: totalPayment,
+        CartItems: [
+          selectedProductMap
+        ], // Pass the selected product map as a list
+        isFromCart: false,
+        isFromWIsh: true,
+      ),
+    ));
   }
 }

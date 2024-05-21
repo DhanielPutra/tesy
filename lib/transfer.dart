@@ -12,6 +12,7 @@ class Transfer extends StatefulWidget {
   final String alamatPengiriman;
   final dynamic cartItems;
   final dynamic isFromCart;
+  final dynamic isFromWish;
 
   const Transfer({
     Key? key,
@@ -19,6 +20,7 @@ class Transfer extends StatefulWidget {
     required this.alamatPengiriman,
     required this.cartItems,
     required this.isFromCart,
+    required this.isFromWish,
   }) : super(key: key);
 
   @override
@@ -165,7 +167,11 @@ class _TransferState extends State<Transfer> {
       // If the data is from the cart
       produkId = widget.cartItems[0]['produk_id'].toString();
       penjualId = widget.cartItems[0]['penjual_id'].toString();
-    } else {
+    } else if(widget.isFromWish){
+    // If the data is from product details
+    produkId = widget.cartItems[0]['id_wish'].toString();
+    penjualId = widget.cartItems[0]['id_penjual'].toString();
+    }else {
       // If the data is from product details
       produkId = widget.cartItems['id'].toString();
       penjualId = widget.cartItems['author']['id'].toString();
@@ -176,6 +182,7 @@ class _TransferState extends State<Transfer> {
     request.fields['produk_id'] = produkId.toString();
     request.fields['user_id'] = penjualId.toString(); // Access the first item in the list and get the penjual_id
     request.fields['cara_bayar'] = '2'; // ID for Bank Transfer
+    request.fields['status_id'] = '1';
 
     // Add the image file
     if (_image != null) {

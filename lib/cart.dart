@@ -401,7 +401,7 @@ class _CartState extends State<Cart> {
       builder: (context) => Checkout(
         CartItems:
             cartItems.where((item) => item['isChecked'] == true).toList(),
-        totalPayment: getTotalPrice(),isFromCart: true,
+        totalPayment: getTotalPrice(),isFromCart: true, isFromWIsh: false,
       ),
     ));
   }

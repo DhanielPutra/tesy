@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:marketplace/bannerDetail.dart';
 import 'package:marketplace/profile.dart';
 import 'package:marketplace/search.dart';
@@ -108,8 +109,8 @@ class _HomepageState extends State<Homepage> {
 
   Future<List<dynamic>> fetchDataByCategory(String categoryId) async {
     try {
-      final response = await http.get(
-          Uri.parse('https://barbeqshop.online/api/produkkat?kategori_id=$categoryId'));
+      final response = await http.get(Uri.parse(
+          'https://barbeqshop.online/api/produkkat?kategori_id=$categoryId'));
 
       if (response.statusCode == 200) {
         Map<String, dynamic> responseData = json.decode(response.body);
@@ -172,38 +173,36 @@ class _HomepageState extends State<Homepage> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
-  setState(() {
-    _selectedIndex = index;
-    if (index == 0) {
-     
-    } else if (index == 1) {
-      Navigator.of(context).pushAndRemoveUntil(
-        PageRouteBuilder(
-          pageBuilder: (context, animation1, animation2) => Cart(),
-          transitionDuration: Duration(milliseconds: 0),
-        ),
-        (route) => false,
-      );
-    } else if (index == 2) {
-       Navigator.of(context).pushAndRemoveUntil(
-        PageRouteBuilder(
-          pageBuilder: (context, animation1, animation2) => Wishlist(),
-          transitionDuration: Duration(milliseconds: 0),
-        ),
-        (route) => false,
-      );
-    } else if (index == 3) {
-      Navigator.of(context).pushAndRemoveUntil(
-        PageRouteBuilder(
-          pageBuilder: (context, animation1, animation2) => Profile(),
-          transitionDuration: Duration(milliseconds: 0),
-        ),
-        (route) => false,
-      );
-    }
-  });
-}
-
+    setState(() {
+      _selectedIndex = index;
+      if (index == 0) {
+      } else if (index == 1) {
+        Navigator.of(context).pushAndRemoveUntil(
+          PageRouteBuilder(
+            pageBuilder: (context, animation1, animation2) => Cart(),
+            transitionDuration: Duration(milliseconds: 0),
+          ),
+          (route) => false,
+        );
+      } else if (index == 2) {
+        Navigator.of(context).pushAndRemoveUntil(
+          PageRouteBuilder(
+            pageBuilder: (context, animation1, animation2) => Wishlist(),
+            transitionDuration: Duration(milliseconds: 0),
+          ),
+          (route) => false,
+        );
+      } else if (index == 3) {
+        Navigator.of(context).pushAndRemoveUntil(
+          PageRouteBuilder(
+            pageBuilder: (context, animation1, animation2) => Profile(),
+            transitionDuration: Duration(milliseconds: 0),
+          ),
+          (route) => false,
+        );
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -271,7 +270,7 @@ class _HomepageState extends State<Homepage> {
                       )
                     : _userData != null
                         ? const Image(image: AssetImage('assets/bbq.jpg'))
-                        : const CircularProgressIndicator(),
+                        :  Lottie.asset ('assets/load.json', width: 40, height: 40),
               ),
             ),
           ),
@@ -291,7 +290,9 @@ class _HomepageState extends State<Homepage> {
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => BannerDetail(banner: banners[index])));
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                    BannerDetail(banner: banners[index])));
                           },
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(5, 10, 10, 10),
@@ -312,7 +313,11 @@ class _HomepageState extends State<Homepage> {
                 future: fetchCategories(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
+                    return Container(
+                      width: 50, // Adjust width as needed
+                      height: 50, // Adjust height as needed
+                      child: Lottie.asset('assets/loading.json'),
+                    );
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else {
