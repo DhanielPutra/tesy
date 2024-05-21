@@ -14,6 +14,18 @@ class _RincianPesananState extends State<RincianPesanan> {
     final product = widget.item['produk'];
     final alamat = widget.item['alamat'];
 
+    // Mengubah cara_bayar ke format yang lebih mudah dipahami
+    String getCaraBayar(String caraBayar) {
+      switch (caraBayar) {
+        case '1':
+          return 'Cash on Delivery';
+        case '2':
+          return 'Transfer';
+        default:
+          return 'Metode Pembayaran Tidak Dikenal';
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Rincian Pesanan'),
@@ -26,91 +38,150 @@ class _RincianPesananState extends State<RincianPesanan> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Row(
-                  children: [
-                    Icon(Icons.location_on_outlined),
-                    SizedBox(width: 8),
-                    Text('Alamat Pengiriman'),
-                  ],
-                ),
-                SizedBox(height: 8),
-                Container(
-                  padding: EdgeInsets.fromLTRB(33, 0, 0, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Nama penerima
-                      Text('Nama Penerima: ${widget.item['pembeli']['name']}'),
-                      // Nomor penerima
-                      Text(
-                          'Nomor Penerima: ${widget.item['pembeli']['no_tlp']}'),
-
-                      Text('Alamat Pengiriman: $alamat'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            Divider(
-              color: Colors.grey[350],
-              thickness: 10,
-            ),
-            SizedBox(height: 16),
-            Container(
-              child: Row(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      image: DecorationImage(
-                        image: NetworkImage(product['gambar']),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  const Row(
                     children: [
-                      Text(
-                        product['nama_produk'],
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Icon(
+                        Icons.location_on_outlined,
+                        color: Colors.red,
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(width: 8),
                       Text(
-                        'Price: Rp. ${product['harga']}',
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Detail: ${product['detail']}',
-                        style: const TextStyle(fontSize: 16),
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Status: ${widget.item['status_id']}',
-                        style: const TextStyle(fontSize: 16),
+                        'Alamat Pengiriman',
+                        style: TextStyle(fontSize: 20, color: Colors.red, fontWeight: FontWeight.bold),
                       ),
                     ],
+                  ),
+                  SizedBox(height: 8),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(33, 0, 0, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Nama penerima
+                        Text(
+                          'Nama Penerima: ${widget.item['pembeli']['name']}',
+                          style: const TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                        // Nomor penerima
+                        Text(
+                          'Nomor Penerima: ${widget.item['pembeli']['no_tlp']}',
+                          style: const TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                        Text(
+                          'Alamat Pengiriman: $alamat',
+                          style: const TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
-            ),
-          ],
+              SizedBox(height: 16),
+              Divider(
+                color: Colors.grey[200],
+                thickness: 5,
+              ),
+              SizedBox(height: 16),
+              Container(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 100,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        image: DecorationImage(
+                          image: NetworkImage(product['gambar']),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            product['nama_produk'],
+                            style: const TextStyle(
+                              fontSize: 24,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Price: Rp. ${product['harga']}',
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Detail: ${product['detail']}',
+                            style: const TextStyle(fontSize: 16),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 16),
+              Divider(
+                color: Colors.grey[200],
+                thickness: 5,
+              ),
+              SizedBox(height: 16),
+              Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Metode Pembayaran',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      getCaraBayar(widget.item['cara_bayar']),
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    // Menampilkan bukti transfer jika metode pembayaran adalah Transfer
+                    if (widget.item['cara_bayar'] == '2' && widget.item['bukti_transfer'] != null)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 8),
+                          Text(
+                            'Bukti Transfer:',
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 8),
+                          Image.network(
+                            widget.item['bukti_transfer'],
+                            height: 150,
+                            width: 150,
+                            fit: BoxFit.cover,
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
