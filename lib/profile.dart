@@ -260,24 +260,24 @@ class _ProfileState extends State<Profile> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            // Handle Account Information onTap
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
-                              Text('Account Information'),
-                              Icon(Icons.settings_outlined),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
+                        // const SizedBox(
+                        //   height: 15,
+                        // ),
+                        // InkWell(
+                        //   onTap: () {
+                        //     // Handle Account Information onTap
+                        //   },
+                        //   child: Row(
+                        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //     children: const [
+                        //       Text('Account Information'),
+                        //       Icon(Icons.settings_outlined),
+                        //     ],
+                        //   ),
+                        // ),
+                        // const SizedBox(
+                        //   height: 10,
+                        // ),
                         const SizedBox(
                           height: 10,
                         ),
