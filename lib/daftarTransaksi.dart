@@ -124,7 +124,7 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> with SingleTickerProv
             );
           },
           child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(5),
               color: Colors.white,
@@ -144,7 +144,7 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> with SingleTickerProv
                   width: 120,
                   height: 120,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
+                    
                     image: DecorationImage(
                       image: NetworkImage(product['gambar']),
                       fit: BoxFit.cover,
@@ -156,6 +156,7 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> with SingleTickerProv
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      SizedBox(height: 25,),
                       Text(
                         product['nama_produk'],
                         style: const TextStyle(
@@ -163,16 +164,13 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> with SingleTickerProv
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 10),
                       Text(
-                        'Price: Rp. ${product['harga']}',
+                        'Rp. ${product['harga']}',
                         style: const TextStyle(fontSize: 16),
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        'Detail: ${product['detail']}',
-                        style: const TextStyle(fontSize: 16),
-                      ),
+                      
                     ],
                   ),
                 ),

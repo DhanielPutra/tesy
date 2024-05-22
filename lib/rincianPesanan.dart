@@ -102,7 +102,7 @@ class _RincianPesananState extends State<RincianPesanan> {
                       width: 100,
                       height: 150,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
+                        //borderRadius: BorderRadius.circular(5),
                         image: DecorationImage(
                           image: NetworkImage(product['gambar']),
                           fit: BoxFit.cover,
