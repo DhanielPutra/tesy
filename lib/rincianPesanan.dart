@@ -1,168 +1,189 @@
 import 'package:flutter/material.dart';
 
 class RincianPesanan extends StatefulWidget {
-  const RincianPesanan({Key? key}) : super(key: key);
+  final dynamic item;
+  const RincianPesanan({Key? key, required this.item}) : super(key: key);
 
   @override
   State<RincianPesanan> createState() => _RincianPesananState();
 }
 
 class _RincianPesananState extends State<RincianPesanan> {
-  final List<List<String>> items = [
-    [
-      "assets/ky.png",
-      "Logitech G903 HERO",
-      "Tidak ada kerusakan",
-      "Rp.1.102.000"
-    ],
-    ["assets/bbq.jpg", "Product 6", "Tidak ada kerusakan", "Rp.100.000"],
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Rincian Pesanan'),
-          leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(Icons.arrow_back),
-          ),
+    final product = widget.item['produk'];
+    final alamat = widget.item['alamat'];
+
+    // Mengubah cara_bayar ke format yang lebih mudah dipahami
+    String getCaraBayar(String caraBayar) {
+      switch (caraBayar) {
+        case '1':
+          return 'Cash on Delivery';
+        case '2':
+          return 'Transfer';
+        default:
+          return 'Metode Pembayaran Tidak Dikenal';
+      }
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Rincian Pesanan'),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.arrow_back),
         ),
-        body: SingleChildScrollView(
-          child: Container(
-            //color: Colors.grey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Divider(
-                  color: Colors.grey[350],
-                  thickness: 10,
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Container(
-                  color: Colors.white,
-                  padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Row(
                     children: [
-                     const Row(
-                        children: [
-                          Icon(Icons.location_on_outlined),
-                          SizedBox(width: 8),
-                          Text('Alamat Pengiriman'),
-                        ],
+                      Icon(
+                        Icons.location_on_outlined,
+                        color: Colors.red,
                       ),
-                      SizedBox(height: 8),
-                      Container(
-                        padding: EdgeInsets.fromLTRB(33, 0, 0, 0),
-                        child: const Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Zahra Meidira'),
-                            Text('08215683425'),
-                            Text('Yongsan Trade Center, Bandung, Jawa Barat'),
-                          ],
+                      SizedBox(width: 8),
+                      Text(
+                        'Alamat Pengiriman',
+                        style: TextStyle(fontSize: 20, color: Colors.red, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 8),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(33, 0, 0, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Nama penerima
+                        Text(
+                          'Nama Penerima: ${widget.item['pembeli']['name']}',
+                          style: const TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                        // Nomor penerima
+                        Text(
+                          'Nomor Penerima: ${widget.item['pembeli']['no_tlp']}',
+                          style: const TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                        Text(
+                          'Alamat Pengiriman: $alamat',
+                          style: const TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16),
+              Divider(
+                color: Colors.grey[200],
+                thickness: 5,
+              ),
+              SizedBox(height: 16),
+              Container(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 100,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        image: DecorationImage(
+                          image: NetworkImage(product['gambar']),
+                          fit: BoxFit.cover,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                Divider(
-                  color: Colors.grey[350],
-                  thickness: 10,
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Container(
-                  color: Colors.white,
-                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: items.length,
-                    separatorBuilder: (context, index) => Divider(),
-                    itemBuilder: (context, index) {
-                      return OrderItem(
-                        imageUrl: items[index][0],
-                        title: items[index][1],
-                        description: items[index][2],
-                        price: items[index][3],
-                      );
-                    },
-                  ),
-                ),
-                Divider(
-                  color: Colors.black,
-                ),
-                Container(
-                  color: Colors.white,
-                  padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [Text('Total Pesanan'), Text('Rp.1.442.000')],
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Divider(
-                  color: Colors.grey[350],
-                  thickness: 10,
-                ),
-                Container(
-                  color: Colors.white,
-                  padding: EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Metode Pembayaran'),
-                      SizedBox(
-                        height: 10,
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            product['nama_produk'],
+                            style: const TextStyle(
+                              fontSize: 24,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Price: Rp. ${product['harga']}',
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Detail: ${product['detail']}',
+                            style: const TextStyle(fontSize: 16),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 16),
+                        ],
                       ),
-                      Text('COD (Bayar di Tempat)')
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              SizedBox(height: 16),
+              Divider(
+                color: Colors.grey[200],
+                thickness: 5,
+              ),
+              SizedBox(height: 16),
+              Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Metode Pembayaran',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      getCaraBayar(widget.item['cara_bayar']),
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    // Menampilkan bukti transfer jika metode pembayaran adalah Transfer
+                    if (widget.item['cara_bayar'] == '2' && widget.item['bukti_transfer'] != null)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 8),
+                          Text(
+                            'Bukti Transfer:',
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 8),
+                          Image.network(
+                            widget.item['bukti_transfer'],
+                            height: 150,
+                            width: 150,
+                            fit: BoxFit.cover,
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
-    );
-  }
-}
-
-class OrderItem extends StatelessWidget {
-  final String imageUrl;
-  final String title;
-  final String description;
-  final String price;
-
-  const OrderItem({
-    required this.imageUrl,
-    required this.title,
-    required this.description,
-    required this.price,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: Container(
-        width: 110.0,
-        height: 110.0,
-        child: Image.asset(imageUrl),
-      ),
-      title: Text(title),
-      subtitle: Text(description),
-      trailing: Text(price),
     );
   }
 }

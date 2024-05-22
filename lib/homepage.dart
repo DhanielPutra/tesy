@@ -282,7 +282,7 @@ class _HomepageState extends State<Homepage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SizedBox(
-              height: 180,
+              height: 185,
               child: banners.isNotEmpty
                   ? PageView.builder(
                       controller: _pageController,

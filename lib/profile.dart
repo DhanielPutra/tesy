@@ -94,51 +94,58 @@ class _ProfileState extends State<Profile> {
 
   // Handle bottom navigation bar item tap
   void _onItemTapped(int index) {
-  setState(() {
-    _selectedIndex = index;
-    if (index == 0) {
-      Navigator.of(context).pushAndRemoveUntil(
-        PageRouteBuilder(
-          pageBuilder: (context, animation1, animation2) => Homepage(),
-          transitionDuration: Duration(milliseconds: 0),
-        ),
-        (route) => false,
-      );
-    } else if (index == 1) {
-      Navigator.of(context).pushAndRemoveUntil(
-        PageRouteBuilder(
-          pageBuilder: (context, animation1, animation2) => Cart(),
-          transitionDuration: Duration(milliseconds: 0),
-        ),
-        (route) => false,
-      );
-    } else if (index == 2) {
-      Navigator.of(context).pushAndRemoveUntil(
-        PageRouteBuilder(
-          pageBuilder: (context, animation1, animation2) => Wishlist(),
-          transitionDuration: Duration(milliseconds: 0),
-        ),
-        (route) => false,
-      );
-    } else if (index == 3) {
-      
-    }
-  });
-}
+    setState(() {
+      _selectedIndex = index;
+      if (index == 0) {
+        Navigator.of(context).pushAndRemoveUntil(
+          PageRouteBuilder(
+            pageBuilder: (context, animation1, animation2) => Homepage(),
+            transitionDuration: Duration(milliseconds: 0),
+          ),
+          (route) => false,
+        );
+      } else if (index == 1) {
+        Navigator.of(context).pushAndRemoveUntil(
+          PageRouteBuilder(
+            pageBuilder: (context, animation1, animation2) => Cart(),
+            transitionDuration: Duration(milliseconds: 0),
+          ),
+          (route) => false,
+        );
+      } else if (index == 2) {
+        Navigator.of(context).pushAndRemoveUntil(
+          PageRouteBuilder(
+            pageBuilder: (context, animation1, animation2) => Wishlist(),
+            transitionDuration: Duration(milliseconds: 0),
+          ),
+          (route) => false,
+        );
+      } else if (index == 3) {}
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return _isLoading
         ? Scaffold(
             body: Center(
-              child: Lottie.asset(
-                'assets/load.json', 
-                width: 100, 
-                height: 100
-              ),
+              child: Lottie.asset('assets/load.json', width: 100, height: 100),
             ),
           )
         : Scaffold(
+            appBar: AppBar(
+              automaticallyImplyLeading: false, // Remove the back arrow button
+              elevation: 5,
+              backgroundColor: Color.fromARGB(255, 193, 24, 24),
+              title: const Text(
+                'Profile',
+                style: TextStyle(
+                  color: Color.fromARGB(255, 255, 255, 255),
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
             backgroundColor: Colors.grey[200],
             bottomNavigationBar: BottomNavigationBar(
               type: BottomNavigationBarType.fixed,
@@ -167,17 +174,11 @@ class _ProfileState extends State<Profile> {
               onTap: _onItemTapped,
             ),
             body: Container(
-              padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Profile',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                 
                   Container(
                     color: const Color(0xFFB50B0B),
                     padding: const EdgeInsets.all(20),
@@ -259,24 +260,24 @@ class _ProfileState extends State<Profile> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            // Handle Account Information onTap
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
-                              Text('Account Information'),
-                              Icon(Icons.settings_outlined),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
+                        // const SizedBox(
+                        //   height: 15,
+                        // ),
+                        // InkWell(
+                        //   onTap: () {
+                        //     // Handle Account Information onTap
+                        //   },
+                        //   child: Row(
+                        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //     children: const [
+                        //       Text('Account Information'),
+                        //       Icon(Icons.settings_outlined),
+                        //     ],
+                        //   ),
+                        // ),
+                        // const SizedBox(
+                        //   height: 10,
+                        // ),
                         const SizedBox(
                           height: 10,
                         ),

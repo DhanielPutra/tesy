@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:marketplace/profile.dart';
+import 'package:marketplace/rincianPesanan.dart';
 import 'dart:convert';
 import 'package:marketplace/user_services.dart';
 
@@ -115,12 +116,17 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> with SingleTickerProv
 
         return GestureDetector(
           onTap: () {
-            // Navigate to transaction detail page here
+           Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => RincianPesanan(item: item),
+              ),
+            );
           },
           child: Container(
             margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(5),
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
@@ -138,7 +144,7 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> with SingleTickerProv
                   width: 120,
                   height: 120,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(5),
                     image: DecorationImage(
                       image: NetworkImage(product['gambar']),
                       fit: BoxFit.cover,
