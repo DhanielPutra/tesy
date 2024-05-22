@@ -13,6 +13,8 @@ class Transfer extends StatefulWidget {
   final dynamic cartItems;
   final dynamic isFromCart;
   final dynamic isFromWish;
+  final String totalPayment;
+  final String idKurir;
 
   const Transfer({
     Key? key,
@@ -21,6 +23,8 @@ class Transfer extends StatefulWidget {
     required this.cartItems,
     required this.isFromCart,
     required this.isFromWish,
+    required this.totalPayment,
+    required this.idKurir,
   }) : super(key: key);
 
   @override
@@ -47,6 +51,7 @@ class _TransferState extends State<Transfer> {
     print('Alamat Pengiriman: ${widget.alamatPengiriman}');
     print('Cart Items: ${widget.cartItems}');
     print('Is From Cart: ${widget.isFromCart}');
+    print('Is From Cart: ${widget.totalPayment}');
     return Scaffold(
       appBar: AppBar(
         title: Text('Transfer Bank'),
@@ -183,6 +188,8 @@ class _TransferState extends State<Transfer> {
     request.fields['user_id'] = penjualId.toString(); // Access the first item in the list and get the penjual_id
     request.fields['cara_bayar'] = '2'; // ID for Bank Transfer
     request.fields['status_id'] = '1';
+    request.fields['harga'] = widget.totalPayment;
+    request.fields['id_kurir'] = widget.idKurir;
 
     // Add the image file
     if (_image != null) {
