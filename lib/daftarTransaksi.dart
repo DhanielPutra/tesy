@@ -12,7 +12,8 @@ class DaftarTransaksi extends StatefulWidget {
   State<DaftarTransaksi> createState() => _DaftarTransaksiState();
 }
 
-class _DaftarTransaksiState extends State<DaftarTransaksi> with SingleTickerProviderStateMixin {
+class _DaftarTransaksiState extends State<DaftarTransaksi>
+    with SingleTickerProviderStateMixin {
   List<dynamic>? items;
   late TabController _tabController;
 
@@ -31,7 +32,8 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> with SingleTickerProv
       final response = await http.get(
         Uri.parse(url),
         headers: {
-          'Authorization': 'Bearer $token' // Include the token in the request headers
+          'Authorization':
+              'Bearer $token' // Include the token in the request headers
         },
       );
 
@@ -58,10 +60,20 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> with SingleTickerProv
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Daftar Transaksi'),
+        elevation: 5,
+        backgroundColor: Color.fromARGB(255, 193, 24, 24),
+        title: const Text(
+          'Daftar Transaksi',
+          style: TextStyle(
+            color: Color.fromARGB(255, 255, 255, 255),
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back, color: Colors.white,),
           onPressed: () {
             Navigator.of(context).pushAndRemoveUntil(
               PageRouteBuilder(
@@ -74,9 +86,11 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> with SingleTickerProv
         ),
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: Colors.red,
-          labelColor: Colors.red, // Add this line to change the selected tab label color to red
-          unselectedLabelColor: Colors.black, // Optionally set the color for unselected tabs
+          indicatorColor: Colors.white,
+          labelColor: Colors
+              .white, // Add this line to change the selected tab label color to red
+          unselectedLabelColor:
+              Colors.black, // Optionally set the color for unselected tabs
           tabs: const [
             Tab(text: 'Diproses'),
             Tab(text: 'Dikirim'),
@@ -116,7 +130,7 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> with SingleTickerProv
 
         return GestureDetector(
           onTap: () {
-           Navigator.push(
+            Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => RincianPesanan(item: item),
@@ -124,13 +138,13 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> with SingleTickerProv
             );
           },
           child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+            margin: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(5),
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
+                  color: Colors.grey.withOpacity(0.3),
                   spreadRadius: 2,
                   blurRadius: 5,
                   offset: const Offset(0, 2),
@@ -144,7 +158,6 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> with SingleTickerProv
                   width: 120,
                   height: 120,
                   decoration: BoxDecoration(
-                    
                     image: DecorationImage(
                       image: NetworkImage(product['gambar']),
                       fit: BoxFit.cover,
@@ -156,7 +169,9 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> with SingleTickerProv
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(height: 25,),
+                      SizedBox(
+                        height: 25,
+                      ),
                       Text(
                         product['nama_produk'],
                         style: const TextStyle(
@@ -170,7 +185,6 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> with SingleTickerProv
                         style: const TextStyle(fontSize: 16),
                       ),
                       const SizedBox(height: 8),
-                      
                     ],
                   ),
                 ),
