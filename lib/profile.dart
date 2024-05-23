@@ -7,11 +7,13 @@ import 'package:marketplace/cart.dart';
 import 'package:marketplace/daftarTransaksi.dart';
 import 'package:marketplace/editProfile.dart';
 import 'package:marketplace/homepage.dart';
+import 'package:marketplace/openWebsite.dart';
 import 'package:marketplace/pembayaran.dart';
 import 'package:marketplace/user_services.dart';
 import 'package:marketplace/view/Register/login.dart';
 import 'package:marketplace/wishlist.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -314,6 +316,21 @@ class _ProfileState extends State<Profile> {
                             children: const [
                               Text('Pembayaran'),
                               Icon(Icons.payment_rounded),
+                            ],
+                          ), 
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        InkWell(
+                          onTap: () {
+                           launch('https://barbeqshop.online');
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Text('Daftar Penjual'),
+                              Icon(Icons.store_mall_directory_outlined),
                             ],
                           ),
                         ),
