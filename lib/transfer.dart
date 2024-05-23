@@ -54,8 +54,23 @@ class _TransferState extends State<Transfer> {
     print('idkurir: ${widget.idKurir}');
     return Scaffold(
       appBar: AppBar(
-        title: Text('Transfer Bank'),
+        elevation: 5,
+        title: Text(
+          'Transfer Bank',
+          style: TextStyle(
+              color: const Color.fromARGB(255, 255, 255, 255),
+              fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Color(0xFFB50B0B),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20),
@@ -217,7 +232,8 @@ class _TransferState extends State<Transfer> {
           MaterialPageRoute(builder: (context) => PesananBerhasil()),
         );
       } else {
-        print('Failed to create order. Status code: ${streamedResponse.statusCode}');
+        print(
+            'Failed to create order. Status code: ${streamedResponse.statusCode}');
       }
     } catch (e) {
       print('Error creating order: $e');
