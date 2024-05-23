@@ -30,12 +30,14 @@ class _RincianPesananState extends State<RincianPesanan> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Rincian Pesanan'),
+        title: Text('Rincian Pesanan', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+        backgroundColor: Color.fromARGB(255, 193, 24, 24),
+        elevation: 5,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back, color: Colors.white,),
         ),
       ),
       body: SingleChildScrollView(
@@ -51,14 +53,14 @@ class _RincianPesananState extends State<RincianPesanan> {
                     children: [
                       Icon(
                         Icons.location_on_outlined,
-                        color: Colors.red,
+                        color: Color.fromARGB(255, 193, 24, 24),
                       ),
                       SizedBox(width: 8),
                       Text(
                         'Alamat Pengiriman',
                         style: TextStyle(
                             fontSize: 20,
-                            color: Colors.red,
+                            color: Color.fromARGB(255, 193, 24, 24),
                             fontWeight: FontWeight.bold),
                       ),
                     ],
@@ -154,6 +156,7 @@ class _RincianPesananState extends State<RincianPesanan> {
                 thickness: 5,
               ),
               Container(
+                padding: EdgeInsets.all(8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -162,7 +165,7 @@ class _RincianPesananState extends State<RincianPesanan> {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.red,
+                        color: Color.fromARGB(255, 193, 24, 24),
                       ),
                     ),
                     SizedBox(height: 8),
