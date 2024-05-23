@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
@@ -56,42 +55,44 @@ class _TransferState extends State<Transfer> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Transfer Bank'),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Color(0xFFB50B0B),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('No Rekening Transfer'),
+            Text(
+              'No Rekening Transfer',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
             SizedBox(height: 10),
             Card(
               elevation: 5,
               shadowColor: Colors.black,
-              color: Colors.red[600],
-              child: SizedBox(
-                width: 500,
-                height: 50,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        widget.bankName,
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      Text(
-                        ' : ${getBankAccount(widget.bankName)}',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ],
-                  ),
+              color: Color(0xFFB50B0B),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      widget.bankName,
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                    Text(
+                      ' : ${getBankAccount(widget.bankName)}',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ],
                 ),
               ),
             ),
             SizedBox(height: 20),
-            Text('Upload Bukti Transfer'),
+            Text(
+              'Upload Bukti Transfer',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
             SizedBox(height: 10),
             _buildImagePicker(),
             SizedBox(height: 20),
@@ -106,9 +107,9 @@ class _TransferState extends State<Transfer> {
     return Card(
       elevation: 5,
       shadowColor: Colors.black,
-      color: Colors.red[600],
+      color: Color(0xFFB50B0B),
       child: SizedBox(
-        width: 500,
+        width: double.infinity,
         height: 350,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -117,16 +118,21 @@ class _TransferState extends State<Transfer> {
             _image == null
                 ? Text(
                     'No image selected.',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   )
                 : Image.file(
                     _image!,
                     width: 200,
                     height: 200,
+                    fit: BoxFit.cover,
                   ),
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: _pickImage,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Color(0xFFB50B0B),
+              ),
               child: Text("Pick Image from Gallery"),
             ),
           ],
@@ -143,7 +149,7 @@ class _TransferState extends State<Transfer> {
         },
         style: ElevatedButton.styleFrom(
           fixedSize: Size(200, 50),
-          backgroundColor: Colors.red[600],
+          backgroundColor: Color(0xFFB50B0B),
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(4.0),
@@ -173,20 +179,21 @@ class _TransferState extends State<Transfer> {
       // If the data is from the cart
       produkId = widget.cartItems[0]['produk_id'].toString();
       penjualId = widget.cartItems[0]['penjual_id'].toString();
-    } else if(widget.isFromWish){
-    // If the data is from product details
-    produkId = widget.cartItems[0]['id_wish'].toString();
-    penjualId = widget.cartItems[0]['id_penjual'].toString();
-    }else {
+    } else if (widget.isFromWish) {
+      // If the data is from wishlist
+      produkId = widget.cartItems[0]['id_wish'].toString();
+      penjualId = widget.cartItems[0]['id_penjual'].toString();
+    } else {
       // If the data is from product details
       produkId = widget.cartItems['id'].toString();
       penjualId = widget.cartItems['author']['id'].toString();
     }
+
     // Add other data fields
     request.fields['pembeli_id'] = userId.toString();
     request.fields['alamat'] = widget.alamatPengiriman;
     request.fields['produk_id'] = produkId.toString();
-    request.fields['user_id'] = penjualId.toString(); // Access the first item in the list and get the penjual_id
+    request.fields['user_id'] = penjualId.toString();
     request.fields['bayar_id'] = '2'; // ID for Bank Transfer
     request.fields['status_id'] = '1';
     request.fields['harga'] = widget.totalPayment;
@@ -194,8 +201,7 @@ class _TransferState extends State<Transfer> {
 
     // Add the image file
     if (_image != null) {
-      var pic =
-          await http.MultipartFile.fromPath("gambar", _image!.path);
+      var pic = await http.MultipartFile.fromPath("gambar", _image!.path);
       request.files.add(pic);
     }
 
@@ -211,8 +217,7 @@ class _TransferState extends State<Transfer> {
           MaterialPageRoute(builder: (context) => PesananBerhasil()),
         );
       } else {
-        print(
-            'Failed to create order. Status code: ${streamedResponse.statusCode}');
+        print('Failed to create order. Status code: ${streamedResponse.statusCode}');
       }
     } catch (e) {
       print('Error creating order: $e');
