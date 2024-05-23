@@ -24,7 +24,6 @@ class _DetailState extends State<Detail> {
   bool isLiked = false;
   List<Product> products = [];
   List<Product> cartItems = [];
-  
 
   @override
   void initState() {
@@ -90,7 +89,7 @@ class _DetailState extends State<Detail> {
       'gambar': widget.item['gambar'],
       'nama_product': widget.item['nama_produk'],
       'harga': widget.item['harga'],
-      'penjual_id' : widget.item['user_id']
+      'penjual_id': widget.item['user_id']
     };
 
     try {
@@ -238,11 +237,20 @@ class _DetailState extends State<Detail> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Color.fromARGB(255, 206, 22, 22),
+        title: Text(
+          'Detail Produk',
+          style: TextStyle(
+              color: const Color.fromARGB(255, 255, 255, 255),
+              fontWeight: FontWeight.bold),
+        ),
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: const Icon(Icons.arrow_back, color: Colors.white,),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -504,9 +512,12 @@ class _DetailState extends State<Detail> {
   void _sendDataTotalToCheckout(BuildContext context, double itemPrice) {
     double totalPayment = itemPrice;
     Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => Checkout(totalPayment: totalPayment, CartItems: widget.item,isFromCart: false,isFromWIsh: false,),
+      builder: (context) => Checkout(
+        totalPayment: totalPayment,
+        CartItems: widget.item,
+        isFromCart: false,
+        isFromWIsh: false,
+      ),
     ));
   }
 }
-
-
