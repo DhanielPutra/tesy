@@ -16,6 +16,8 @@ class _DaftarTransaksiState extends State<DaftarTransaksi>
     with SingleTickerProviderStateMixin {
   List<dynamic>? items;
   late TabController _tabController;
+  bool isLoading = true;
+  String? errorMessage;
 
   @override
   void initState() {
@@ -32,8 +34,7 @@ class _DaftarTransaksiState extends State<DaftarTransaksi>
       final response = await http.get(
         Uri.parse(url),
         headers: {
-          'Authorization':
-              'Bearer $token' // Include the token in the request headers
+          'Authorization': 'Bearer $token', // Include the token in the request headers
         },
       );
 
@@ -47,13 +48,19 @@ class _DaftarTransaksiState extends State<DaftarTransaksi>
         });
         setState(() {
           items = data;
-          print(data);
+          isLoading = false;
         });
       } else {
-        throw Exception('Failed to load items');
+        setState(() {
+          errorMessage = 'Failed to load items';
+          isLoading = false;
+        });
       }
     } catch (e) {
-      print('Error fetching cart data: $e');
+      setState(() {
+        errorMessage = 'Error fetching cart data: $e';
+        isLoading = false;
+      });
     }
   }
 
@@ -73,7 +80,7 @@ class _DaftarTransaksiState extends State<DaftarTransaksi>
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white,),
+          icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             Navigator.of(context).pushAndRemoveUntil(
               PageRouteBuilder(
@@ -87,10 +94,8 @@ class _DaftarTransaksiState extends State<DaftarTransaksi>
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.white,
-          labelColor: Colors
-              .white, // Add this line to change the selected tab label color to red
-          unselectedLabelColor:
-              Colors.black, // Optionally set the color for unselected tabs
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.black,
           tabs: const [
             Tab(text: 'Diproses'),
             Tab(text: 'Dikirim'),
@@ -98,112 +103,44 @@ class _DaftarTransaksiState extends State<DaftarTransaksi>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          buildListView(0),
-          buildListView(1),
-          buildListView(2),
-        ],
-      ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : errorMessage != null
+              ? Center(child: Text(errorMessage!))
+              : TabBarView(
+                  controller: _tabController,
+                  children: [
+                    buildListView(0),
+                    buildListView(1),
+                    buildListView(2),
+                  ],
+                ),
     );
   }
 
   Widget buildListView(int statusIndex) {
-  return ListView.builder(
-    itemCount: items?.length ?? 0,
-    itemBuilder: (BuildContext context, int index) {
-      final item = items![index];
-      final product = item['produk'];
+    return ListView.builder(
+      itemCount: items?.length ?? 0,
+      itemBuilder: (BuildContext context, int index) {
+        final item = items![index];
+        final product = item['produk'];
 
-      // Check if the item matches the selected status type
-      if (statusIndex == 0) {
-        // Show items with status ID '1' or null
-        if (item['status_id'] != '1' && item['status_id'] != null) {
-          return Container(); // Return empty container if not 'Diproses'
+        // Check if the item matches the selected status type
+        if (statusIndex == 0) {
+          // Show items with status ID '1' or null
+          if (item['status_id'] != '1' && item['status_id'] != null) {
+            return Container(); // Return empty container if not 'Diproses'
+          }
+        } else if (statusIndex == 1 && item['status_id'] != '2') {
+          return Container(); // Return empty container if not 'Dikirim'
+        } else if (statusIndex == 2 && item['status_id'] != '3') {
+          return Container(); // Return empty container if not 'Selesai'
         }
-      } else if (statusIndex == 1 && item['status_id'] != '2') {
-        return Container(); // Return empty container if not 'Dikirim'
-      } else if (statusIndex == 2 && item['status_id'] != '3') {
-        return Container(); // Return empty container if not 'Selesai'
-      }
 
-      // Check if product is null
-      if (product == null) {
-        return Container(); // Return empty container if product is null
-      }
-
-      return GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => RincianPesanan(item: item),
-            ),
-          );
-        },
-        child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  image: DecorationImage(
-                    image: product['gambar'] != null
-                        ? NetworkImage(product['gambar'])
-                        : AssetImage('assets/placeholder.png') as ImageProvider,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      product['nama_produk'] ?? 'No Name',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Price: Rp. ${product['harga'] ?? 'N/A'}',
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Detail: ${product['detail'] ?? 'No Details'}',
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    },
-  );
-}
+        // Check if product is null
+        if (product == null) {
+          return Container(); // Return empty container if product is null
+        }
 
         return GestureDetector(
           onTap: () {
@@ -215,13 +152,13 @@ class _DaftarTransaksiState extends State<DaftarTransaksi>
             );
           },
           child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
+            margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(5),
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.3),
+                  color: Colors.grey.withOpacity(0.5),
                   spreadRadius: 2,
                   blurRadius: 5,
                   offset: const Offset(0, 2),
@@ -235,8 +172,11 @@ class _DaftarTransaksiState extends State<DaftarTransaksi>
                   width: 120,
                   height: 120,
                   decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
                     image: DecorationImage(
-                      image: NetworkImage(product['gambar']),
+                      image: product['gambar'] != null
+                          ? NetworkImage(product['gambar'])
+                          : AssetImage('assets/placeholder.png') as ImageProvider,
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -246,22 +186,25 @@ class _DaftarTransaksiState extends State<DaftarTransaksi>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        height: 25,
-                      ),
+                      const SizedBox(height: 16),
                       Text(
-                        product['nama_produk'],
+                        product['nama_produk'] ?? 'No Name',
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 8),
                       Text(
-                        'Rp. ${product['harga']}',
+                        'Price: Rp. ${product['harga'] ?? 'N/A'}',
                         style: const TextStyle(fontSize: 16),
                       ),
                       const SizedBox(height: 8),
+                      Text(
+                        'Detail: ${product['detail'] ?? 'No Details'}',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(height: 16),
                     ],
                   ),
                 ),
