@@ -241,34 +241,64 @@ class _CheckoutState extends State<Checkout> {
                   onPressed: () async {
                     final selectedPengiriman = await showMenu<String>(
                       context: context,
-                      position: const RelativeRect.fromLTRB(5, 200, 0, 0),
+                      position: const RelativeRect.fromLTRB(5, 350, 0, 0),
                       items: _pengirimanOptions
-                          .map<PopupMenuEntry<String>>((option) {
+                          .asMap()
+                          .entries
+                          .map<PopupMenuEntry<String>>((entry) {
+                        int index = entry.key;
+                        var option = entry.value;
+
+                        // Color backgroundColor;
+                        // if (index % 2 == 0) {
+                        //   backgroundColor = Colors.blue[100]!;
+                        // } else {
+                        //   backgroundColor = Colors.green[100]!;
+                        // }
+
                         return PopupMenuItem<String>(
                           value: option['id'].toString(),
                           height: 50,
                           child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.white,
-                                style: BorderStyle.none,
-                                width: 15,
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                option['expedisi'],
-                                style: TextStyle(
-                                  color: _selectedPengiriman ==
-                                          option['id'].toString()
-                                      ? Color(0xFFB50B0B)
-                                      : null,
+                            // color: backgroundColor,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    option['expedisi'],
+                                    style: TextStyle(
+                                      color: _selectedPengiriman ==
+                                              option['id'].toString()
+                                          ? Color(0xFFB50B0B)
+                                          : null,
+                                      fontWeight: _selectedPengiriman ==
+                                              option['id'].toString()
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                Text(
+                                  'Rp. ${option['harga']}',
+                                  style: TextStyle(
+                                    color: _selectedPengiriman ==
+                                            option['id'].toString()
+                                        ? Color(0xFFB50B0B)
+                                        : null,
+                                    fontWeight: _selectedPengiriman ==
+                                            option['id'].toString()
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         );
                       }).toList(),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     );
 
                     if (selectedPengiriman != null) {
@@ -280,13 +310,15 @@ class _CheckoutState extends State<Checkout> {
                       if (selectedOption != null) {
                         setState(() {
                           _selectedPengiriman = selectedPengiriman;
-                          _hargaPengiriman = double.parse(selectedOption['harga'].toString());
+                          _hargaPengiriman =
+                              double.parse(selectedOption['harga'].toString());
                         });
                       }
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: const Color(0xFFB50B0B),
+                    foregroundColor: Colors.white,
+                    backgroundColor: const Color(0xFFB50B0B),
                     minimumSize: Size(200, 50),
                   ),
                   child: const Text(
@@ -399,7 +431,9 @@ class _CheckoutState extends State<Checkout> {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ').format(widget.totalPayment + _hargaPengiriman),
+                  NumberFormat.currency(
+                          locale: 'id_ID', symbol: 'Rp. ')
+                      .format(widget.totalPayment + _hargaPengiriman),
                   style: TextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 30),
@@ -407,7 +441,8 @@ class _CheckoutState extends State<Checkout> {
                   child: ElevatedButton(
                     onPressed: handlePayment,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white, backgroundColor: const Color(0xFFB50B0B),
+                      foregroundColor: Colors.white,
+                      backgroundColor: const Color(0xFFB50B0B),
                       minimumSize: Size(200, 50),
                     ),
                     child: const Text(
