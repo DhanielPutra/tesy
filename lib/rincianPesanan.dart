@@ -28,12 +28,24 @@ class _RincianPesananState extends State<RincianPesanan> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Rincian Pesanan'),
+        elevation: 5,
+        backgroundColor: Color.fromARGB(255, 193, 24, 24),
+        title: Text(
+          'Rincian Pesanan',
+          style: TextStyle(
+            color: Color.fromARGB(255, 255, 255, 255),
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
         ),
       ),
       body: Padding(
@@ -49,12 +61,15 @@ class _RincianPesananState extends State<RincianPesanan> {
                     children: [
                       Icon(
                         Icons.location_on_outlined,
-                        color: Colors.red,
+                        color: Color.fromARGB(255, 193, 24, 24),
                       ),
                       SizedBox(width: 8),
                       Text(
                         'Alamat Pengiriman',
-                        style: TextStyle(fontSize: 20, color: Colors.red, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: Color.fromARGB(255, 193, 24, 24),
+                            fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -102,7 +117,7 @@ class _RincianPesananState extends State<RincianPesanan> {
                       width: 100,
                       height: 150,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
+                        //borderRadius: BorderRadius.circular(5),
                         image: DecorationImage(
                           image: NetworkImage(product['gambar']),
                           fit: BoxFit.cover,
@@ -151,7 +166,11 @@ class _RincianPesananState extends State<RincianPesanan> {
                   children: [
                     Text(
                       'Metode Pembayaran',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 193, 24, 24),
+                      ),
                     ),
                     SizedBox(height: 8),
                     Text(
@@ -159,14 +178,18 @@ class _RincianPesananState extends State<RincianPesanan> {
                       style: TextStyle(fontSize: 18),
                     ),
                     // Menampilkan bukti transfer jika metode pembayaran adalah Transfer
-                    if (widget.item['cara_bayar'] == '2' && widget.item['bukti_transfer'] != null)
+                    if (widget.item['cara_bayar'] == '2' &&
+                        widget.item['bukti_transfer'] != null)
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(height: 8),
                           Text(
                             'Bukti Transfer:',
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 20,
+                                color: Color.fromARGB(255, 193, 24, 24),
+                                fontWeight: FontWeight.bold),
                           ),
                           SizedBox(height: 8),
                           Image.network(
@@ -180,6 +203,27 @@ class _RincianPesananState extends State<RincianPesanan> {
                   ],
                 ),
               ),
+              SizedBox(height: 16),
+              Divider(
+                color: Colors.grey[200],
+                thickness: 5,
+              ),
+              SizedBox(height: 16),
+              Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Informasi Pengiriman',
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Color.fromARGB(255, 193, 24, 24),
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text('ap?'),
+                  ],
+                ),
+              )
             ],
           ),
         ),
