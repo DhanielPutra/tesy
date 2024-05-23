@@ -88,10 +88,11 @@ class _CartState extends State<Cart> {
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Color.fromARGB(255, 163, 6, 6),
-          
           title: Text(
             'My Cart',
-            style: TextStyle(color: const Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: const Color.fromARGB(255, 255, 255, 255),
+                fontWeight: FontWeight.bold),
           ),
         ),
         body: Stack(
@@ -207,10 +208,12 @@ class _CartState extends State<Cart> {
                       ],
                     ),
                     ElevatedButton(
-                      onPressed: getTotalPrice() > 0 ? () {
-                        _sendDataToCheckout(
-                            context); // Mengirim data ke halaman checkout
-                      } : null,
+                      onPressed: getTotalPrice() > 0
+                          ? () {
+                              _sendDataToCheckout(
+                                  context); // Mengirim data ke halaman checkout
+                            }
+                          : null,
                       child: Text(
                         'Checkout',
                         style: TextStyle(
@@ -220,7 +223,9 @@ class _CartState extends State<Cart> {
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: getTotalPrice() > 0 ? Color(0xFFB50B0B) : Colors.grey,
+                        backgroundColor: getTotalPrice() > 0
+                            ? Color(0xFFB50B0B)
+                            : Colors.grey,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -359,37 +364,37 @@ class _CartState extends State<Cart> {
   }
 
   void _onItemTapped(int index) {
-  setState(() {
-    _selectedIndex = index;
-    if (index == 0) {
-     Navigator.of(context).pushAndRemoveUntil(
-        PageRouteBuilder(
-          pageBuilder: (context, animation1, animation2) => Homepage(),
-          transitionDuration: Duration(milliseconds: 0),
-        ),
-        (route) => false,
-      );
-    } else if (index == 1) {
-      //////
-    } else if (index == 2) {
-       Navigator.of(context).pushAndRemoveUntil(
-        PageRouteBuilder(
-          pageBuilder: (context, animation1, animation2) => Wishlist(),
-          transitionDuration: Duration(milliseconds: 0),
-        ),
-        (route) => false,
-      );
-    } else if (index == 3) {
-      Navigator.of(context).pushAndRemoveUntil(
-        PageRouteBuilder(
-          pageBuilder: (context, animation1, animation2) => Profile(),
-          transitionDuration: Duration(milliseconds: 0),
-        ),
-        (route) => false,
-      );
-    }
-  });
-}
+    setState(() {
+      _selectedIndex = index;
+      if (index == 0) {
+        Navigator.of(context).pushAndRemoveUntil(
+          PageRouteBuilder(
+            pageBuilder: (context, animation1, animation2) => Homepage(),
+            transitionDuration: Duration(milliseconds: 0),
+          ),
+          (route) => false,
+        );
+      } else if (index == 1) {
+        //////
+      } else if (index == 2) {
+        Navigator.of(context).pushAndRemoveUntil(
+          PageRouteBuilder(
+            pageBuilder: (context, animation1, animation2) => Wishlist(),
+            transitionDuration: Duration(milliseconds: 0),
+          ),
+          (route) => false,
+        );
+      } else if (index == 3) {
+        Navigator.of(context).pushAndRemoveUntil(
+          PageRouteBuilder(
+            pageBuilder: (context, animation1, animation2) => Profile(),
+            transitionDuration: Duration(milliseconds: 0),
+          ),
+          (route) => false,
+        );
+      }
+    });
+  }
 
   // void _sendDataTotalToCheckout(BuildContext context) {
   //   double totalPayment = getTotalPrice();
@@ -401,7 +406,9 @@ class _CartState extends State<Cart> {
       builder: (context) => Checkout(
         CartItems:
             cartItems.where((item) => item['isChecked'] == true).toList(),
-        totalPayment: getTotalPrice(),isFromCart: true, isFromWIsh: false,
+        totalPayment: getTotalPrice(),
+        isFromCart: true,
+        isFromWIsh: false,
       ),
     ));
   }

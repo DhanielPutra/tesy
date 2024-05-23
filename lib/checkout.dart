@@ -62,147 +62,145 @@ class _CheckoutState extends State<Checkout> {
   }
 
   Future<void> addToPesanan() async {
-  final String url = 'https://barbeqshop.online/api/pesanan';
+    final String url = 'https://barbeqshop.online/api/pesanan';
 
-  int userId = await getUserId();
-  if (userId == null) {
-    print('Error: User ID is null.');
-    return;
-  }
-
-  String token = await getToken();
-  if (token == null) {
-    print('Error: Token is null.');
-    return;
-  }
-
-  String caraBayar = '1'; // Default to Cash on Delivery
-  if (_selectedPaymentMethod == '1') {
-    caraBayar = '1'; // ID for Cash on Delivery
-  } else if (_selectedPaymentMethod == '2') {
-    if (_selectedBank == 'Bank BNI') {
-      caraBayar = '2'; // ID for Bank BNI
-    } else if (_selectedBank == 'Bank BCA') {
-      caraBayar = '3'; // ID for Bank BCA
-    } else if (_selectedBank == 'Bank Mandiri') {
-      caraBayar = '4'; // ID for Bank Mandiri (assuming 4 for Mandiri)
+    int userId = await getUserId();
+    if (userId == null) {
+      print('Error: User ID is null.');
+      return;
     }
-  }
 
-  String produkId;
-  String penjualId;
-  if (widget.isFromCart) {
-    // If the data is from the cart
-    produkId = widget.CartItems[0]['produk_id'].toString();
-    penjualId = widget.CartItems[0]['penjual_id'].toString();
-  } else if (widget.isFromWIsh) {
-    // If the data is from product details
-    produkId = widget.CartItems[0]['id_wish'].toString();
-    penjualId = widget.CartItems[0]['id_penjual'].toString();
-  } else {
-    produkId = widget.CartItems['id'].toString();
-    penjualId = widget.CartItems['author']['id'].toString();
-  }
+    String token = await getToken();
+    if (token == null) {
+      print('Error: Token is null.');
+      return;
+    }
 
-  // Get the selected pengiriman option
-  var selectedPengiriman = _pengirimanOptions.firstWhere(
-    (option) => option['id'].toString() == _selectedPengiriman,
-    orElse: () => null,
-  );
+    String caraBayar = '1'; // Default to Cash on Delivery
+    if (_selectedPaymentMethod == '1') {
+      caraBayar = '1'; // ID for Cash on Delivery
+    } else if (_selectedPaymentMethod == '2') {
+      if (_selectedBank == 'Bank BNI') {
+        caraBayar = '2'; // ID for Bank BNI
+      } else if (_selectedBank == 'Bank BCA') {
+        caraBayar = '3'; // ID for Bank BCA
+      } else if (_selectedBank == 'Bank Mandiri') {
+        caraBayar = '4'; // ID for Bank Mandiri (assuming 4 for Mandiri)
+      }
+    }
 
-  // Calculate the total price including the selected pengiriman option
-  double hargaPengiriman = 0.0;
-   String totalPrice = '0.00';
-  if (selectedPengiriman != null) {
-    hargaPengiriman = double.parse(selectedPengiriman['harga'].toString());
-     totalPrice = (widget.totalPayment + hargaPengiriman).toStringAsFixed(2);
-  }
-
-  final Map<String, dynamic> bodyData = {
-  'pembeli_id': userId.toString(),
-  'alamat': alamatController.text,
-  'produk_id': produkId,
-  'user_id': penjualId,
-  'cara_bayar': caraBayar,
-  'status_id': '1',
-  'id_kurir': _selectedPengiriman,
-  'pengiriman_id': _selectedPengiriman, // Include selected delivery option
-  'harga': totalPrice // Calculate total price and format as string
-};
-
-
-  // Print the data before making the request
-  print('Posting data: $bodyData');
-
-  try {
-    final response = await http.post(
-      Uri.parse(url),
-      body: bodyData,
-      headers: {'Authorization': 'Bearer $token'},
-    );
-    if (response.statusCode == 200) {
-      print('Order created successfully.');
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => PesananBerhasil()),
-      );
+    String produkId;
+    String penjualId;
+    if (widget.isFromCart) {
+      // If the data is from the cart
+      produkId = widget.CartItems[0]['produk_id'].toString();
+      penjualId = widget.CartItems[0]['penjual_id'].toString();
+    } else if (widget.isFromWIsh) {
+      // If the data is from product details
+      produkId = widget.CartItems[0]['id_wish'].toString();
+      penjualId = widget.CartItems[0]['id_penjual'].toString();
     } else {
-      print('Failed to create order. Status code: ${response.statusCode}');
-      print('Response body: ${response.body}'); // Debugging the response body
+      produkId = widget.CartItems['id'].toString();
+      penjualId = widget.CartItems['author']['id'].toString();
     }
-  } catch (e) {
-    print('Error creating order: $e');
-  }
-}
 
+    // Get the selected pengiriman option
+    var selectedPengiriman = _pengirimanOptions.firstWhere(
+      (option) => option['id'].toString() == _selectedPengiriman,
+      orElse: () => null,
+    );
 
-  void handlePayment() {
-  if (_selectedPaymentMethod == '1') {
-    // Cash on Delivery, post the data
-    addToPesanan();
-  } else if (_selectedPaymentMethod == '2' && _selectedBank.isNotEmpty) {
-    // Bank Transfer, navigate to the Transfer screen
-    if (_selectedPengiriman.isNotEmpty) {
-      var selectedPengiriman = _pengirimanOptions.firstWhere(
-        (option) => option['id'].toString() == _selectedPengiriman,
-        orElse: () => null,
+    // Calculate the total price including the selected pengiriman option
+    double hargaPengiriman = 0.0;
+    String totalPrice = '0.00';
+    if (selectedPengiriman != null) {
+      hargaPengiriman = double.parse(selectedPengiriman['harga'].toString());
+      totalPrice = (widget.totalPayment + hargaPengiriman).toStringAsFixed(2);
+    }
+
+    final Map<String, dynamic> bodyData = {
+      'pembeli_id': userId.toString(),
+      'alamat': alamatController.text,
+      'produk_id': produkId,
+      'user_id': penjualId,
+      'cara_bayar': caraBayar,
+      'status_id': '1',
+      'id_kurir': _selectedPengiriman,
+      'pengiriman_id': _selectedPengiriman, // Include selected delivery option
+      'harga': totalPrice // Calculate total price and format as string
+    };
+
+    // Print the data before making the request
+    print('Posting data: $bodyData');
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        body: bodyData,
+        headers: {'Authorization': 'Bearer $token'},
       );
-
-      if (selectedPengiriman != null) {
+      if (response.statusCode == 200) {
+        print('Order created successfully.');
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => Transfer(
-              bankName: _selectedBank,
-              alamatPengiriman: alamatController.text,
-              cartItems: widget.CartItems,
-              isFromCart: widget.isFromCart,
-              isFromWish: widget.isFromWIsh,
-              totalPayment: (widget.totalPayment + double.parse(selectedPengiriman['harga'].toString())).toStringAsFixed(2),
-              idKurir: selectedPengiriman['id'].toString(),
+          MaterialPageRoute(builder: (context) => PesananBerhasil()),
+        );
+      } else {
+        print('Failed to create order. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}'); // Debugging the response body
+      }
+    } catch (e) {
+      print('Error creating order: $e');
+    }
+  }
+
+  void handlePayment() {
+    if (_selectedPaymentMethod == '1') {
+      // Cash on Delivery, post the data
+      addToPesanan();
+    } else if (_selectedPaymentMethod == '2' && _selectedBank.isNotEmpty) {
+      // Bank Transfer, navigate to the Transfer screen
+      if (_selectedPengiriman.isNotEmpty) {
+        var selectedPengiriman = _pengirimanOptions.firstWhere(
+          (option) => option['id'].toString() == _selectedPengiriman,
+          orElse: () => null,
+        );
+
+        if (selectedPengiriman != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Transfer(
+                bankName: _selectedBank,
+                alamatPengiriman: alamatController.text,
+                cartItems: widget.CartItems,
+                isFromCart: widget.isFromCart,
+                isFromWish: widget.isFromWIsh,
+                totalPayment: (widget.totalPayment +
+                        double.parse(selectedPengiriman['harga'].toString()))
+                    .toStringAsFixed(2),
+                idKurir: selectedPengiriman['id'].toString(),
+              ),
             ),
+          );
+        }
+      } else {
+        // Show a message if no delivery option is selected
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Silakan pilih metode pengiriman terlebih dahulu.'),
           ),
         );
       }
     } else {
-      // Show a message if no delivery option is selected
+      // Show a message if no payment method is selected
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Silakan pilih metode pengiriman terlebih dahulu.'),
+          content: Text('Silakan pilih metode pembayaran terlebih dahulu.'),
         ),
       );
     }
-  } else {
-    // Show a message if no payment method is selected
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Silakan pilih metode pembayaran terlebih dahulu.'),
-      ),
-    );
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -250,6 +248,79 @@ class _CheckoutState extends State<Checkout> {
                 ),
                 SizedBox(
                   height: 25,
+                ),
+                Text(
+                  'Pengiriman',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final selectedPengiriman = await showMenu<String>(
+                      context: context,
+                      position: const RelativeRect.fromLTRB(5, 200, 0, 0),
+                      items: _pengirimanOptions
+                          .map<PopupMenuEntry<String>>((option) {
+                        return PopupMenuItem<String>(
+                          value: option['id'].toString(),
+                          height: 50,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.white,
+                                style: BorderStyle.none,
+                                width: 15,
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                option['nama_kurir'],
+                                style: TextStyle(
+                                  color: _selectedPengiriman ==
+                                          option['id'].toString()
+                                      ? Color(0xFFB50B0B)
+                                      : null,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    );
+                    if (selectedPengiriman != null) {
+                      setState(() {
+                        _selectedPengiriman = selectedPengiriman;
+                      });
+                      print('Selected Pengiriman ID: $_selectedPengiriman');
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: const Size(400, 60),
+                    backgroundColor: _selectedPengiriman.isNotEmpty
+                        ? Color(0xFFB50B0B)
+                        : Colors.white,
+                    foregroundColor: _selectedPengiriman.isNotEmpty
+                        ? Colors.white
+                        : Color(0xFFB50B0B),
+                    side: const BorderSide(color: Color(0xFFB50B0B), width: 1),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4.0),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(_selectedPengiriman.isNotEmpty
+                          ? 'Pengiriman: ${_pengirimanOptions.firstWhere((option) => option['id'].toString() == _selectedPengiriman)['nama_kurir']}'
+                          : 'Pilih Pengiriman'),
+                      const Icon(Icons.arrow_drop_down),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 50,
                 ),
                 Text(
                   'Total Pembayaran: Rp. ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(widget.totalPayment)},00',
@@ -424,79 +495,6 @@ class _CheckoutState extends State<Checkout> {
                 ),
                 SizedBox(
                   height: 25,
-                ),
-                Text(
-                  'Pengiriman',
-                  style: TextStyle(fontWeight: FontWeight.w700),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    final selectedPengiriman = await showMenu<String>(
-                      context: context,
-                      position: const RelativeRect.fromLTRB(5, 200, 0, 0),
-                      items: _pengirimanOptions
-                          .map<PopupMenuEntry<String>>((option) {
-                        return PopupMenuItem<String>(
-                          value: option['id'].toString(),
-                          height: 50,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.white,
-                                style: BorderStyle.none,
-                                width: 15,
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                option['nama_kurir'],
-                                style: TextStyle(
-                                  color: _selectedPengiriman ==
-                                          option['id'].toString()
-                                      ? Color(0xFFB50B0B)
-                                      : null,
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    );
-                    if (selectedPengiriman != null) {
-                      setState(() {
-                        _selectedPengiriman = selectedPengiriman;
-                      });
-                      print('Selected Pengiriman ID: $_selectedPengiriman');
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    fixedSize: const Size(400, 60),
-                    backgroundColor: _selectedPengiriman.isNotEmpty
-                        ? Color(0xFFB50B0B)
-                        : Colors.white,
-                    foregroundColor: _selectedPengiriman.isNotEmpty
-                        ? Colors.white
-                        : Color(0xFFB50B0B),
-                    side: const BorderSide(color: Color(0xFFB50B0B), width: 1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4.0),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(_selectedPengiriman.isNotEmpty
-                          ? 'Pengiriman: ${_pengirimanOptions.firstWhere((option) => option['id'].toString() == _selectedPengiriman)['nama_kurir']}'
-                          : 'Pilih Pengiriman'),
-                      const Icon(Icons.arrow_drop_down),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 50,
                 ),
                 Center(
                   child: ElevatedButton(
