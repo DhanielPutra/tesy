@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class RincianPesanan extends StatefulWidget {
   final dynamic item;
@@ -11,11 +12,12 @@ class RincianPesanan extends StatefulWidget {
 class _RincianPesananState extends State<RincianPesanan> {
   @override
   Widget build(BuildContext context) {
-    final product = widget.item['produk'];
-    final alamat = widget.item['alamat'];
+    final product = widget.item['produk'] ?? {};
+    final alamat = widget.item['alamat'] ?? '';
+    final pembeli = widget.item['pembeli'] ?? {};
 
     // Mengubah cara_bayar ke format yang lebih mudah dipahami
-    String getCaraBayar(String caraBayar) {
+    String getCaraBayar(String? caraBayar) {
       switch (caraBayar) {
         case '1':
           return 'Cash on Delivery';
@@ -28,29 +30,17 @@ class _RincianPesananState extends State<RincianPesanan> {
 
     return Scaffold(
       appBar: AppBar(
-        elevation: 5,
-        backgroundColor: Color.fromARGB(255, 193, 24, 24),
-        title: Text(
-          'Rincian Pesanan',
-          style: TextStyle(
-            color: Color.fromARGB(255, 255, 255, 255),
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        title: Text('Rincian Pesanan'),
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
+          icon: Icon(Icons.arrow_back),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -61,34 +51,32 @@ class _RincianPesananState extends State<RincianPesanan> {
                     children: [
                       Icon(
                         Icons.location_on_outlined,
-                        color: Color.fromARGB(255, 193, 24, 24),
+                        color: Colors.red,
                       ),
                       SizedBox(width: 8),
                       Text(
                         'Alamat Pengiriman',
                         style: TextStyle(
                             fontSize: 20,
-                            color: Color.fromARGB(255, 193, 24, 24),
+                            color: Colors.red,
                             fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Container(
-                    padding: EdgeInsets.fromLTRB(33, 0, 0, 0),
+                    padding: const EdgeInsets.fromLTRB(33, 0, 0, 0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Nama penerima
                         Text(
-                          'Nama Penerima: ${widget.item['pembeli']['name']}',
+                          'Nama Penerima: ${pembeli['name'] ?? 'Tidak ada data'}',
                           style: const TextStyle(
                             fontSize: 18,
                           ),
                         ),
-                        // Nomor penerima
                         Text(
-                          'Nomor Penerima: ${widget.item['pembeli']['no_tlp']}',
+                          'Nomor Penerima: ${pembeli['no_tlp'] ?? 'Tidak ada data'}',
                           style: const TextStyle(
                             fontSize: 18,
                           ),
@@ -104,22 +92,23 @@ class _RincianPesananState extends State<RincianPesanan> {
                   ),
                 ],
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Divider(
                 color: Colors.grey[200],
                 thickness: 5,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Container(
                 child: Row(
                   children: [
                     Container(
-                      width: 100,
-                      height: 150,
+                      width: 130,
+                      height: 130,
                       decoration: BoxDecoration(
-                        //borderRadius: BorderRadius.circular(5),
+                        borderRadius: BorderRadius.circular(5),
                         image: DecorationImage(
-                          image: NetworkImage(product['gambar']),
+                          image: NetworkImage(product['gambar'] ??
+                              'https://via.placeholder.com/100'),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -130,24 +119,29 @@ class _RincianPesananState extends State<RincianPesanan> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            product['nama_produk'],
+                            product['nama_produk'] ?? 'Tidak ada data',
                             style: const TextStyle(
                               fontSize: 24,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Price: Rp. ${product['harga']}',
+                            'Price: Rp. ${product['harga'] ?? 'Tidak ada data'}',
                             style: const TextStyle(fontSize: 20),
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Detail: ${product['detail']}',
+                            'Detail: ${product['detail'] ?? 'Tidak ada data'}',
                             style: const TextStyle(fontSize: 16),
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 16),
+                          // Text(
+                          //   'Status: ${widget.item['status_id'] ?? 'Tidak ada data'}',
+                          //   style: const TextStyle(fontSize: 16),
+                          // ),
                         ],
                       ),
                     ),
@@ -159,7 +153,6 @@ class _RincianPesananState extends State<RincianPesanan> {
                 color: Colors.grey[200],
                 thickness: 5,
               ),
-              SizedBox(height: 16),
               Container(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,17 +162,17 @@ class _RincianPesananState extends State<RincianPesanan> {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 193, 24, 24),
+                        color: Colors.red,
                       ),
                     ),
                     SizedBox(height: 8),
                     Text(
-                      getCaraBayar(widget.item['cara_bayar']),
+                      getCaraBayar(widget.item['bayar_id']?.toString()),
                       style: TextStyle(fontSize: 18),
                     ),
                     // Menampilkan bukti transfer jika metode pembayaran adalah Transfer
-                    if (widget.item['cara_bayar'] == '2' &&
-                        widget.item['bukti_transfer'] != null)
+                    if (widget.item['bayar_id']?.toString() == '2' &&
+                        widget.item['gambar'] != null)
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -187,40 +180,19 @@ class _RincianPesananState extends State<RincianPesanan> {
                           Text(
                             'Bukti Transfer:',
                             style: TextStyle(
-                                fontSize: 20,
-                                color: Color.fromARGB(255, 193, 24, 24),
-                                fontWeight: FontWeight.bold),
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          SizedBox(height: 8),
+                          SizedBox(height: 10),
                           Image.network(
-                            widget.item['bukti_transfer'],
+                            widget.item['gambar'] ?? '',
                             height: 150,
                             width: 150,
                             fit: BoxFit.cover,
                           ),
                         ],
                       ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 16),
-              Divider(
-                color: Colors.grey[200],
-                thickness: 5,
-              ),
-              SizedBox(height: 16),
-              Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Informasi Pengiriman',
-                      style: TextStyle(
-                          fontSize: 20,
-                          color: Color.fromARGB(255, 193, 24, 24),
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text('ap?'),
                   ],
                 ),
               )

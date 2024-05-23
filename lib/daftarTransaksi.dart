@@ -34,7 +34,8 @@ class _DaftarTransaksiState extends State<DaftarTransaksi>
       final response = await http.get(
         Uri.parse(url),
         headers: {
-          'Authorization': 'Bearer $token', // Include the token in the request headers
+          'Authorization':
+              'Bearer $token', // Include the token in the request headers
         },
       );
 
@@ -123,11 +124,10 @@ class _DaftarTransaksiState extends State<DaftarTransaksi>
       itemCount: items?.length ?? 0,
       itemBuilder: (BuildContext context, int index) {
         final item = items![index];
-        final product = item['produk'];
+        final product = item['produk'] ?? {};
 
         // Check if the item matches the selected status type
         if (statusIndex == 0) {
-          // Show items with status ID '1' or null
           if (item['status_id'] != '1' && item['status_id'] != null) {
             return Container(); // Return empty container if not 'Diproses'
           }
@@ -135,11 +135,6 @@ class _DaftarTransaksiState extends State<DaftarTransaksi>
           return Container(); // Return empty container if not 'Dikirim'
         } else if (statusIndex == 2 && item['status_id'] != '3') {
           return Container(); // Return empty container if not 'Selesai'
-        }
-
-        // Check if product is null
-        if (product == null) {
-          return Container(); // Return empty container if product is null
         }
 
         return GestureDetector(
@@ -152,7 +147,7 @@ class _DaftarTransaksiState extends State<DaftarTransaksi>
             );
           },
           child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(5),
               color: Colors.white,
@@ -172,11 +167,10 @@ class _DaftarTransaksiState extends State<DaftarTransaksi>
                   width: 120,
                   height: 120,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
+                    //borderRadius: BorderRadius.circular(5),
                     image: DecorationImage(
-                      image: product['gambar'] != null
-                          ? NetworkImage(product['gambar'])
-                          : AssetImage('assets/placeholder.png') as ImageProvider,
+                      image: NetworkImage(product['gambar'] ??
+                          'https://via.placeholder.com/120'),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -186,25 +180,21 @@ class _DaftarTransaksiState extends State<DaftarTransaksi>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 25),
                       Text(
-                        product['nama_produk'] ?? 'No Name',
+                        product['nama_produk'] ?? 'Tidak ada data',
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 10),
                       Text(
-                        'Price: Rp. ${product['harga'] ?? 'N/A'}',
+                        'Price: Rp. ${product['harga'] ?? 'Tidak ada data'}',
                         style: const TextStyle(fontSize: 16),
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        'Detail: ${product['detail'] ?? 'No Details'}',
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(height: 16),
+                    
                     ],
                   ),
                 ),
