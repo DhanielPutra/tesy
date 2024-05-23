@@ -51,7 +51,8 @@ class _TransferState extends State<Transfer> {
     print('Alamat Pengiriman: ${widget.alamatPengiriman}');
     print('Cart Items: ${widget.cartItems}');
     print('Is From Cart: ${widget.isFromCart}');
-    print('Is From Cart: ${widget.totalPayment}');
+    print('Bayar: ${widget.totalPayment}');
+    print('idkurir: ${widget.idKurir}');
     return Scaffold(
       appBar: AppBar(
         title: Text('Transfer Bank'),
@@ -186,15 +187,15 @@ class _TransferState extends State<Transfer> {
     request.fields['alamat'] = widget.alamatPengiriman;
     request.fields['produk_id'] = produkId.toString();
     request.fields['user_id'] = penjualId.toString(); // Access the first item in the list and get the penjual_id
-    request.fields['cara_bayar'] = '2'; // ID for Bank Transfer
+    request.fields['bayar_id'] = '2'; // ID for Bank Transfer
     request.fields['status_id'] = '1';
     request.fields['harga'] = widget.totalPayment;
-    request.fields['id_kurir'] = widget.idKurir;
+    request.fields['expedisi_id'] = widget.idKurir;
 
     // Add the image file
     if (_image != null) {
       var pic =
-          await http.MultipartFile.fromPath("bukti_transfer", _image!.path);
+          await http.MultipartFile.fromPath("gambar", _image!.path);
       request.files.add(pic);
     }
 

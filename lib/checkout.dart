@@ -123,10 +123,9 @@ class _CheckoutState extends State<Checkout> {
   'alamat': alamatController.text,
   'produk_id': produkId,
   'user_id': penjualId,
-  'cara_bayar': caraBayar,
+  'bayar_id': caraBayar,
   'status_id': '1',
-  'id_kurir': _selectedPengiriman,
-  'pengiriman_id': _selectedPengiriman, // Include selected delivery option
+  'expedisi_id': _selectedPengiriman, // Include selected delivery option
   'harga': totalPrice // Calculate total price and format as string
 };
 
@@ -452,7 +451,7 @@ class _CheckoutState extends State<Checkout> {
                             ),
                             child: Center(
                               child: Text(
-                                option['nama_kurir'],
+                                option['expedisi'],
                                 style: TextStyle(
                                   color: _selectedPengiriman ==
                                           option['id'].toString()

@@ -1,16 +1,13 @@
-import 'dart:math';
-
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-// ignore: unused_import
 import 'package:marketplace/homepage.dart';
 import 'package:marketplace/user_services.dart';
-import 'dart:async';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:marketplace/view/Register/login.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  const SplashScreen({Key? key}) : super(key: key);
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -20,26 +17,42 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Add a delay to simulate the splash screen duration
+    _checkRememberMeAndNavigate();
+  }
+
+  Future<void> _checkRememberMeAndNavigate() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool rememberMe = prefs.getBool('rememberMe') ?? false;
     Timer(
       Duration(seconds: 2),
-      () => Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Login(),
-        ),
-      ),
+      () {
+        if (rememberMe) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Homepage(),
+            ),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Login(),
+            ),
+          );
+        }
+      },
     );
   }
+
+  @override
   Widget build(BuildContext context) {
-     return Scaffold(
+    return Scaffold(
       backgroundColor: Color.fromARGB(255, 163, 6, 6),
       body: Center(
-        
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            // Add your splash screen content her
             Image.asset('assets/bbq.jpg', width: 300, height: 300),
             Lottie.asset('assets/load.json', width: 80, height: 80),
           ],

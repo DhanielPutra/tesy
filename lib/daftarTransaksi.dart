@@ -96,91 +96,99 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> with SingleTickerProv
   }
 
   Widget buildListView(int statusIndex) {
-    return ListView.builder(
-      itemCount: items?.length ?? 0,
-      itemBuilder: (BuildContext context, int index) {
-        final item = items![index];
-        final product = item['produk'];
+  return ListView.builder(
+    itemCount: items?.length ?? 0,
+    itemBuilder: (BuildContext context, int index) {
+      final item = items![index];
+      final product = item['produk'];
 
-        // Check if the item matches the selected status type
-        if (statusIndex == 0) {
-          // Show items with status ID '1' or null
-          if (item['status_id'] != '1' && item['status_id'] != null) {
-            return Container(); // Return empty container if not 'Diproses'
-          }
-        } else if (statusIndex == 1 && item['status_id'] != '2') {
-          return Container(); // Return empty container if not 'Dikirim'
-        } else if (statusIndex == 2 && item['status_id'] != '3') {
-          return Container(); // Return empty container if not 'Selesai'
+      // Check if the item matches the selected status type
+      if (statusIndex == 0) {
+        // Show items with status ID '1' or null
+        if (item['status_id'] != '1' && item['status_id'] != null) {
+          return Container(); // Return empty container if not 'Diproses'
         }
+      } else if (statusIndex == 1 && item['status_id'] != '2') {
+        return Container(); // Return empty container if not 'Dikirim'
+      } else if (statusIndex == 2 && item['status_id'] != '3') {
+        return Container(); // Return empty container if not 'Selesai'
+      }
 
-        return GestureDetector(
-          onTap: () {
-           Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => RincianPesanan(item: item),
+      // Check if product is null
+      if (product == null) {
+        return Container(); // Return empty container if product is null
+      }
+
+      return GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => RincianPesanan(item: item),
+            ),
+          );
+        },
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: const Offset(0, 2),
               ),
-            );
-          },
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    image: DecorationImage(
-                      image: NetworkImage(product['gambar']),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        product['nama_produk'],
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Price: Rp. ${product['harga']}',
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Detail: ${product['detail']}',
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+            ],
           ),
-        );
-      },
-    );
-  }
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  image: DecorationImage(
+                    image: product['gambar'] != null
+                        ? NetworkImage(product['gambar'])
+                        : AssetImage('assets/placeholder.png') as ImageProvider,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      product['nama_produk'] ?? 'No Name',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Price: Rp. ${product['harga'] ?? 'N/A'}',
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Detail: ${product['detail'] ?? 'No Details'}',
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
 }

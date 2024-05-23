@@ -337,7 +337,13 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
                   Text('sudah memiliki akun?'),
                   TextButton(
                     onPressed: () {
-                      _register();
+                      Navigator.of(context).pushAndRemoveUntil(
+          PageRouteBuilder(
+            pageBuilder: (context, animation1, animation2) => Login(),
+            transitionDuration: Duration(milliseconds: 0),
+          ),
+          (route) => false,
+        );
                     },
                     child: Text(
                       'Log in!',

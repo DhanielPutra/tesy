@@ -27,6 +27,15 @@ class _LoginState extends State<Login> {
     _getSavedCredentials();
   }
 
+  /// Retrieves the saved credentials from the SharedPreferences instance and updates the state accordingly.
+  ///
+  /// This function retrieves the email and password from the SharedPreferences instance and sets the text
+  /// fields [txtEmail] and [txtPassword] accordingly. It also checks if the email and password are not empty
+  /// and sets the [rememberMe] flag accordingly. If [rememberMe] is true, it calls the [_login] function.
+  ///
+  /// This function does not have any parameters.
+  ///
+  /// This function does not return any value.
   void _getSavedCredentials() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
