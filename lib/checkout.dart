@@ -9,8 +9,7 @@ import 'package:marketplace/user_services.dart';
 class Checkout extends StatefulWidget {
   final double totalPayment;
   final dynamic CartItems;
-  final bool
-      isFromCart; // Indicator to check if the data is from the cart or product details
+  final bool isFromCart; // Indicator to check if the data is from the cart or product details
   final bool isFromWIsh;
 
   const Checkout({
@@ -31,6 +30,7 @@ class _CheckoutState extends State<Checkout> {
   String _selectedBank = ''; // To store the selected bank
   String _selectedPengiriman = ''; // To store the selected delivery option
   List<dynamic> _pengirimanOptions = []; // To store delivery options
+  double _hargaPengiriman = 0.0; // To store the delivery price
 
   @override
   void initState() {
@@ -89,46 +89,34 @@ class _CheckoutState extends State<Checkout> {
       }
     }
 
-  String produkId;
-  String penjualId;
-  if (widget.isFromCart) {
-    // If the data is from the cart
-    produkId = widget.CartItems[0]['produk_id'].toString();
-    penjualId = widget.CartItems[0]['penjual_id'].toString();
-  } else if (widget.isFromWIsh) {
-    // If the data is from product details
-    produkId = widget.CartItems[0]['id_wish'].toString();
-    penjualId = widget.CartItems[0]['id_penjual'].toString();
-  } else {
-    produkId = widget.CartItems['id'].toString();
-    penjualId = widget.CartItems['author']['id'].toString();
-  }
-
-    // Get the selected pengiriman option
-    var selectedPengiriman = _pengirimanOptions.firstWhere(
-      (option) => option['id'].toString() == _selectedPengiriman,
-      orElse: () => null,
-    );
-
-    // Calculate the total price including the selected pengiriman option
-    double hargaPengiriman = 0.0;
-    String totalPrice = '0.00';
-    if (selectedPengiriman != null) {
-      hargaPengiriman = double.parse(selectedPengiriman['harga'].toString());
-      totalPrice = (widget.totalPayment + hargaPengiriman).toStringAsFixed(2);
+    String produkId;
+    String penjualId;
+    if (widget.isFromCart) {
+      // If the data is from the cart
+      produkId = widget.CartItems[0]['produk_id'].toString();
+      penjualId = widget.CartItems[0]['penjual_id'].toString();
+    } else if (widget.isFromWIsh) {
+      // If the data is from product details
+      produkId = widget.CartItems[0]['id_wish'].toString();
+      penjualId = widget.CartItems[0]['id_penjual'].toString();
+    } else {
+      produkId = widget.CartItems['id'].toString();
+      penjualId = widget.CartItems['author']['id'].toString();
     }
 
-  final Map<String, dynamic> bodyData = {
-  'pembeli_id': userId.toString(),
-  'alamat': alamatController.text,
-  'produk_id': produkId,
-  'user_id': penjualId,
-  'bayar_id': caraBayar,
-  'status_id': '1',
-  'expedisi_id': _selectedPengiriman, // Include selected delivery option
-  'harga': totalPrice // Calculate total price and format as string
-};
+    // Calculate the total price including the selected pengiriman option
+    String totalPrice = (widget.totalPayment + _hargaPengiriman).toStringAsFixed(2);
 
+    final Map<String, dynamic> bodyData = {
+      'pembeli_id': userId.toString(),
+      'alamat': alamatController.text,
+      'produk_id': produkId,
+      'user_id': penjualId,
+      'bayar_id': caraBayar,
+      'status_id': '1',
+      'expedisi_id': _selectedPengiriman, // Include selected delivery option
+      'harga': totalPrice // Calculate total price and format as string
+    };
 
     // Print the data before making the request
     print('Posting data: $bodyData');
@@ -184,13 +172,6 @@ class _CheckoutState extends State<Checkout> {
             ),
           );
         }
-      } else {
-        // Show a message if no delivery option is selected
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Silakan pilih metode pengiriman terlebih dahulu.'),
-          ),
-        );
       }
     } else {
       // Show a message if no payment method is selected
@@ -276,253 +257,6 @@ class _CheckoutState extends State<Checkout> {
                             ),
                             child: Center(
                               child: Text(
-                                option['nama_kurir'],
-                                style: TextStyle(
-                                  color: _selectedPengiriman ==
-                                          option['id'].toString()
-                                      ? Color(0xFFB50B0B)
-                                      : null,
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    );
-                    if (selectedPengiriman != null) {
-                      setState(() {
-                        _selectedPengiriman = selectedPengiriman;
-                      });
-                      print('Selected Pengiriman ID: $_selectedPengiriman');
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    fixedSize: const Size(400, 60),
-                    backgroundColor: _selectedPengiriman.isNotEmpty
-                        ? Color(0xFFB50B0B)
-                        : Colors.white,
-                    foregroundColor: _selectedPengiriman.isNotEmpty
-                        ? Colors.white
-                        : Color(0xFFB50B0B),
-                    side: const BorderSide(color: Color(0xFFB50B0B), width: 1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4.0),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(_selectedPengiriman.isNotEmpty
-                          ? 'Pengiriman: ${_pengirimanOptions.firstWhere((option) => option['id'].toString() == _selectedPengiriman)['nama_kurir']}'
-                          : 'Pilih Pengiriman'),
-                      const Icon(Icons.arrow_drop_down),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 50,
-                ),
-                Text(
-                  'Total Pembayaran: Rp. ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(widget.totalPayment)},00',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
-                SizedBox(
-                  height: 25,
-                ),
-                Text(
-                  'Metode Pembayaran',
-                  style: TextStyle(fontWeight: FontWeight.w700),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _selectedPaymentMethod =
-                              '1'; // Menetapkan ID 1 untuk Cash on Delivery
-                          _selectedBank =
-                              ''; // Reset selected bank when cash on delivery is chosen
-                        });
-                        print(
-                            'Selected Payment Method ID: $_selectedPaymentMethod');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        fixedSize: const Size(400, 60),
-                        backgroundColor: _selectedPaymentMethod == '1'
-                            ? Color(0xFFB50B0B)
-                            : Colors.white,
-                        foregroundColor: _selectedPaymentMethod == '1'
-                            ? Colors.white
-                            : Color(0xFFB50B0B),
-                        side: const BorderSide(color: Colors.red, width: 1),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4.0),
-                        ),
-                      ),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Cash on Delivery'),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () async {
-                        final selectedMethod = await showMenu<String>(
-                          context: context,
-                          position: const RelativeRect.fromLTRB(5, 200, 0, 0),
-                          items: <PopupMenuEntry<String>>[
-                            PopupMenuItem<String>(
-                              value:
-                                  'Bank BNI', // Menetapkan ID 2 untuk Bank BNI
-                              height: 50,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    style: BorderStyle.none,
-                                    width: 15,
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    'Transfer Bank BNI',
-                                    style: TextStyle(
-                                      color:
-                                          _selectedPaymentMethod == 'Bank BNI'
-                                              ? Color(0xFFB50B0B)
-                                              : null,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            PopupMenuItem<String>(
-                              value:
-                                  'Bank BCA', // Menetapkan ID 2 untuk Bank BCA
-                              height: 50,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    style: BorderStyle.none,
-                                    width: 15,
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    'Transfer Bank BCA',
-                                    style: TextStyle(
-                                      color:
-                                          _selectedPaymentMethod == 'Bank BCA'
-                                              ? Color.fromARGB(255, 19, 65, 204)
-                                              : null,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            PopupMenuItem<String>(
-                              value:
-                                  'Bank Mandiri', // Menetapkan ID 2 untuk Bank Mandiri
-                              height: 50,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    style: BorderStyle.none,
-                                    width: 15,
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    'Transfer Bank Mandiri',
-                                    style: TextStyle(
-                                      color: _selectedPaymentMethod ==
-                                              'Bank Mandiri'
-                                          ? const Color.fromARGB(
-                                              255, 15, 3, 255)
-                                          : null,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                        if (selectedMethod != null &&
-                            selectedMethod.contains('Bank')) {
-                          setState(() {
-                            _selectedPaymentMethod =
-                                '2'; // Menetapkan ID 2 untuk metode pembayaran transfer bank
-                            _selectedBank =
-                                selectedMethod; // Menetapkan nama bank yang dipilih
-                          });
-                          print(
-                              'Selected Payment Method ID: $_selectedPaymentMethod');
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        fixedSize: const Size(400, 60),
-                        backgroundColor: _selectedPaymentMethod != '1'
-                            ? Color(0xFFB50B0B)
-                            : Colors.white,
-                        foregroundColor: _selectedPaymentMethod != '1'
-                            ? Colors.white
-                            : Color(0xFFB50B0B),
-                        side: const BorderSide(
-                            color: Color(0xFFB50B0B), width: 1),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4.0),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(_selectedBank.isNotEmpty
-                              ? _selectedBank
-                              : 'Transfer Bank'),
-                          const Icon(Icons.arrow_drop_down),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 25,
-                ),
-                Text(
-                  'Pengiriman',
-                  style: TextStyle(fontWeight: FontWeight.w700),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    final selectedPengiriman = await showMenu<String>(
-                      context: context,
-                      position: const RelativeRect.fromLTRB(5, 200, 0, 0),
-                      items: _pengirimanOptions
-                          .map<PopupMenuEntry<String>>((option) {
-                        return PopupMenuItem<String>(
-                          value: option['id'].toString(),
-                          height: 50,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.white,
-                                style: BorderStyle.none,
-                                width: 15,
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
                                 option['expedisi'],
                                 style: TextStyle(
                                   color: _selectedPengiriman ==
@@ -536,58 +270,152 @@ class _CheckoutState extends State<Checkout> {
                         );
                       }).toList(),
                     );
+
                     if (selectedPengiriman != null) {
-                      setState(() {
-                        _selectedPengiriman = selectedPengiriman;
-                      });
-                      print('Selected Pengiriman ID: $_selectedPengiriman');
+                      final selectedOption = _pengirimanOptions.firstWhere(
+                        (option) => option['id'].toString() == selectedPengiriman,
+                        orElse: () => null,
+                      );
+
+                      if (selectedOption != null) {
+                        setState(() {
+                          _selectedPengiriman = selectedPengiriman;
+                          _hargaPengiriman = double.parse(selectedOption['harga'].toString());
+                        });
+                      }
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    fixedSize: const Size(400, 60),
-                    backgroundColor: _selectedPengiriman.isNotEmpty
-                        ? Color(0xFFB50B0B)
-                        : Colors.white,
-                    foregroundColor: _selectedPengiriman.isNotEmpty
-                        ? Colors.white
-                        : Color(0xFFB50B0B),
-                    side: const BorderSide(color: Color(0xFFB50B0B), width: 1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4.0),
-                    ),
+                    foregroundColor: Colors.white, backgroundColor: const Color(0xFFB50B0B),
+                    minimumSize: Size(200, 50),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: const Text(
+                    'Pilih Metode Pengiriman',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                const SizedBox(height: 15),
+                if (_selectedPengiriman.isNotEmpty)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(_selectedPengiriman.isNotEmpty
-                          ? 'Pengiriman: ${_pengirimanOptions.firstWhere((option) => option['id'].toString() == _selectedPengiriman)['nama_kurir']}'
-                          : 'Pilih Pengiriman'),
-                      const Icon(Icons.arrow_drop_down),
+                      Text(
+                        'Metode Pengiriman Terpilih:',
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        _pengirimanOptions.firstWhere(
+                          (option) =>
+                              option['id'].toString() == _selectedPengiriman,
+                          orElse: () => {'expedisi': 'Unknown'},
+                        )['expedisi'],
+                      ),
+                      Text(
+                        'Harga Pengiriman: ${NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ').format(_hargaPengiriman)}',
+                      ),
                     ],
                   ),
+                SizedBox(height: 25),
+                Text(
+                  'Metode Pembayaran',
+                  style: TextStyle(fontWeight: FontWeight.w700),
                 ),
-                SizedBox(
-                  height: 50,
+                SizedBox(height: 15),
+                ListTile(
+                  title: Text('Cash on Delivery'),
+                  leading: Radio<String>(
+                    value: '1',
+                    groupValue: _selectedPaymentMethod,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedPaymentMethod = value!;
+                        _selectedBank = ''; // Reset the selected bank if COD is selected
+                      });
+                    },
+                  ),
                 ),
+                ListTile(
+                  title: Text('Bank Transfer'),
+                  leading: Radio<String>(
+                    value: '2',
+                    groupValue: _selectedPaymentMethod,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedPaymentMethod = value!;
+                      });
+                    },
+                  ),
+                ),
+                if (_selectedPaymentMethod == '2')
+                  Column(
+                    children: [
+                      ListTile(
+                        title: Text('Bank BNI'),
+                        leading: Radio<String>(
+                          value: 'Bank BNI',
+                          groupValue: _selectedBank,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedBank = value!;
+                            });
+                          },
+                        ),
+                      ),
+                      ListTile(
+                        title: Text('Bank BCA'),
+                        leading: Radio<String>(
+                          value: 'Bank BCA',
+                          groupValue: _selectedBank,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedBank = value!;
+                            });
+                          },
+                        ),
+                      ),
+                      ListTile(
+                        title: Text('Bank Mandiri'),
+                        leading: Radio<String>(
+                          value: 'Bank Mandiri',
+                          groupValue: _selectedBank,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedBank = value!;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                const SizedBox(height: 20),
+                const Divider(
+                  thickness: 1.0,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Total Pembayaran',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ').format(widget.totalPayment + _hargaPengiriman),
+                  style: TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 30),
                 Center(
                   child: ElevatedButton(
-                    onPressed: () {
-                      handlePayment();
-                    },
+                    onPressed: handlePayment,
                     style: ElevatedButton.styleFrom(
-                      fixedSize: Size(400, 60),
-                      backgroundColor: Color(0xFFB50B0B),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4.0),
-                      ),
+                      foregroundColor: Colors.white, backgroundColor: const Color(0xFFB50B0B),
+                      minimumSize: Size(200, 50),
                     ),
-                    child: Text(
-                      'Buat Pesanan',
-                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    child: const Text(
+                      'Lanjutkan Pembayaran',
+                      style: TextStyle(fontSize: 16),
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),

@@ -57,7 +57,7 @@ class _HomepageState extends State<Homepage> {
     try {
       final response =
           await http.get(Uri.parse('https://barbeqshop.online/api/produk'));
-
+      print(response.statusCode);
       if (response.statusCode == 200) {
         Map<String, dynamic> responseData = json.decode(response.body);
         return responseData['data'];
@@ -93,7 +93,7 @@ class _HomepageState extends State<Homepage> {
     try {
       final response =
           await http.get(Uri.parse('https://barbeqshop.online/api/kategori'));
-
+      print(response.statusCode);
       if (response.statusCode == 200) {
         Map<String, dynamic> responseData = json.decode(response.body);
         return responseData['data'];
@@ -111,7 +111,7 @@ class _HomepageState extends State<Homepage> {
     try {
       final response = await http.get(Uri.parse(
           'https://barbeqshop.online/api/produkkat?kategori_id=$categoryId'));
-
+      print(response.statusCode);
       if (response.statusCode == 200) {
         Map<String, dynamic> responseData = json.decode(response.body);
         return responseData['data'];
@@ -336,7 +336,7 @@ class _HomepageState extends State<Homepage> {
                           ),
                           ...categories.map<Widget>((category) {
                             return ClickableText(
-                              text: category['nama_kategori'],
+                              text: category['kategori'],
                               isSelected: _selectedCategoryId ==
                                   category['id'].toString(),
                               onTap: () => filterItemsByCategory(
