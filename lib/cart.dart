@@ -293,17 +293,18 @@ class _CartState extends State<Cart> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    SizedBox(height: 15,),
                     Text(
                       product['nama_produk'],
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                     ),
                     SizedBox(
-                      height: 40,
+                      height: 25,
                     ),
                     Text(
                       'Rp. ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(double.parse(product['harga']))},00',
