@@ -12,7 +12,8 @@ class DaftarTransaksi extends StatefulWidget {
   State<DaftarTransaksi> createState() => _DaftarTransaksiState();
 }
 
-class _DaftarTransaksiState extends State<DaftarTransaksi> with SingleTickerProviderStateMixin {
+class _DaftarTransaksiState extends State<DaftarTransaksi>
+    with SingleTickerProviderStateMixin {
   List<dynamic>? items;
   late TabController _tabController;
   bool isLoading = true;
@@ -63,7 +64,8 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> with SingleTickerProv
   }
 
   Future<void> postItem(int index) async {
-    final String url = 'https://barbeqshop.online/api/pesanan/${items![index]['id']}';
+    final String url =
+        'https://barbeqshop.online/api/pesanan/${items![index]['id']}';
     String token = await getToken();
 
     final Map<String, dynamic> item = items![index];
@@ -167,7 +169,10 @@ class _DaftarTransaksiState extends State<DaftarTransaksi> with SingleTickerProv
   }
 
   Widget buildListView(String statusId) {
-    final filteredItems = items?.where((item) => item['status_id'].toString() == statusId).toList() ?? [];
+    final filteredItems = items
+            ?.where((item) => item['status_id'].toString() == statusId)
+            .toList() ??
+        [];
     return ListView.builder(
       itemCount: filteredItems.length,
       itemBuilder: (BuildContext context, int index) {
@@ -229,10 +234,11 @@ class TransactionItem extends StatelessWidget {
             children: [
               Container(
                 width: 120,
-                height: 120,
+                height: 150,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: NetworkImage(product['gambar'] ?? 'https://via.placeholder.com/120'),
+                    image: NetworkImage(
+                        product['gambar'] ?? 'https://via.placeholder.com/120'),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -240,32 +246,59 @@ class TransactionItem extends StatelessWidget {
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const SizedBox(height: 25),
-                    Text(
-                      product['nama_produk'] ?? 'Tidak ada data',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      'Price: Rp. ${product['harga'] ?? 'Tidak ada data'}',
-                      style: const TextStyle(fontSize: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          product['nama_produk'] ?? 'Tidak ada data',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Price: Rp. ${product['harga'] ?? 'Tidak ada data'}',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 8),
+                    if (isShipped)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          ElevatedButton(
+                            onPressed: onConfirm,
+                            child: Text('Pesanan Diterima'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color.fromARGB(
+                                  255, 193, 24, 24), // Background color
+                              foregroundColor: Colors.white, // Text color
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 12),
+                              textStyle: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 8,
+                          )
+                        ],
+                      ),
                   ],
                 ),
               ),
             ],
           ),
-          if (isShipped)
-            ElevatedButton(
-              onPressed: onConfirm,
-              child: Text('Konfirmasi Terima'),
-            ),
         ],
       ),
     );
