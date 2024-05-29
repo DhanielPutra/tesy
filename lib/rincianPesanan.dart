@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 class RincianPesanan extends StatefulWidget {
   final dynamic item;
@@ -219,7 +220,7 @@ class _RincianPesananState extends State<RincianPesanan> {
                       ),
                     ),
                     Text(
-                      widget.item['harga'],
+                      'Rp ${NumberFormat("#,##0", "id_ID").format(int.parse(widget.item['harga']))}',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
