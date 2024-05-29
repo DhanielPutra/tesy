@@ -26,6 +26,10 @@ class _HomepageState extends State<Homepage> {
   Map<String, dynamic>? _userData;
   List<dynamic> banners = [];
   late PageController _pageController;
+  ScrollController _scrollController = ScrollController();
+  int _currentPage = 1;
+  bool _isLoadingMore = false;
+  bool _hasMoreItems = true;
 
   @override
   void initState() {
@@ -38,7 +42,7 @@ class _HomepageState extends State<Homepage> {
     }).catchError((error) {
       print('Error fetching user profile: $error');
     });
-    fetchData().then((data) {
+    fetchData(page: _currentPage).then((data) {
       setState(() {
         products = data;
         filteredItems = data;
@@ -51,12 +55,12 @@ class _HomepageState extends State<Homepage> {
     }).catchError((error) {
       print('Error fetching banners: $error');
     });
+    _scrollController.addListener(_scrollListener);
   }
 
-  Future<List<dynamic>> fetchData() async {
+  Future<List<dynamic>> fetchData({int page = 1, int limit = 10}) async {
     try {
-      final response =
-          await http.get(Uri.parse('https://barbeqshop.online/api/produk'));
+      final response = await http.get(Uri.parse('https://barbeqshop.online/api/produk?page=$page&limit=$limit'));
       print(response.statusCode);
       if (response.statusCode == 200) {
         Map<String, dynamic> responseData = json.decode(response.body);
@@ -73,8 +77,7 @@ class _HomepageState extends State<Homepage> {
 
   Future<List<dynamic>> getBanners() async {
     try {
-      final response =
-          await http.get(Uri.parse('https://barbeqshop.online/api/banner'));
+      final response = await http.get(Uri.parse('https://barbeqshop.online/api/banner'));
       if (response.statusCode == 200) {
         Map<String, dynamic> responseData = json.decode(response.body);
         print(responseData);
@@ -91,8 +94,7 @@ class _HomepageState extends State<Homepage> {
 
   Future<List<dynamic>> fetchCategories() async {
     try {
-      final response =
-          await http.get(Uri.parse('https://barbeqshop.online/api/kategori'));
+      final response = await http.get(Uri.parse('https://barbeqshop.online/api/kategori'));
       print(response.statusCode);
       if (response.statusCode == 200) {
         Map<String, dynamic> responseData = json.decode(response.body);
@@ -107,10 +109,9 @@ class _HomepageState extends State<Homepage> {
     }
   }
 
-  Future<List<dynamic>> fetchDataByCategory(String categoryId) async {
+  Future<List<dynamic>> fetchDataByCategory(String categoryId, {int page = 1, int limit = 10}) async {
     try {
-      final response = await http.get(Uri.parse(
-          'https://barbeqshop.online/api/produkkat?kategori_id=$categoryId'));
+      final response = await http.get(Uri.parse('https://barbeqshop.online/api/produkkat?kategori_id=$categoryId&page=$page&limit=$limit'));
       print(response.statusCode);
       if (response.statusCode == 200) {
         Map<String, dynamic> responseData = json.decode(response.body);
@@ -129,10 +130,21 @@ class _HomepageState extends State<Homepage> {
     print('Selected category ID: $categoryId');
     setState(() {
       _selectedCategoryId = categoryId;
+      _currentPage = 1;
+      _hasMoreItems = true;
+      _isLoadingMore = false;
+      filteredItems.clear();
       if (categoryId == 'All') {
-        filteredItems = List.from(products);
+        fetchData(page: _currentPage).then((data) {
+          setState(() {
+            filteredItems = data;
+            products = data;
+          });
+        }).catchError((error) {
+          print('Error fetching all products: $error');
+        });
       } else {
-        fetchDataByCategory(categoryId).then((categoryProducts) {
+        fetchDataByCategory(categoryId, page: _currentPage).then((categoryProducts) {
           setState(() {
             filteredItems = categoryProducts;
           });
@@ -167,6 +179,41 @@ class _HomepageState extends State<Homepage> {
       }
     } catch (error) {
       throw Exception('Error fetching user profile: $error');
+    }
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+      if (!_isLoadingMore && _hasMoreItems) {
+        setState(() {
+          _isLoadingMore = true;
+        });
+        _currentPage++;
+        if (_selectedCategoryId == 'All') {
+          fetchData(page: _currentPage).then((moreData) {
+            setState(() {
+              if (moreData.isNotEmpty) {
+                products.addAll(moreData);
+                filteredItems.addAll(moreData);
+              } else {
+                _hasMoreItems = false;
+              }
+              _isLoadingMore = false;
+            });
+          });
+        } else {
+          fetchDataByCategory(_selectedCategoryId, page: _currentPage).then((moreData) {
+            setState(() {
+              if (moreData.isNotEmpty) {
+                filteredItems.addAll(moreData);
+              } else {
+                _hasMoreItems = false;
+              }
+              _isLoadingMore = false;
+            });
+          });
+        }
+      }
     }
   }
 
@@ -207,6 +254,7 @@ class _HomepageState extends State<Homepage> {
   @override
   void dispose() {
     _pageController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -277,6 +325,7 @@ class _HomepageState extends State<Homepage> {
         ],
       ),
       body: SingleChildScrollView(
+        controller: _scrollController,
         scrollDirection: Axis.vertical,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -421,6 +470,13 @@ class _HomepageState extends State<Homepage> {
                 }).toList(),
               ),
             ),
+            if (_isLoadingMore)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
           ],
         ),
       ),

@@ -71,7 +71,7 @@ class _DaftarTransaksiState extends State<DaftarTransaksi>
       backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 5,
-        backgroundColor: Color.fromARGB(255, 193, 24, 24),
+        backgroundColor: const Color.fromARGB(255, 193, 24, 24),
         title: const Text(
           'Daftar Transaksi',
           style: TextStyle(
@@ -81,12 +81,12 @@ class _DaftarTransaksiState extends State<DaftarTransaksi>
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             Navigator.of(context).pushAndRemoveUntil(
               PageRouteBuilder(
-                pageBuilder: (context, animation1, animation2) => Profile(),
-                transitionDuration: Duration(milliseconds: 0),
+                pageBuilder: (context, animation1, animation2) => const Profile(),
+                transitionDuration: const Duration(milliseconds: 0),
               ),
               (route) => false,
             );
@@ -105,7 +105,7 @@ class _DaftarTransaksiState extends State<DaftarTransaksi>
         ),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : errorMessage != null
               ? Center(child: Text(errorMessage!))
               : TabBarView(

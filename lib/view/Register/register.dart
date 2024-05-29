@@ -80,6 +80,7 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
         // Login failed
         setState(() {
           errormessage = 'Failed to login';
+          print(response);
         });
       }
     } catch (e) {

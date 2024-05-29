@@ -152,7 +152,7 @@ class _LoginState extends State<Login> {
     SharedPreferences pref = await SharedPreferences.getInstance();
 
     Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => Homepage()), (route) => false);
+        MaterialPageRoute(builder: (context) => const Homepage()), (route) => false);
   }
 
   @override
@@ -161,7 +161,7 @@ class _LoginState extends State<Login> {
       body: SingleChildScrollView(
         child: Container(
           alignment: Alignment.topCenter,
-          padding: EdgeInsets.fromLTRB(15, 90, 15, 0),
+          padding: const EdgeInsets.fromLTRB(15, 90, 15, 0),
           child: Column(
             children: [
               ClipOval(
@@ -172,22 +172,22 @@ class _LoginState extends State<Login> {
                   height: 130.0,
                 ),
               ),
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 "Welcome Back",
                 style: TextStyle(
                     color: Color.fromARGB(255, 0, 0, 0),
                     fontWeight: FontWeight.bold,
                     fontSize: 23),
               ),
-              Text(
+              const Text(
                 "Sign In to access your account!",
                 style: TextStyle(
                     color: Color.fromARGB(255, 0, 0, 0),
                     fontWeight: FontWeight.bold,
                     fontSize: 18),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 50,
               ),
               Form(
@@ -195,24 +195,24 @@ class _LoginState extends State<Login> {
                 child: Column(
                   children: [
                     TextFormField(
-                      style: TextStyle(height: 1.5),
+                      style: const TextStyle(height: 1.5),
                       controller: txtEmail,
                       decoration: InputDecoration(
-                        fillColor: Color(0xFFD9D9D9),
+                        fillColor: const Color(0xFFD9D9D9),
                         filled: true,
-                        contentPadding: EdgeInsets.all(20.0),
+                        contentPadding: const EdgeInsets.all(20.0),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.transparent),
+                          borderSide: const BorderSide(color: Colors.transparent),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.black),
+                          borderSide: const BorderSide(color: Colors.black),
                         ),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10)),
                         hintText: 'Enter e-Mail ',
-                        suffixIcon: Icon(Icons.person_outline),
+                        suffixIcon: const Icon(Icons.person_outline),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -221,24 +221,24 @@ class _LoginState extends State<Login> {
                         return null;
                       },
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 15,
                     ),
                     TextFormField(
-                      style: TextStyle(height: 1.5),
+                      style: const TextStyle(height: 1.5),
                       controller: txtPassword,
                       obscureText: !_isPasswordVisible,
                       decoration: InputDecoration(
-                        fillColor: Color(0xFFD9D9D9),
+                        fillColor: const Color(0xFFD9D9D9),
                         filled: true,
-                        contentPadding: EdgeInsets.all(20.0),
+                        contentPadding: const EdgeInsets.all(20.0),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.transparent),
+                          borderSide: const BorderSide(color: Colors.transparent),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.black),
+                          borderSide: const BorderSide(color: Colors.black),
                         ),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10)),
@@ -269,7 +269,7 @@ class _LoginState extends State<Login> {
                           });
                         },
                       ),
-                      Text(
+                      const Text(
                         'Remember me',
                         style: TextStyle(
                           fontSize: 14,
@@ -277,7 +277,7 @@ class _LoginState extends State<Login> {
                       ),
                     ],
                   ),
-                  Text(
+                  const Text(
                     'Forgot Password?',
                     style: TextStyle(
                       color: Colors.black,
@@ -285,13 +285,13 @@ class _LoginState extends State<Login> {
                   )
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 55,
               ),
               Container(
                 height: 60,
                 width: 330,
-                padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: SizedBox.expand(
                   child: ElevatedButton(
                     onPressed: () {
@@ -300,14 +300,14 @@ class _LoginState extends State<Login> {
                           : null;
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFFB50B0B),
+                      backgroundColor: const Color(0xFFB50B0B),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
                     child: loading
-                        ? CircularProgressIndicator()
-                        : Text(
+                        ? const CircularProgressIndicator()
+                        : const Text(
                             'LOGIN',
                             style: TextStyle(
                                 fontWeight: FontWeight.w500,
@@ -318,11 +318,11 @@ class _LoginState extends State<Login> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
+                    const Text(
                       'New Member?',
                       style: TextStyle(color: Colors.black, fontSize: 15),
                     ),
@@ -331,7 +331,7 @@ class _LoginState extends State<Login> {
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => HalamanDaftar()));
                         },
-                        child: Text(
+                        child: const Text(
                           'Register Now!',
                           style: TextStyle(
                               color: Colors.red,
