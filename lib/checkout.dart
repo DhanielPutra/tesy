@@ -9,7 +9,8 @@ import 'package:marketplace/user_services.dart';
 class Checkout extends StatefulWidget {
   final double totalPayment;
   final dynamic CartItems;
-  final bool isFromCart; // Indicator to check if the data is from the cart or product details
+  final bool
+      isFromCart; // Indicator to check if the data is from the cart or product details
   final bool isFromWIsh;
 
   const Checkout({
@@ -105,7 +106,8 @@ class _CheckoutState extends State<Checkout> {
     }
 
     // Calculate the total price including the selected pengiriman option
-    String totalPrice = (widget.totalPayment + _hargaPengiriman).toStringAsFixed(2);
+    String totalPrice =
+        (widget.totalPayment + _hargaPengiriman).toStringAsFixed(2);
 
     final Map<String, dynamic> bodyData = {
       'pembeli_id': userId.toString(),
@@ -189,12 +191,19 @@ class _CheckoutState extends State<Checkout> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Checkout'),
+          elevation: 0,
+          backgroundColor: Color.fromARGB(255, 206, 22, 22),
+          title: Text(
+            'Checkout',
+            style: TextStyle(
+                color: const Color.fromARGB(255, 255, 255, 255),
+                fontWeight: FontWeight.bold),
+          ),
           leading: IconButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              icon: Icon(Icons.arrow_back)),
+              icon: Icon(Icons.arrow_back, color: Colors.white,)),
         ),
         body: SingleChildScrollView(
           child: Container(
@@ -303,7 +312,8 @@ class _CheckoutState extends State<Checkout> {
 
                     if (selectedPengiriman != null) {
                       final selectedOption = _pengirimanOptions.firstWhere(
-                        (option) => option['id'].toString() == selectedPengiriman,
+                        (option) =>
+                            option['id'].toString() == selectedPengiriman,
                         orElse: () => null,
                       );
 
@@ -362,7 +372,8 @@ class _CheckoutState extends State<Checkout> {
                     onChanged: (value) {
                       setState(() {
                         _selectedPaymentMethod = value!;
-                        _selectedBank = ''; // Reset the selected bank if COD is selected
+                        _selectedBank =
+                            ''; // Reset the selected bank if COD is selected
                       });
                     },
                   ),
@@ -431,8 +442,7 @@ class _CheckoutState extends State<Checkout> {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  NumberFormat.currency(
-                          locale: 'id_ID', symbol: 'Rp. ')
+                  NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ')
                       .format(widget.totalPayment + _hargaPengiriman),
                   style: TextStyle(fontSize: 16),
                 ),

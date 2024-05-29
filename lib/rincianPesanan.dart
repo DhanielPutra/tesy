@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 class RincianPesanan extends StatefulWidget {
   final dynamic item;
@@ -30,14 +31,20 @@ class _RincianPesananState extends State<RincianPesanan> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Rincian Pesanan', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+        title: Text(
+          'Rincian Pesanan',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Color.fromARGB(255, 193, 24, 24),
         elevation: 5,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(Icons.arrow_back, color: Colors.white,),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -196,6 +203,30 @@ class _RincianPesananState extends State<RincianPesanan> {
                           ),
                         ],
                       ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Total Pembayaran :',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 193, 24, 24),
+                      ),
+                    ),
+                    Text(
+                      'Rp ${NumberFormat("#,##0", "id_ID").format(int.parse(widget.item['harga']))}',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    )
                   ],
                 ),
               )
