@@ -134,7 +134,7 @@ class _SearchFormState extends State<SearchForm> {
   padding: const EdgeInsets.symmetric(horizontal: 13.0),
   child: _searchResults.isNotEmpty
       ? GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate:const  SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             mainAxisSpacing: 8,
             crossAxisSpacing: 11,

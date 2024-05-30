@@ -253,7 +253,7 @@ class _WishlistState extends State<Wishlist> {
                           Padding(
                             padding: const EdgeInsets.only(top: 3),
                             child: Text(
-                              'Rp. ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(double.parse(product.price))},00',
+                              'Rp.${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(double.parse(product.price))},00',
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 17,
@@ -263,6 +263,7 @@ class _WishlistState extends State<Wishlist> {
                               maxLines: 1,
                             ),
                           ),
+                          const SizedBox(height: 10,),
                           Padding(
                             padding: const EdgeInsets.fromLTRB(0, 7, 0, 5),
                             child: SizedBox(
@@ -277,11 +278,11 @@ class _WishlistState extends State<Wishlist> {
                                     borderRadius: BorderRadius.circular(5),
                                   ),
                                   backgroundColor:
-                                      Color.fromARGB(255, 208, 9, 9),
+                                      Color.fromARGB(255, 174, 5, 5),
                                 ),
                                 child: const Text(
                                   'Order Now',
-                                  style: TextStyle(color: Colors.white),
+                                  style: TextStyle(color: Colors.white,fontWeight: FontWeight.normal,fontSize: 15),
                                 ),
                               ),
                             ),

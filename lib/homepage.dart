@@ -455,7 +455,7 @@ class _HomepageState extends State<Homepage> {
                                 child: Text(
                                   'Rp ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(double.parse(product['harga']))}',
                                   style: const TextStyle(
-                                    fontSize: 18,
+                                    fontSize: 15,
                                     fontWeight: FontWeight.w400,
                                     color: Color.fromARGB(255, 193, 24, 24),
                                   ),
