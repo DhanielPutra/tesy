@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:marketplace/product.dart';
 
 class RincianPesanan extends StatefulWidget {
   final dynamic item;
@@ -16,6 +17,7 @@ class _RincianPesananState extends State<RincianPesanan> {
     final product = widget.item['produk'] ?? {};
     final alamat = widget.item['alamat'] ?? '';
     final pembeli = widget.item['pembeli'] ?? {};
+    print(widget.item);
 
     // Mengubah cara_bayar ke format yang lebih mudah dipahami
     String getCaraBayar(String? caraBayar) {
@@ -197,6 +199,29 @@ class _RincianPesananState extends State<RincianPesanan> {
                           SizedBox(height: 10),
                           Image.network(
                             widget.item['gambar'] ?? '',
+                            height: 150,
+                            width: 150,
+                            fit: BoxFit.cover,
+                          ),
+                        ],
+                      ),
+                    // Additional image widget for gambar3 if status_id is 2
+                    if (widget.item['status_id'] == '2' &&
+                        widget.item['gambar3'] != null)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 8),
+                          Text(
+                            'Resi:',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Image.network(
+                            widget.item['gambar3'] ?? '',
                             height: 150,
                             width: 150,
                             fit: BoxFit.cover,

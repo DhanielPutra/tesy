@@ -68,45 +68,32 @@ class _WishlistState extends State<Wishlist> {
       print('Error fetching wishlist data: $e');
     }
   }
+   Future<int> fetchProductStock(int productId) async {
+  final String url = 'https://barbeqshop.online/api/produk/$productId';
 
-  Future<List<dynamic>> fetchProdukItems(String idWish) async {
-    try {
-      String url =
-          'https://barbeqshop.online/api/produk/$idWish'; // Pass the id_wish in the URL
-      String token = await getToken();
-
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {'Authorization': 'Bearer $token'},
-      );
-
-      if (response.statusCode == 200) {
-        // Parse the JSON response
-        dynamic responseData = json.decode(response.body);
-        List<dynamic> wishlistItems = [];
-
-        if (responseData is List<dynamic>) {
-          // If the response data is already a list, use it directly
-          wishlistItems = responseData;
-        } else if (responseData is Map<String, dynamic> &&
-            responseData.containsKey('data')) {
-          // If the response data is an object containing a list, extract the list
-          wishlistItems = responseData['data'];
-        }
-
-        print('Wishlist items: $wishlistItems');
-
-        return wishlistItems;
+  try {
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      final responseBody = json.decode(response.body);
+      if (responseBody != null && responseBody['data'] != null && responseBody['data']['stock'] != null) {
+        // Ensure the stock value is parsed as an integer
+        return int.parse(responseBody['data']['stock'].toString());
       } else {
-        print('Failed to fetch wishlist. Status code: ${response.statusCode}');
-        return [];
+        print('Stock data is missing in the response.');
+        return 0; // Default to 0 if stock data is missing
       }
-    } catch (e) {
-      print('Error fetching wishlist: $e');
-      return [];
+    } else {
+      print('Failed to fetch product stock. Status code: ${response.statusCode}');
+      return 0; // Default to 0 if there is an error
     }
+  } catch (e) {
+    print('Error fetching product stock: $e');
+    return 0;
   }
+}
 
+
+  
   Future<void> deleteFromWishlist(String productId) async {
     try {
       final response = await http.delete(
@@ -326,32 +313,63 @@ class _WishlistState extends State<Wishlist> {
     );
   }
 
-  void _sendDataTotalToCheckout(BuildContext context, Product selectedProduct) {
-    // Calculate total payment
-    double totalPayment = double.parse(selectedProduct.price);
+ void _sendDataTotalToCheckout(BuildContext context, Product selectedProduct) async {
+  try {
+    // Fetch product stock
+    int productStock = await fetchProductStock(int.parse(selectedProduct.id_wish));
 
-    // Convert selected product into a map
-    Map<String, dynamic> selectedProductMap = {
-      'id': selectedProduct.id,
-      'id_wish': selectedProduct.id_wish,
-      'nama_product': selectedProduct.name,
-      'detail': selectedProduct.detail,
-      'harga': selectedProduct.price,
-      'gambar': selectedProduct.imageUrl,
-      'id_penjual': selectedProduct.id_penjual,
-      "user_id": selectedProduct.id_user
-    };
+    if (productStock > 0) {
+      // If product stock exists, proceed to checkout
 
-    // Pass the selected product map as a list
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => Checkout(
-        totalPayment: totalPayment,
-        CartItems: [
-          selectedProductMap
-        ], // Pass the selected product map as a list
-        isFromCart: false,
-        isFromWIsh: true,
-      ),
-    ));
+      // Calculate total payment
+      double totalPayment = double.parse(selectedProduct.price);
+
+      // Convert selected product into a map
+      Map<String, dynamic> selectedProductMap = {
+        'id': selectedProduct.id,
+        'id_wish': selectedProduct.id_wish,
+        'nama_product': selectedProduct.name,
+        'detail': selectedProduct.detail,
+        'harga': selectedProduct.price,
+        'gambar': selectedProduct.imageUrl,
+        'id_penjual': selectedProduct.id_penjual,
+        "user_id": selectedProduct.id_user
+      };
+
+      // Pass the selected product map as a list
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => Checkout(
+          totalPayment: totalPayment,
+          CartItems: [
+            selectedProductMap
+          ], // Pass the selected product map as a list
+          isFromCart: false,
+          isFromWIsh: true,
+        ),
+      ));
+    } else {
+      // If product stock does not exist, show a dialog or message
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Out of Stock'),
+            content: Text('The selected item is out of stock.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  } catch (e) {
+    print('Error fetching product stock: $e');
   }
+}
+
 }

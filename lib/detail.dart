@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -205,7 +204,7 @@ class _DetailState extends State<Detail> {
     }
   }
 
-// Update the checkWishlist method to use the fetched wishlist items
+  // Update the checkWishlist method to use the fetched wishlist items
   Future<void> checkWishlist(int productId) async {
     try {
       List<dynamic> wishlistItems = await fetchWishlistItems(productId);
@@ -230,6 +229,32 @@ class _DetailState extends State<Detail> {
       print('Error checking wishlist: $e');
     }
   }
+
+  // Method to fetch product stock
+  Future<int> fetchProductStock(int productId) async {
+  final String url = 'https://barbeqshop.online/api/produk/$productId';
+
+  try {
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      final responseBody = json.decode(response.body);
+      if (responseBody != null && responseBody['data'] != null && responseBody['data']['stock'] != null) {
+        // Ensure the stock value is parsed as an integer
+        return int.parse(responseBody['data']['stock'].toString());
+      } else {
+        print('Stock data is missing in the response.');
+        return 0; // Default to 0 if stock data is missing
+      }
+    } else {
+      print('Failed to fetch product stock. Status code: ${response.statusCode}');
+      return 0; // Default to 0 if there is an error
+    }
+  } catch (e) {
+    print('Error fetching product stock: $e');
+    return 0;
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -485,23 +510,47 @@ class _DetailState extends State<Detail> {
                 ),
               ),
               ElevatedButton(
+  onPressed: () async {
+    int productId = widget.item['id'];
+    int stock = await fetchProductStock(productId);
+
+    if (stock > 0) {
+      double itemPrice = double.parse(widget.item['harga']);
+      _sendDataTotalToCheckout(context, itemPrice);
+    } else {
+      // Show an alert if stock is zero
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Out of Stock'),
+            content: Text('This product is currently out of stock.'),
+            actions: [
+              TextButton(
+                child: Text('OK'),
                 onPressed: () {
-                  double itemPrice = double.parse(widget.item['harga']);
-                  _sendDataTotalToCheckout(context, itemPrice);
+                  Navigator.of(context).pop();
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFB50B0B),
-                  minimumSize: const Size(200, 60),
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(10.0), // Atur sesuai kebutuhan
-                  ),
-                ),
-                child: const Text(
-                  'Buy Now',
-                  style: TextStyle(fontSize: 17, color: Colors.white),
-                ),
-              )
+              ),
+            ],
+          );
+        },
+      );
+    }
+  },
+  style: ElevatedButton.styleFrom(
+    backgroundColor: const Color(0xFFB50B0B),
+    minimumSize: const Size(200, 60),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10.0),
+    ),
+  ),
+  child: const Text(
+    'Buy Now',
+    style: TextStyle(fontSize: 17, color: Colors.white),
+  ),
+),
+
             ],
           ),
         ),
