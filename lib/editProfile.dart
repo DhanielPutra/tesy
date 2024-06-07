@@ -116,12 +116,6 @@ class _EditProfileState extends State<EditProfile> {
 
   Future<void> _updateProfile() async {
   try {
-    print('Updating profile with the following data:');
-    print('Name: ${namaController.text}');
-    print('Email: ${emailController.text}');
-    print('Phone: ${teleponController.text}');
-    print('Image: ${_image != null ? 'Image selected' : 'No image selected'}');
-
     ApiResponse response = await updateUser(
       namaController.text,
       emailController.text,
@@ -130,7 +124,7 @@ class _EditProfileState extends State<EditProfile> {
     );
 
     if (response.data != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Profile updated successfully'),
       ));
       Navigator.pop(context, [
@@ -147,7 +141,7 @@ class _EditProfileState extends State<EditProfile> {
     }
   } catch (e) {
     print('Error updating profile: $e');
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('An error occurred while updating profile'),
     ));
   }
@@ -165,15 +159,15 @@ class _EditProfileState extends State<EditProfile> {
       appBar: AppBar(
         toolbarHeight: 60,
         elevation: 0,
-        backgroundColor: Color.fromARGB(255, 201, 11, 11),
+        backgroundColor: const Color.fromARGB(255, 201, 11, 11),
         leading: IconButton(
           color: Colors.white,
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
         ),
-        title: Center(
+        title: const Center(
           child: Text(
             'Edit Profil',
             style: TextStyle(color: Colors.white),
@@ -182,7 +176,7 @@ class _EditProfileState extends State<EditProfile> {
         actions: [
           TextButton(
             onPressed: _updateProfile,
-            child: Text(
+            child: const Text(
               'SAVE',
               style: TextStyle(color: Colors.white),
             ),
@@ -203,8 +197,8 @@ class _EditProfileState extends State<EditProfile> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Container(
-                            padding: EdgeInsets.all(50),
-                            decoration: BoxDecoration(
+                            padding: const EdgeInsets.all(50),
+                            decoration: const BoxDecoration(
                               color: Color.fromARGB(255, 201, 11, 11),
                             ),
                             height: MediaQuery.of(context).size.height * 0.3,
@@ -220,7 +214,7 @@ class _EditProfileState extends State<EditProfile> {
                                           ? NetworkImage(_imageUrl!) as ImageProvider
                                           : null,
                                   child: _image == null && _imageUrl == null
-                                      ? Icon(Icons.person, size: 80)
+                                      ? const Icon(Icons.person, size: 80)
                                       : null,
                                 ),
                               ),
@@ -232,26 +226,26 @@ class _EditProfileState extends State<EditProfile> {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.fromLTRB(30, 20, 30, 10),
+                  padding: const EdgeInsets.fromLTRB(30, 20, 30, 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Fullname'),
+                      const Text('Fullname'),
                       TextField(
                         controller: namaController,
-                        decoration: InputDecoration(),
+                        decoration: const InputDecoration(),
                       ),
-                      SizedBox(height: 10),
-                      Text('Phone number'),
+                      const SizedBox(height: 10),
+                      const Text('Phone number'),
                       TextField(
                         controller: teleponController,
-                        decoration: InputDecoration(),
+                        decoration: const InputDecoration(),
                       ),
-                      SizedBox(height: 10),
-                      Text('Email'),
+                      const SizedBox(height: 10),
+                      const Text('Email'),
                       TextField(
                         controller: emailController,
-                        decoration: InputDecoration(),
+                        decoration: const InputDecoration(),
                       ),
                     ],
                   ),

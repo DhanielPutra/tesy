@@ -22,9 +22,9 @@ class OpenWebsiteWidget extends StatelessWidget {
         height: 60,
         color: Colors.white,
         padding: const EdgeInsets.all(15),
-        child: Row(
+        child: const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
+          children: [
             Text('Open Website'),
             Icon(Icons.open_in_browser),
           ],

@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:marketplace/pesanan_berhasil.dart';
 import 'package:marketplace/transfer.dart';
 import 'package:marketplace/user_services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Checkout extends StatefulWidget {
   final double totalPayment;
@@ -16,6 +17,7 @@ class Checkout extends StatefulWidget {
   const Checkout({
     Key? key,
     required this.totalPayment,
+    // ignore: non_constant_identifier_names
     required this.CartItems,
     required this.isFromCart,
     required this.isFromWIsh, // Add this parameter to indicate the data source
@@ -42,7 +44,7 @@ class _CheckoutState extends State<Checkout> {
   }
 
   Future<void> _fetchPengirimanOptions() async {
-    final String url = 'https://barbeqshop.online/api/kurir';
+    const String url = 'https://barbeqshop.online/api/kurir';
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -63,86 +65,95 @@ class _CheckoutState extends State<Checkout> {
   }
 
   Future<void> addToPesanan() async {
-    final String url = 'https://barbeqshop.online/api/pesanan';
+  const String url = 'https://barbeqshop.online/api/pesanan';
 
-    int userId = await getUserId();
-    if (userId == null) {
-      print('Error: User ID is null.');
-      return;
-    }
+  int userId = await getUserId();
+  if (userId == null || userId == 0) {
+    print('Error: Invalid User ID.');
+    return;
+  }
 
-    String token = await getToken();
-    if (token == null) {
-      print('Error: Token is null.');
-      return;
-    }
+  String token = await getToken();
+  if (token == null || token.isEmpty) {
+    print('Error: Invalid Token.');
+    return;
+  }
 
-    String caraBayar = '1'; // Default to Cash on Delivery
-    if (_selectedPaymentMethod == '1') {
-      caraBayar = '1'; // ID for Cash on Delivery
-    } else if (_selectedPaymentMethod == '2') {
-      if (_selectedBank == 'Bank BNI') {
-        caraBayar = '2'; // ID for Bank BNI
-      } else if (_selectedBank == 'Bank BCA') {
-        caraBayar = '3'; // ID for Bank BCA
-      } else if (_selectedBank == 'Bank Mandiri') {
-        caraBayar = '4'; // ID for Bank Mandiri (assuming 4 for Mandiri)
-      }
-    }
-
-    String produkId;
-    String penjualId;
-    if (widget.isFromCart) {
-      // If the data is from the cart
-      produkId = widget.CartItems[0]['produk_id'].toString();
-      penjualId = widget.CartItems[0]['penjual_id'].toString();
-    } else if (widget.isFromWIsh) {
-      // If the data is from product details
-      produkId = widget.CartItems[0]['id_wish'].toString();
-      penjualId = widget.CartItems[0]['id_penjual'].toString();
-    } else {
-      produkId = widget.CartItems['id'].toString();
-      penjualId = widget.CartItems['author']['id'].toString();
-    }
-
-    // Calculate the total price including the selected pengiriman option
-    String totalPrice =
-        (widget.totalPayment + _hargaPengiriman).toStringAsFixed(2);
-
-    final Map<String, dynamic> bodyData = {
-      'pembeli_id': userId.toString(),
-      'alamat': alamatController.text,
-      'produk_id': produkId,
-      'user_id': penjualId,
-      'bayar_id': caraBayar,
-      'status_id': '1',
-      'expedisi_id': _selectedPengiriman, // Include selected delivery option
-      'harga': totalPrice // Calculate total price and format as string
-    };
-
-    // Print the data before making the request
-    print('Posting data: $bodyData');
-
-    try {
-      final response = await http.post(
-        Uri.parse(url),
-        body: bodyData,
-        headers: {'Authorization': 'Bearer $token'},
-      );
-      if (response.statusCode == 200) {
-        print('Order created successfully.');
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => PesananBerhasil()),
-        );
-      } else {
-        print('Failed to create order. Status code: ${response.statusCode}');
-        print('Response body: ${response.body}'); // Debugging the response body
-      }
-    } catch (e) {
-      print('Error creating order: $e');
+  String caraBayar = '1'; // Default to Cash on Delivery
+  if (_selectedPaymentMethod == '1') {
+    caraBayar = '1'; // ID for Cash on Delivery
+  } else if (_selectedPaymentMethod == '2') {
+    if (_selectedBank == 'Bank BNI') {
+      caraBayar = '2'; // ID for Bank BNI
+    } else if (_selectedBank == 'Bank BCA') {
+      caraBayar = '3'; // ID for Bank BCA
+    } else if (_selectedBank == 'Bank Mandiri') {
+      caraBayar = '4'; // ID for Bank Mandiri (assuming 4 for Mandiri)
     }
   }
+
+  String produkId;
+  String penjualId;
+  if (widget.isFromCart) {
+    produkId = widget.CartItems[0]['produk_id'].toString();
+    penjualId = widget.CartItems[0]['user_id'].toString();
+  } else if (widget.isFromWIsh) {
+    produkId = widget.CartItems[0]['id_wish'].toString();
+    penjualId = widget.CartItems[0]['user_id'].toString();
+  } else {
+    produkId = widget.CartItems['id'].toString();
+    penjualId = widget.CartItems['author']['id'].toString();
+  }
+
+  // Calculate the total price including the selected pengiriman option
+  String totalPrice = (widget.totalPayment + _hargaPengiriman).toStringAsFixed(2);
+
+  final Map<String, dynamic> bodyData = {
+    'pembeli_id': userId.toString(),
+    'alamat': alamatController.text,
+    'produk_id': produkId,
+    'user_id': penjualId,
+    'bayar_id': caraBayar,
+    'status_id': '1',
+    'expedisi_id': _selectedPengiriman,
+    'harga': totalPrice
+  };
+
+  // Print the data before making the request
+  print('Posting data: $bodyData');
+
+  try {
+    final response = await http.post(
+      Uri.parse(url),
+      body: bodyData,
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (response.statusCode == 200) {
+      print('Order created successfully.');
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const PesananBerhasil()),
+      );
+    } else {
+      // Debugging the response body
+      print('Failed to create order: ${response.body}');
+    }
+  } catch (e) {
+    print('Error creating order: $e');
+  }
+}
+Future<int> getUserId() async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('userId') ?? 0;
+    print('Retrieved User ID: $userId');
+    return userId;
+  } catch (e) {
+    print('Error retrieving User ID: $e');
+    return 0; // Return 0 to indicate an error
+  }
+}
+
 
   void handlePayment() {
     if (_selectedPaymentMethod == '1') {
@@ -178,7 +189,7 @@ class _CheckoutState extends State<Checkout> {
     } else {
       // Show a message if no payment method is selected
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Silakan pilih metode pembayaran terlebih dahulu.'),
         ),
       );
@@ -192,18 +203,18 @@ class _CheckoutState extends State<Checkout> {
       home: Scaffold(
         appBar: AppBar(
           elevation: 0,
-          backgroundColor: Color.fromARGB(255, 206, 22, 22),
-          title: Text(
+          backgroundColor: const Color.fromARGB(255, 206, 22, 22),
+          title: const Text(
             'Checkout',
             style: TextStyle(
-                color: const Color.fromARGB(255, 255, 255, 255),
+                color: Color.fromARGB(255, 255, 255, 255),
                 fontWeight: FontWeight.bold),
           ),
           leading: IconButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              icon: Icon(Icons.arrow_back, color: Colors.white,)),
+              icon: const Icon(Icons.arrow_back, color: Colors.white,)),
         ),
         body: SingleChildScrollView(
           child: Container(
@@ -211,11 +222,11 @@ class _CheckoutState extends State<Checkout> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Alamat Pengiriman',
                   style: TextStyle(fontWeight: FontWeight.w700),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 TextField(
@@ -225,7 +236,7 @@ class _CheckoutState extends State<Checkout> {
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(4.0),
-                      borderSide: BorderSide(
+                      borderSide: const BorderSide(
                         color: Colors.black,
                         width: 1.0,
                       ),
@@ -236,14 +247,14 @@ class _CheckoutState extends State<Checkout> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 25,
                 ),
-                Text(
+                const Text(
                   'Pengiriman',
                   style: TextStyle(fontWeight: FontWeight.w700),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 15,
                 ),
                 ElevatedButton(
@@ -278,7 +289,7 @@ class _CheckoutState extends State<Checkout> {
                                     style: TextStyle(
                                       color: _selectedPengiriman ==
                                               option['id'].toString()
-                                          ? Color(0xFFB50B0B)
+                                          ? const Color(0xFFB50B0B)
                                           : null,
                                       fontWeight: _selectedPengiriman ==
                                               option['id'].toString()
@@ -292,7 +303,7 @@ class _CheckoutState extends State<Checkout> {
                                   style: TextStyle(
                                     color: _selectedPengiriman ==
                                             option['id'].toString()
-                                        ? Color(0xFFB50B0B)
+                                        ? const Color(0xFFB50B0B)
                                         : null,
                                     fontWeight: _selectedPengiriman ==
                                             option['id'].toString()
@@ -329,7 +340,7 @@ class _CheckoutState extends State<Checkout> {
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: const Color(0xFFB50B0B),
-                    minimumSize: Size(200, 50),
+                    minimumSize: const Size(200, 50),
                   ),
                   child: const Text(
                     'Pilih Metode Pengiriman',
@@ -341,11 +352,11 @@ class _CheckoutState extends State<Checkout> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Metode Pengiriman Terpilih:',
                         style: TextStyle(fontWeight: FontWeight.w700),
                       ),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
                       Text(
                         _pengirimanOptions.firstWhere(
                           (option) =>
@@ -358,14 +369,14 @@ class _CheckoutState extends State<Checkout> {
                       ),
                     ],
                   ),
-                SizedBox(height: 25),
-                Text(
+                const SizedBox(height: 25),
+                const Text(
                   'Metode Pembayaran',
                   style: TextStyle(fontWeight: FontWeight.w700),
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 ListTile(
-                  title: Text('Cash on Delivery'),
+                  title: const Text('Cash on Delivery'),
                   leading: Radio<String>(
                     value: '1',
                     groupValue: _selectedPaymentMethod,
@@ -379,7 +390,7 @@ class _CheckoutState extends State<Checkout> {
                   ),
                 ),
                 ListTile(
-                  title: Text('Bank Transfer'),
+                  title: const Text('Bank Transfer'),
                   leading: Radio<String>(
                     value: '2',
                     groupValue: _selectedPaymentMethod,
@@ -394,7 +405,7 @@ class _CheckoutState extends State<Checkout> {
                   Column(
                     children: [
                       ListTile(
-                        title: Text('Bank BNI'),
+                        title: const Text('Bank BNI'),
                         leading: Radio<String>(
                           value: 'Bank BNI',
                           groupValue: _selectedBank,
@@ -406,7 +417,7 @@ class _CheckoutState extends State<Checkout> {
                         ),
                       ),
                       ListTile(
-                        title: Text('Bank BCA'),
+                        title: const Text('Bank BCA'),
                         leading: Radio<String>(
                           value: 'Bank BCA',
                           groupValue: _selectedBank,
@@ -418,7 +429,7 @@ class _CheckoutState extends State<Checkout> {
                         ),
                       ),
                       ListTile(
-                        title: Text('Bank Mandiri'),
+                        title: const Text('Bank Mandiri'),
                         leading: Radio<String>(
                           value: 'Bank Mandiri',
                           groupValue: _selectedBank,
@@ -436,7 +447,7 @@ class _CheckoutState extends State<Checkout> {
                   thickness: 1.0,
                 ),
                 const SizedBox(height: 10),
-                Text(
+                const Text(
                   'Total Pembayaran',
                   style: TextStyle(fontWeight: FontWeight.w700),
                 ),
@@ -444,7 +455,7 @@ class _CheckoutState extends State<Checkout> {
                 Text(
                   NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ')
                       .format(widget.totalPayment + _hargaPengiriman),
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 30),
                 Center(
@@ -453,7 +464,7 @@ class _CheckoutState extends State<Checkout> {
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: const Color(0xFFB50B0B),
-                      minimumSize: Size(200, 50),
+                      minimumSize: const Size(200, 50),
                     ),
                     child: const Text(
                       'Lanjutkan Pembayaran',

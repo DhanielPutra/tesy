@@ -11,10 +11,10 @@ class BannerDetail extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           banner['title'] ?? 'Banner Detail',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Color.fromARGB(255, 163, 6, 6),
-        iconTheme: IconThemeData(color: Colors.white), // Set the icon color to white
+        backgroundColor: const Color.fromARGB(255, 163, 6, 6),
+        iconTheme: const IconThemeData(color: Colors.white), // Set the icon color to white
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -31,7 +31,7 @@ class BannerDetail extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Text(
                 banner['detail'] ?? 'No description available',
-                style: TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16),
               ),
             ),
           ],

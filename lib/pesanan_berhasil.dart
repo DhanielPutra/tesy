@@ -34,7 +34,7 @@ class _PesananBerhasilState extends State<PesananBerhasil> {
               },
             ),
             SizedBox(height: 20),
-            Text(
+            const Text(
               'Pesanan Anda telah berhasil!',
               style: TextStyle(fontSize: 24,color: Colors.black,fontWeight: FontWeight.bold),
             ),

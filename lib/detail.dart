@@ -59,7 +59,7 @@ class _DetailState extends State<Detail> {
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
-          backgroundColor: Color.fromARGB(255, 23, 65, 162),
+          backgroundColor: const Color.fromARGB(255, 23, 65, 162),
           textColor: Colors.white,
           fontSize: 16.0,
         );
@@ -127,16 +127,12 @@ class _DetailState extends State<Detail> {
   Future<void> removeFromWishlist(int productId) async {
     try {
       List<dynamic> wishlistItems = await fetchWishlistItems(productId);
-
-      print('Wishlist items in removeFromWishlist: $wishlistItems');
-
       // Check if the wishlist item exists for the current product
       if (wishlistItems.isNotEmpty) {
         // Assuming the first item in the wishlist is the desired product
         int wishlistItemId = wishlistItems[0]['id'];
         await deleteFromWishlist(wishlistItemId);
       } else {
-        print('Item not found in wishlist.');
       }
     } catch (e) {
       print('Error removing item from wishlist: $e');
@@ -261,11 +257,11 @@ class _DetailState extends State<Detail> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Color.fromARGB(255, 206, 22, 22),
-        title: Text(
+        backgroundColor: const Color.fromARGB(255, 206, 22, 22),
+        title: const Text(
           'Detail Produk',
           style: TextStyle(
-              color: const Color.fromARGB(255, 255, 255, 255),
+              color: Color.fromARGB(255, 255, 255, 255),
               fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
@@ -523,11 +519,11 @@ class _DetailState extends State<Detail> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Out of Stock'),
-            content: Text('This product is currently out of stock.'),
+            title: const Text('Out of Stock'),
+            content: const Text('This product is currently out of stock.'),
             actions: [
               TextButton(
-                child: Text('OK'),
+                child: const Text('OK'),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },

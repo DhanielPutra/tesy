@@ -226,24 +226,24 @@ class _HomepageState extends State<Homepage> {
       } else if (index == 1) {
         Navigator.of(context).pushAndRemoveUntil(
           PageRouteBuilder(
-            pageBuilder: (context, animation1, animation2) => Cart(),
-            transitionDuration: Duration(milliseconds: 0),
+            pageBuilder: (context, animation1, animation2) => const Cart(),
+            transitionDuration: const Duration(milliseconds: 0),
           ),
           (route) => false,
         );
       } else if (index == 2) {
         Navigator.of(context).pushAndRemoveUntil(
           PageRouteBuilder(
-            pageBuilder: (context, animation1, animation2) => Wishlist(),
-            transitionDuration: Duration(milliseconds: 0),
+            pageBuilder: (context, animation1, animation2) => const Wishlist(),
+            transitionDuration: const Duration(milliseconds: 0),
           ),
           (route) => false,
         );
       } else if (index == 3) {
         Navigator.of(context).pushAndRemoveUntil(
           PageRouteBuilder(
-            pageBuilder: (context, animation1, animation2) => Profile(),
-            transitionDuration: Duration(milliseconds: 0),
+            pageBuilder: (context, animation1, animation2) => const Profile(),
+            transitionDuration: const Duration(milliseconds: 0),
           ),
           (route) => false,
         );
@@ -471,8 +471,8 @@ class _HomepageState extends State<Homepage> {
               ),
             ),
             if (_isLoadingMore)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
                 child: Center(
                   child: CircularProgressIndicator(),
                 ),

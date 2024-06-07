@@ -2,11 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:marketplace/homepage.dart';
-import 'package:marketplace/models/user.dart';
-import 'package:marketplace/user_services.dart';
 import 'package:marketplace/view/Register/login.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HalamanDaftar extends StatefulWidget {
   HalamanDaftar({super.key});
@@ -63,19 +59,10 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
       if (response.statusCode == 200) {
         // Login successful
         final responseData = jsonDecode(response.body);
-        // final String token = responseData['token'];
-        // final int id = responseData['user']['id'];
-        // final String username = responseData['user']['username'];
-        // setState(() {
+        
         errormessage = 'success';
-        //   print(token);
-        // });
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => Login()), (route) => false);
-
-        // Handle the token or navigate to the home screen
-        // For now, we'll print the token to the console
-        // print('Login successful! Token: $token');
+            MaterialPageRoute(builder: (context) => const Login()), (route) => false);
       } else {
         // Login failed
         setState(() {
@@ -91,21 +78,13 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
     }
   }
 
-  // void _saveAndRedirectToLogin(User user) async {
-  //   SharedPreferences pref = await SharedPreferences.getInstance();
-  //   // await pref.setString('token', user.token ?? '');
-  //   await pref.setInt('id', user.id ?? 0);
-  //   Navigator.of(context).pushAndRemoveUntil(
-  //       MaterialPageRoute(builder: (context) => Login()), (route) => false);
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.all(40),
-          margin: EdgeInsets.only(top: 20),
+          padding: const EdgeInsets.all(40),
+          margin: const EdgeInsets.only(top: 20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -118,26 +97,26 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
                   fit: BoxFit.cover, // Atur sesuai kebutuhan tata letak gambar
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               //WELCOME TEXT
-              Text(
+              const Text(
                 'Get started',
                 style: TextStyle(fontWeight: FontWeight.w900, fontSize: 30),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
-              Text(
+              const Text(
                 'Create Your BarBeQ Account!',
                 style: TextStyle(fontSize: 17),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               //NAMA LENGKAP
               TextField(
-                style: TextStyle(height: 1.5),
+                style: const TextStyle(height: 1.5),
                 onChanged: (value) {
                   setState(() {
                     isFormComplete = validateForm();
@@ -145,28 +124,28 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
                 },
                 controller: namaLengkapController,
                 decoration: InputDecoration(
-                  fillColor: Color(0xFFD9D9D9),
+                  fillColor: const Color(0xFFD9D9D9),
                   filled: true,
-                  contentPadding: EdgeInsets.all(20.0),
+                  contentPadding: const EdgeInsets.all(20.0),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
+                    borderSide: const BorderSide(
                         color: Colors.transparent), // Hilangkan borderSide
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide:
-                        BorderSide(color: Colors.black), // Hilangkan borderSide
+                        const BorderSide(color: Colors.black), // Hilangkan borderSide
                   ),
                   hintText: 'Fullname',
-                  suffixIcon: Icon(Icons.person_outline),
+                  suffixIcon: const Icon(Icons.person_outline),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               // TELEPON
               TextField(
-                style: TextStyle(height: 1.5),
+                style: const TextStyle(height: 1.5),
                 onChanged: (value) {
                   setState(() {
                     isFormComplete = validateForm();
@@ -174,31 +153,31 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
                 },
                 controller: teleponController,
                 decoration: InputDecoration(
-                  fillColor: Color(
+                  fillColor: const Color(
                       0xFFD9D9D9), // Ganti dengan warna latar belakang yang diinginkan
                   filled: true,
-                  contentPadding: EdgeInsets.all(20.0),
+                  contentPadding: const EdgeInsets.all(20.0),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
+                    borderSide: const BorderSide(
                         color: Colors.transparent), // Hilangkan borderSide
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide:
-                        BorderSide(color: Colors.black), // Hilangkan borderSide
+                        const BorderSide(color: Colors.black), // Hilangkan borderSide
                   ),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
                   hintText: 'Phone Number',
-                  suffixIcon: Icon(Icons.phone_enabled_outlined),
+                  suffixIcon: const Icon(Icons.phone_enabled_outlined),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               //EMAIL
               TextField(
-                style: TextStyle(height: 1.5),
+                style: const TextStyle(height: 1.5),
                 onChanged: (value) {
                   setState(() {
                     isFormComplete = validateForm();
@@ -206,30 +185,30 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
                 },
                 controller: emailController,
                 decoration: InputDecoration(
-                  fillColor: Color(
+                  fillColor: const Color(
                       0xFFD9D9D9), // Ganti dengan warna latar belakang yang diinginkan
                   filled: true,
-                  contentPadding: EdgeInsets.all(20.0),
+                  contentPadding: const EdgeInsets.all(20.0),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
+                    borderSide: const BorderSide(
                         color: Colors.transparent), // Hilangkan borderSide
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide:
-                        BorderSide(color: Colors.black), // Hilangkan borderSide
+                        const BorderSide(color: Colors.black), // Hilangkan borderSide
                   ),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  hintText: 'Email', suffixIcon: Icon(Icons.email_outlined),
+                  hintText: 'Email', suffixIcon: const Icon(Icons.email_outlined),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               //PASSWORD
               TextField(
-                style: TextStyle(height: 1.5),
+                style: const TextStyle(height: 1.5),
                 onChanged: (value) {
                   setState(() {
                     isFormComplete = validateForm();
@@ -237,30 +216,30 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
                 },
                 controller: passwordController,
                 decoration: InputDecoration(
-                  fillColor: Color(
+                  fillColor: const Color(
                       0xFFD9D9D9), // Ganti dengan warna latar belakang yang diinginkan
                   filled: true,
-                  contentPadding: EdgeInsets.all(20.0),
+                  contentPadding: const EdgeInsets.all(20.0),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
+                    borderSide: const BorderSide(
                         color: Colors.transparent), // Hilangkan borderSide
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide:
-                        BorderSide(color: Colors.black), // Hilangkan borderSide
+                        const BorderSide(color: Colors.black), // Hilangkan borderSide
                   ),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  hintText: 'Password', suffixIcon: Icon(Icons.lock_outline),
+                  hintText: 'Password', suffixIcon: const Icon(Icons.lock_outline),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               //KONFIRMASI PAASSWORD
               TextField(
-                style: TextStyle(height: 1.5),
+                style: const TextStyle(height: 1.5),
                 onChanged: (value) {
                   setState(() {
                     isFormComplete = validateForm();
@@ -273,33 +252,33 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
                 decoration: InputDecoration(
                   iconColor: Colors.black,
 
-                  fillColor: Color(
+                  fillColor: const Color(
                       0xFFD9D9D9), // Ganti dengan warna latar belakang yang diinginkan
                   filled: true,
-                  contentPadding: EdgeInsets.all(20.0),
+                  contentPadding: const EdgeInsets.all(20.0),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
+                    borderSide: const BorderSide(
                         color: Colors.transparent), // Hilangkan borderSide
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide:
-                        BorderSide(color: Colors.black), // Hilangkan borderSide
+                        const BorderSide(color: Colors.black), // Hilangkan borderSide
                   ),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
                   hintText: 'Konfirmasi Password',
 
-                  suffixIcon: Icon(Icons.lock_outlined),
+                  suffixIcon: const Icon(Icons.lock_outlined),
                 ),
               ),
               Text(
                 passwordError,
-                style: TextStyle(color: Colors.red),
+                style: const TextStyle(color: Colors.red),
               ),
 
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
 
               //TOMBOL SIGN UP
               Container(
@@ -314,7 +293,7 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
                           }
                         : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFFB50B0B),
+                      backgroundColor: const Color(0xFFB50B0B),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
                             10.0), // Sesuaikan nilai radius sesuai keinginan
@@ -335,18 +314,18 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('sudah memiliki akun?'),
+                  const Text('sudah memiliki akun?'),
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pushAndRemoveUntil(
           PageRouteBuilder(
-            pageBuilder: (context, animation1, animation2) => Login(),
-            transitionDuration: Duration(milliseconds: 0),
+            pageBuilder: (context, animation1, animation2) => const Login(),
+            transitionDuration: const Duration(milliseconds: 0),
           ),
           (route) => false,
         );
                     },
-                    child: Text(
+                    child: const Text(
                       'Log in!',
                       style: TextStyle(color: Color(0xFFB50B0B)),
                     ),

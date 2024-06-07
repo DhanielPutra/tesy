@@ -31,43 +31,40 @@ class _WishlistState extends State<Wishlist> {
   }
 
   Future<void> fetchWishlistData() async {
-    final String url = 'https://barbeqshop.online/api/wishlist';
+  final String url = 'https://barbeqshop.online/api/wishlist';
 
-    // Get the user ID and token from SharedPreferences
-    String token =
-        await getToken(); // Assuming getToken() retrieves token from SharedPreferences
+  // Get the user ID and token from SharedPreferences
+  String token = await getToken(); // Assuming getToken() retrieves token from SharedPreferences
 
-    try {
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {
-          'Authorization': 'Bearer $token'
-        }, // Pass the token in the headers
-      );
+  try {
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Authorization': 'Bearer $token'
+      },
+    );
 
-      if (response.statusCode == 200) {
-        // Parse response body
-        Map<String, dynamic> responseData = json.decode(response.body);
-        if (responseData['status'] == true) {
-          // Data retrieved successfully
-          print(responseData);
-          List<dynamic> wishlistData = responseData['data'];
-          setState(() {
-            // Update products list with fetched data
-            products =
-                wishlistData.map((data) => Product.fromJson(data)).toList();
-          });
-        } else {
-          print('Failed to fetch wishlist data: ${responseData['message']}');
-        }
+    if (response.statusCode == 200) {
+      // Parse response body
+      Map<String, dynamic> responseData = json.decode(response.body);
+      if (responseData['status'] == true) {
+        // Data retrieved successfully
+        print(responseData);
+        List<dynamic> wishlistData = responseData['data'];
+        setState(() {
+          // Update products list with fetched data
+          products = wishlistData.map((data) => Product.fromJson(data)).toList();
+        });
       } else {
-        print(
-            'Failed to fetch wishlist data. Status code: ${response.statusCode}');
+        print('Failed to fetch wishlist data: ${responseData['message']}');
       }
-    } catch (e) {
-      print('Error fetching wishlist data: $e');
+    } else {
+      print('Failed to fetch wishlist data. Status code: ${response.statusCode}');
     }
+  } catch (e) {
+    print('Error fetching wishlist data: $e');
   }
+}
    Future<int> fetchProductStock(int productId) async {
   final String url = 'https://barbeqshop.online/api/produk/$productId';
 
@@ -121,16 +118,16 @@ class _WishlistState extends State<Wishlist> {
       if (index == 0) {
         Navigator.of(context).pushAndRemoveUntil(
           PageRouteBuilder(
-            pageBuilder: (context, animation1, animation2) => Homepage(),
-            transitionDuration: Duration(milliseconds: 0),
+            pageBuilder: (context, animation1, animation2) => const Homepage(),
+            transitionDuration: const Duration(milliseconds: 0),
           ),
           (route) => false,
         );
       } else if (index == 1) {
         Navigator.of(context).pushAndRemoveUntil(
           PageRouteBuilder(
-            pageBuilder: (context, animation1, animation2) => Cart(),
-            transitionDuration: Duration(milliseconds: 0),
+            pageBuilder: (context, animation1, animation2) => const Cart(),
+            transitionDuration: const Duration(milliseconds: 0),
           ),
           (route) => false,
         );
@@ -139,8 +136,8 @@ class _WishlistState extends State<Wishlist> {
       } else if (index == 3) {
         Navigator.of(context).pushAndRemoveUntil(
           PageRouteBuilder(
-            pageBuilder: (context, animation1, animation2) => Profile(),
-            transitionDuration: Duration(milliseconds: 0),
+            pageBuilder: (context, animation1, animation2) => const Profile(),
+            transitionDuration: const Duration(milliseconds: 0),
           ),
           (route) => false,
         );
@@ -154,7 +151,7 @@ class _WishlistState extends State<Wishlist> {
       appBar: AppBar(
         automaticallyImplyLeading: false, // Remove the back arrow button
         elevation: 5,
-        backgroundColor: Color.fromARGB(255, 163, 6, 6),
+        backgroundColor: const Color.fromARGB(255, 163, 6, 6),
         title: const Text(
           'Wishlist',
           style: TextStyle(
@@ -205,7 +202,7 @@ class _WishlistState extends State<Wishlist> {
                                   padding:
                                       const EdgeInsets.only(top: 10, right: 40),
                                   child: Text(
-                                    product.name,
+                                    products[index].name,
                                     style: const TextStyle(
                                       color: Colors.black,
                                       fontSize: 20,
@@ -225,20 +222,21 @@ class _WishlistState extends State<Wishlist> {
                             ],
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(top: 3),
+                            padding: const EdgeInsets.only(top: 0),
                             child: Text(
                               product.detail,
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 17,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.normal,
+                                fontFamily: 'Roboto',
                               ),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(top: 3),
+                            padding: const EdgeInsets.only(top: 7),
                             child: Text(
                               'Rp.${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(double.parse(product.price))},00',
                               style: const TextStyle(
@@ -265,7 +263,7 @@ class _WishlistState extends State<Wishlist> {
                                     borderRadius: BorderRadius.circular(5),
                                   ),
                                   backgroundColor:
-                                      Color.fromARGB(255, 174, 5, 5),
+                                      const Color.fromARGB(255, 174, 5, 5),
                                 ),
                                 child: const Text(
                                   'Order Now',
@@ -307,7 +305,7 @@ class _WishlistState extends State<Wishlist> {
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: const Color.fromARGB(255, 255, 255, 255),
-        unselectedItemColor: Color.fromARGB(207, 0, 0, 0),
+        unselectedItemColor: const Color.fromARGB(207, 0, 0, 0),
         onTap: _onItemTapped,
       ),
     );
@@ -353,14 +351,14 @@ class _WishlistState extends State<Wishlist> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Out of Stock'),
-            content: Text('The selected item is out of stock.'),
+            title: const Text('Out of Stock'),
+            content: const Text('The selected item is out of stock.'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );

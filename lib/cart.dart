@@ -307,7 +307,7 @@ class _CartState extends State<Cart> {
                 width: 120.0,
                 height: 120.0,
                 child: Image.network(
-                  product['gambar'],
+                  product['produk']['gambar'],
                   fit: BoxFit.contain,
                 ),
               ),
@@ -318,7 +318,7 @@ class _CartState extends State<Cart> {
                   children: [
                     SizedBox(height: 15,),
                     Text(
-                      product['nama_produk'],
+                      product['produk']['nama_produk'],
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -330,7 +330,7 @@ class _CartState extends State<Cart> {
                       height: 25,
                     ),
                     Text(
-                      'Rp. ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(double.parse(product['harga']))},00',
+                      'Rp. ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(double.parse(product['produk']['harga']))},00',
                       style: TextStyle(fontSize: 16, color: Colors.black),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
@@ -371,7 +371,7 @@ class _CartState extends State<Cart> {
     double total = 0.0;
     for (Map<String, dynamic> product in cartItems) {
       if (product['isChecked']) {
-        total += double.parse(product['harga']);
+        total += double.parse(product['produk']['harga']);
       }
     }
     return total;

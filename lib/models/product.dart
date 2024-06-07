@@ -3,7 +3,7 @@ class Product {
   final String name;
   final String imageUrl;
   final String price;
-  final String detail; // Add detail field
+  final String detail;
   final String id_wish;
   final String id_penjual;
   final String id_user;
@@ -18,25 +18,17 @@ class Product {
     required this.id_penjual,
     required this.id_user,
   });
-  
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
       id: json['id'].toString(),
-      name: json['nama_product'] ?? '',
-      imageUrl: json['gambar'] ?? '',
-      price: json['harga'].toString() ?? '',
-      detail: json['detail'] ?? '', // Assign detail field
-      id_wish: json['id_wish'].toString() ?? '',
-      id_penjual: json['penjual_id'].toString() ?? '',
-      id_user: json['user_id'].toString() ?? '',
+      name: json['produk']?['nama_produk'] ?? '',
+      imageUrl: json['produk']?['gambar'] ?? '',
+      price: json['produk']?['harga'].toString() ?? '',
+      detail: json['produk']?['detail'] ?? '',
+      id_wish: json['id_wish'].toString(),
+      id_penjual: json['produk']?['author']?['id'].toString() ?? '',
+      id_user: json['pembeli']?['user_id'].toString() ?? '',
     );
   }
-
-
-
-
-  
-
-  static void removeWhere(bool Function(dynamic product) param0) {}
 }
