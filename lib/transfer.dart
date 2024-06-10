@@ -178,67 +178,71 @@ class _TransferState extends State<Transfer> {
     );
   }
 
-  Future<void> _createOrder() async {
-    final String url = 'https://barbeqshop.online/api/pesanan';
+ Future<void> _createOrder() async {
+  final String url = 'https://barbeqshop.online/api/pesanan';
 
-    int userId = await getUserId();
-    String token = await getToken();
+  int userId = await getUserId();
+  String token = await getToken();
 
-    // Prepare the multipart request
-    var request = http.MultipartRequest('POST', Uri.parse(url));
-    request.headers['Authorization'] = 'Bearer $token';
+  // Prepare the multipart request
+  var request = http.MultipartRequest('POST', Uri.parse(url));
+  request.headers['Authorization'] = 'Bearer $token';
 
-    String produkId;
-    String penjualId;
-    if (widget.isFromCart) {
-      // If the data is from the cart
-      produkId = widget.cartItems[0]['produk_id'].toString();
-      penjualId = widget.cartItems[0]['penjual_id'].toString();
-    } else if (widget.isFromWish) {
-      // If the data is from wishlist
-      produkId = widget.cartItems[0]['id_wish'].toString();
-      penjualId = widget.cartItems[0]['id_penjual'].toString();
-    } else {
-      // If the data is from product details
-      produkId = widget.cartItems['id'].toString();
-      penjualId = widget.cartItems['author']['id'].toString();
-    }
-
-    // Add other data fields
-    request.fields['pembeli_id'] = userId.toString();
-    request.fields['alamat'] = widget.alamatPengiriman;
-    request.fields['produk_id'] = produkId.toString();
-    request.fields['user_id'] = penjualId.toString();
-    request.fields['bayar_id'] = '2'; // ID for Bank Transfer
-    request.fields['status_id'] = '1';
-    request.fields['harga'] = widget.totalPayment;
-    request.fields['expedisi_id'] = widget.idKurir;
-
-    // Add the image file
-    if (_image != null) {
-      var pic = await http.MultipartFile.fromPath("gambar", _image!.path);
-      request.files.add(pic);
-    }
-
-    try {
-      // Send the request
-      var streamedResponse = await request.send();
-
-      // Check the response status
-      if (streamedResponse.statusCode == 200) {
-        print('Order created successfully.');
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => PesananBerhasil()),
-        );
-      } else {
-        print(
-            'Failed to create order. Status code: ${streamedResponse.statusCode}');
-      }
-    } catch (e) {
-      print('Error creating order: $e');
-    }
+  String produkId;
+  String penjualId;
+  if (widget.isFromCart) {
+    // If the data is from the cart
+    produkId = widget.cartItems[0]['produk_id'].toString();
+    penjualId = widget.cartItems[0]['user_id'].toString();
+  } else if (widget.isFromWish) {
+    // If the data is from wishlist
+    produkId = widget.cartItems[0]['id_wish'].toString();
+    penjualId = widget.cartItems[0]['id_penjual'].toString();
+  } else {
+    // If the data is from product details
+    produkId = widget.cartItems['id'].toString();
+    penjualId = widget.cartItems['author']['id'].toString();
   }
+
+  // Add other data fields
+  request.fields['pembeli_id'] = userId.toString();
+  request.fields['alamat'] = widget.alamatPengiriman;
+  request.fields['produk_id'] = produkId.toString();
+  request.fields['user_id'] = penjualId.toString();
+  request.fields['bayar_id'] = '2'; // ID for Bank Transfer
+  request.fields['status_id'] = '1';
+  request.fields['harga'] = widget.totalPayment;
+  request.fields['expedisi_id'] = widget.idKurir;
+
+  // Add the image file
+  if (_image != null) {
+    var pic = await http.MultipartFile.fromPath("gambar", _image!.path);
+    request.files.add(pic);
+  }
+
+  try {
+    // Send the request
+    var streamedResponse = await request.send();
+
+    // Read the response
+    var response = await http.Response.fromStream(streamedResponse);
+
+    // Check the response status
+    if (response.statusCode == 200) {
+      print('Order created successfully.');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => PesananBerhasil()),
+      );
+    } else {
+      print('Failed to create order. Status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+    }
+  } catch (e) {
+    print('Error creating order: $e');
+  }
+}
+
 
   String getBankAccount(String bankName) {
     final Map<String, String> bankAccounts = {

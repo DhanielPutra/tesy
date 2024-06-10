@@ -31,7 +31,6 @@ class _CartState extends State<Cart> {
           'Authorization': 'Bearer $token'
         }, // Pass the token in the headers
       );
-      ;
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
@@ -55,29 +54,30 @@ class _CartState extends State<Cart> {
       print('Error fetching cart data: $e');
     }
   }
-  Future<int> fetchProductStock(int productId) async {
-  final String url = 'https://barbeqshop.online/api/produk/$productId';
 
-  try {
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200) {
-      final responseBody = json.decode(response.body);
-      if (responseBody != null && responseBody['data'] != null && responseBody['data']['stock'] != null) {
-        // Ensure the stock value is parsed as an integer
-        return int.parse(responseBody['data']['stock'].toString());
+  Future<int> fetchProductStock(int productId) async {
+    final String url = 'https://barbeqshop.online/api/produk/$productId';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final responseBody = json.decode(response.body);
+        if (responseBody != null && responseBody['data'] != null && responseBody['data']['stock'] != null) {
+          // Ensure the stock value is parsed as an integer
+          return int.parse(responseBody['data']['stock'].toString());
+        } else {
+          print('Stock data is missing in the response.');
+          return 0; // Default to 0 if stock data is missing
+        }
       } else {
-        print('Stock data is missing in the response.');
-        return 0; // Default to 0 if stock data is missing
+        print('Failed to fetch product stock. Status code: ${response.statusCode}');
+        return 0; // Default to 0 if there is an error
       }
-    } else {
-      print('Failed to fetch product stock. Status code: ${response.statusCode}');
-      return 0; // Default to 0 if there is an error
+    } catch (e) {
+      print('Error fetching product stock: $e');
+      return 0;
     }
-  } catch (e) {
-    print('Error fetching product stock: $e');
-    return 0;
   }
-}
 
   Future<void> deleteItem(String itemId) async {
     final String url = 'https://barbeqshop.online/api/cart/$itemId';
@@ -345,6 +345,11 @@ class _CartState extends State<Cart> {
                     value: product['isChecked'],
                     onChanged: (bool? value) {
                       setState(() {
+                        // Uncheck all other items
+                        for (var item in cartItems) {
+                          item['isChecked'] = false;
+                        }
+                        // Check the selected item
                         product['isChecked'] = value!;
                       });
                     },
@@ -420,49 +425,42 @@ class _CartState extends State<Cart> {
     });
   }
 
-  // void _sendDataTotalToCheckout(BuildContext context) {
-  //   double totalPayment = getTotalPrice();
-  //   Navigator.of(context).push(MaterialPageRoute(
-  //       builder: (context) => Checkout(totalPayment: totalPayment)));
-  // }
   void _sendDataToCheckout(BuildContext context) async {
-  // Iterate over selected items in the cart
-  for (var item in cartItems.where((item) => item['isChecked'] == true)) {
-    int productId = int.parse(item['produk_id']); // Parse the product ID as an integer
-    int productStock = await fetchProductStock(productId); // Fetch product stock
+    for (var item in cartItems.where((item) => item['isChecked'] == true)) {
+      int productId = int.parse(item['produk_id']); // Parse the product ID as an integer
+      int productStock = await fetchProductStock(productId); // Fetch product stock
 
-    if (productStock > 0) {
-      // If product stock exists, proceed to checkout
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => Checkout(
-          CartItems: cartItems.where((item) => item['isChecked'] == true).toList(),
-          totalPayment: getTotalPrice(),
-          isFromCart: true,
-          isFromWIsh: false,
-        ),
-      ));
-    } else {
-      // If product stock does not exist, show a dialog or message
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Out of Stock'),
-            content: Text('The selected item is out of stock.'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-      break; // Exit the loop
+      if (productStock > 0) {
+        // If product stock exists, proceed to checkout
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => Checkout(
+            CartItems: cartItems.where((item) => item['isChecked'] == true).toList(),
+            totalPayment: getTotalPrice(),
+            isFromCart: true,
+            isFromWIsh: false,
+          ),
+        ));
+      } else {
+        // If product stock does not exist, show a dialog or message
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Out of Stock'),
+              content: Text('The selected item is out of stock.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+        break; // Exit the loop
+      }
     }
   }
-}
-
 }

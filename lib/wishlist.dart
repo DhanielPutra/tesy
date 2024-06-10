@@ -6,10 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:marketplace/cart.dart';
 import 'package:marketplace/checkout.dart';
-import 'package:marketplace/detail.dart';
 import 'package:marketplace/homepage.dart';
 import 'package:marketplace/models/product.dart';
-import 'package:marketplace/product.dart';
 import 'package:marketplace/profile.dart';
 import 'package:marketplace/user_services.dart';
 

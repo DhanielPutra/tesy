@@ -58,7 +58,7 @@ class _HomepageState extends State<Homepage> {
     _scrollController.addListener(_scrollListener);
   }
 
-  Future<List<dynamic>> fetchData({int page = 1, int limit = 10}) async {
+  Future<List<dynamic>> fetchData({int page = 1, int limit = 4}) async {
     try {
       final response = await http.get(Uri.parse('https://barbeqshop.online/api/produk?page=$page&limit=$limit'));
       print(response.statusCode);
@@ -109,7 +109,7 @@ class _HomepageState extends State<Homepage> {
     }
   }
 
-  Future<List<dynamic>> fetchDataByCategory(String categoryId, {int page = 1, int limit = 10}) async {
+  Future<List<dynamic>> fetchDataByCategory(String categoryId, {int page = 1, int limit = 5}) async {
     try {
       final response = await http.get(Uri.parse('https://barbeqshop.online/api/produkkat?kategori_id=$categoryId&page=$page&limit=$limit'));
       print(response.statusCode);
@@ -183,39 +183,52 @@ class _HomepageState extends State<Homepage> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-      if (!_isLoadingMore && _hasMoreItems) {
-        setState(() {
-          _isLoadingMore = true;
-        });
-        _currentPage++;
-        if (_selectedCategoryId == 'All') {
-          fetchData(page: _currentPage).then((moreData) {
-            setState(() {
+  if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+    if (!_isLoadingMore && _hasMoreItems) {
+      setState(() {
+        _isLoadingMore = true;
+      });
+      _currentPage++;
+      if (_selectedCategoryId == 'All') {
+        fetchData(page: _currentPage).then((moreData) {
+          setState(() {
+            if (moreData.isNotEmpty) {
+              // Check for duplicates
+              moreData.removeWhere((newItem) => products.any((existingItem) => existingItem['id'] == newItem['id']));
               if (moreData.isNotEmpty) {
                 products.addAll(moreData);
                 filteredItems.addAll(moreData);
               } else {
                 _hasMoreItems = false;
               }
-              _isLoadingMore = false;
-            });
+            } else {
+              _hasMoreItems = false;
+            }
+            _isLoadingMore = false;
           });
-        } else {
-          fetchDataByCategory(_selectedCategoryId, page: _currentPage).then((moreData) {
-            setState(() {
+        });
+      } else {
+        fetchDataByCategory(_selectedCategoryId, page: _currentPage).then((moreData) {
+          setState(() {
+            if (moreData.isNotEmpty) {
+              // Check for duplicates
+              moreData.removeWhere((newItem) => filteredItems.any((existingItem) => existingItem['id'] == newItem['id']));
               if (moreData.isNotEmpty) {
                 filteredItems.addAll(moreData);
               } else {
                 _hasMoreItems = false;
               }
-              _isLoadingMore = false;
-            });
+            } else {
+              _hasMoreItems = false;
+            }
+            _isLoadingMore = false;
           });
-        }
+        });
       }
     }
   }
+}
+
 
   int _selectedIndex = 0;
 
