@@ -213,11 +213,18 @@ class _TransferState extends State<Transfer> {
   request.fields['status_id'] = '1';
   request.fields['harga'] = widget.totalPayment;
   request.fields['expedisi_id'] = widget.idKurir;
+  request.fields['gambar'] = _pickImage().toString();
 
   // Add the image file
   if (_image != null) {
-    var pic = await http.MultipartFile.fromPath("gambar", _image!.path);
-    request.files.add(pic);
+    try {
+      var pic = await http.MultipartFile.fromPath("gambar", _image!.path);
+      request.files.add(pic);
+    } catch (e) {
+      print('Error adding image file to request: $e');
+    }
+  } else {
+    print('No image selected to upload.');
   }
 
   try {
@@ -242,6 +249,7 @@ class _TransferState extends State<Transfer> {
     print('Error creating order: $e');
   }
 }
+
 
 
   String getBankAccount(String bankName) {

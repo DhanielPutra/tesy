@@ -110,11 +110,11 @@ class _CartState extends State<Cart> {
       home: Scaffold(
         appBar: AppBar(
           elevation: 0,
-          backgroundColor: Color.fromARGB(255, 163, 6, 6),
-          title: Text(
+          backgroundColor: const Color.fromARGB(255, 163, 6, 6),
+          title: const Text(
             'My Cart',
             style: TextStyle(
-                color: const Color.fromARGB(255, 255, 255, 255),
+                color: Color.fromARGB(255, 255, 255, 255),
                 fontWeight: FontWeight.bold),
           ),
         ),
@@ -136,7 +136,7 @@ class _CartState extends State<Cart> {
               right: 0,
               child: Container(
                 color: Colors.white,
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -145,7 +145,7 @@ class _CartState extends State<Cart> {
                       children: [
                         Row(
                           children: [
-                            Text(
+                            const Text(
                               'Total Harga',
                               style: TextStyle(
                                 fontSize: 18,
@@ -163,7 +163,7 @@ class _CartState extends State<Cart> {
                                   ),
                                   builder: (BuildContext context) {
                                     return Container(
-                                      padding: EdgeInsets.all(15),
+                                      padding: const EdgeInsets.all(15),
                                       height: 250.0,
                                       width: MediaQuery.of(context).size.width,
                                       child: Column(
@@ -174,7 +174,7 @@ class _CartState extends State<Cart> {
                                             onPressed: () {
                                               Navigator.pop(context);
                                             },
-                                            icon: Icon(Icons.close_sharp),
+                                            icon: const Icon(Icons.close_sharp),
                                           ),
                                           const SizedBox(height: 10),
                                           const Text(
@@ -184,7 +184,7 @@ class _CartState extends State<Cart> {
                                               fontSize: 18,
                                             ),
                                           ),
-                                          SizedBox(height: 20),
+                                          const SizedBox(height: 20),
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -197,14 +197,14 @@ class _CartState extends State<Cart> {
                                               ),
                                             ],
                                           ),
-                                          SizedBox(height: 10),
-                                          Divider(),
-                                          SizedBox(height: 10),
+                                          const SizedBox(height: 10),
+                                          const Divider(),
+                                          const SizedBox(height: 10),
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Text(
+                                              const Text(
                                                 'Total Pembayaran',
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -221,7 +221,7 @@ class _CartState extends State<Cart> {
                                   },
                                 );
                               },
-                              icon: Icon(Icons.keyboard_arrow_up),
+                              icon: const Icon(Icons.keyboard_arrow_up),
                             ),
                           ],
                         ),
@@ -237,20 +237,20 @@ class _CartState extends State<Cart> {
                                   context); // Mengirim data ke halaman checkout
                             }
                           : null,
-                      child: Text(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: getTotalPrice() > 0
+                            ? const Color(0xFFB50B0B)
+                            : Colors.grey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                      child: const Text(
                         'Checkout',
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           fontSize: 17,
                           color: Colors.white,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: getTotalPrice() > 0
-                            ? Color(0xFFB50B0B)
-                            : Colors.grey,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
                         ),
                       ),
                     ),
@@ -283,7 +283,7 @@ class _CartState extends State<Cart> {
           ],
           currentIndex: _selectedIndex,
           selectedItemColor: const Color.fromARGB(255, 255, 255, 255),
-          unselectedItemColor: Color.fromARGB(207, 0, 0, 0),
+          unselectedItemColor: const Color.fromARGB(207, 0, 0, 0),
           onTap: _onItemTapped,
         ),
       ),
@@ -292,7 +292,7 @@ class _CartState extends State<Cart> {
 
   Widget buildProductCard(Map<String, dynamic> product, int index) {
     return Container(
-      margin: EdgeInsets.fromLTRB(20, 5, 20, 5),
+      margin: const EdgeInsets.fromLTRB(20, 5, 20, 5),
       height: 140,
       child: Card(
         shape: RoundedRectangleBorder(
@@ -311,27 +311,27 @@ class _CartState extends State<Cart> {
                   fit: BoxFit.contain,
                 ),
               ),
-              SizedBox(width: 16.0),
+              const SizedBox(width: 16.0),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 15,),
+                    const SizedBox(height: 15,),
                     Text(
                       product['produk']['nama_produk'],
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 25,
                     ),
                     Text(
                       'Rp. ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(double.parse(product['produk']['harga']))},00',
-                      style: TextStyle(fontSize: 16, color: Colors.black),
+                      style: const TextStyle(fontSize: 16, color: Colors.black),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                     ),
@@ -355,7 +355,7 @@ class _CartState extends State<Cart> {
                     },
                   ),
                   IconButton(
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.delete,
                       color: Color(0xFFB50B0B),
                     ),
@@ -398,8 +398,8 @@ class _CartState extends State<Cart> {
       if (index == 0) {
         Navigator.of(context).pushAndRemoveUntil(
           PageRouteBuilder(
-            pageBuilder: (context, animation1, animation2) => Homepage(),
-            transitionDuration: Duration(milliseconds: 0),
+            pageBuilder: (context, animation1, animation2) => const Homepage(),
+            transitionDuration: const Duration(milliseconds: 0),
           ),
           (route) => false,
         );
@@ -408,16 +408,16 @@ class _CartState extends State<Cart> {
       } else if (index == 2) {
         Navigator.of(context).pushAndRemoveUntil(
           PageRouteBuilder(
-            pageBuilder: (context, animation1, animation2) => Wishlist(),
-            transitionDuration: Duration(milliseconds: 0),
+            pageBuilder: (context, animation1, animation2) => const Wishlist(),
+            transitionDuration: const Duration(milliseconds: 0),
           ),
           (route) => false,
         );
       } else if (index == 3) {
         Navigator.of(context).pushAndRemoveUntil(
           PageRouteBuilder(
-            pageBuilder: (context, animation1, animation2) => Profile(),
-            transitionDuration: Duration(milliseconds: 0),
+            pageBuilder: (context, animation1, animation2) => const Profile(),
+            transitionDuration: const Duration(milliseconds: 0),
           ),
           (route) => false,
         );
@@ -446,14 +446,14 @@ class _CartState extends State<Cart> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Out of Stock'),
-              content: Text('The selected item is out of stock.'),
+              title: const Text('Out of Stock'),
+              content: const Text('The selected item is out of stock.'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
